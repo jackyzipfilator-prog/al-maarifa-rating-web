@@ -413,6 +413,11 @@ async function boot() {
     renderAuth();
     if (user) {
       await loadUserProfile(user);
+      if (userProfile && userProfile.suspended) {
+        await FB.signOut(FB.auth);
+        showToast('Your account has been suspended.');
+        return;
+      }
       if (!userProfile || !userProfile.onboarded) { openModal('onboardModal'); setupOnboarding(user); }
       else { closeModal('onboardModal'); if (!profilesUnsub) loadProfiles(); loadJoinCount(); }
     } else {

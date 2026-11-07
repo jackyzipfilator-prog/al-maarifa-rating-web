@@ -31,10 +31,10 @@
 <div id="app" class="min-h-screen flex flex-col">
   <header class="sticky top-0 z-40 glass border-b" style="border-color:var(--border)">
     <div class="max-w-6xl mx-auto px-4 h-16 flex items-center gap-3">
-      <a id="logo" href="#" class="flex items-center gap-2 logo-glow select-none">
+      <div id="logo" class="flex items-center gap-2 logo-glow select-none" style="cursor:default">
         <img src="https://i.postimg.cc/gjgpRqTJ/yessir.png" alt="Al Maarifa" class="w-8 h-8 rounded-lg object-cover" />
         <span class="font-semibold tracking-tight" data-i18n="app_name">Al Maarifa</span>
-      </a>
+      </div>
       <div class="flex-1 max-w-md mx-auto hidden sm:block">
         <input id="search" type="text" data-i18n-placeholder="search_placeholder" placeholder="Search by name or class…"
           class="w-full rounded-full px-4 py-2 text-sm ring-accent" style="background:var(--card);border:1px solid var(--border);color:var(--text)" />
@@ -831,10 +831,7 @@ $('langSelect').addEventListener('change', (e) => applyLang(e.target.value));
 $('imgSizeSelect').addEventListener('change', (e) => { imgSize = e.target.value; localStorage.setItem('imgSize', imgSize); renderFeed(); renderRecommended(); renderForYou(); });
 
 // Logo click
-$('logo').addEventListener('click', (e) => {
-  e.preventDefault();
-  window.open('https://imgs.search.brave.com/oLqY0zCEZAnSRkAN2vvU73yfFBPlJ70JNe5WZpWMOwg/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRpYS50ZW5vci5jb20vMHJLTDVkdE1Qa2dBQUFBTS9tb25rZXkuZ2lm.gif','_blank');
-});
+// logo is non-clickable; glow on hover only
 
 function wireUI() {
   $('search').addEventListener('input', renderFeed);

@@ -26,6 +26,7 @@
 </style>
 </head>
 <body class="antialiased">
+<div id="fatalErr" class="hidden fixed top-0 left-0 right-0 z-[100] p-3 text-center text-sm font-medium" style="background:#dc2626;color:#fff"></div>
 
 <div id="app" class="min-h-screen flex flex-col">
   <header class="sticky top-0 z-40 glass border-b" style="border-color:var(--border)">
@@ -324,9 +325,9 @@
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2 rounded-full text-sm font-medium shadow-lg fade-in" style="background:var(--text);color:var(--bg)"></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, runTransaction, where, limit, increment, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, runTransaction, where, limit, increment, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCUPW2VwfF9Ae5KQMelYGfLnjYbz6eFmG4",
@@ -398,9 +399,9 @@ function avatarUrl(){ return (userProfile && userProfile.avatarUrl) || (currentU
 // dynamic imports
 let FB = null;
 async function boot() {
-  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js");
-  const authMod = await import("https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js");
-  const fsMod = await import("https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js");
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js");
+  const authMod = await import("https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js");
+  const fsMod = await import("https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js");
   const firebaseConfig = { apiKey:"AIzaSyCUPW2VwfF9Ae5KQMelYGfLnjYbz6eFmG4", authDomain:"al-maarifa-3fc45.firebaseapp.com", projectId:"al-maarifa-3fc45", storageBucket:"al-maarifa-3fc45.firebasestorage.app", messagingSenderId:"936309588942", appId:"1:936309588942:web:68aec7b0f200710576a19f", measurementId:"G-X6JBCW26JC" };
   const app = initializeApp(firebaseConfig);
   const auth = authMod.getAuth(app);
@@ -881,7 +882,11 @@ if (EMAILJS_SERVICE) {
   document.head.appendChild(s);
 }
 
-boot();
+boot().catch(err => {
+  const b = document.getElementById('fatalErr');
+  if (b) { b.textContent = 'Failed to load: ' + (err && err.message ? err.message : err); b.classList.remove('hidden'); }
+  console.error(err);
+});
 </script>
 </body>
 </html>

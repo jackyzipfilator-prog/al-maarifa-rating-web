@@ -1,107 +1,187 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark" dir="ltr">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Al Maarifa — School Social Rating</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    darkMode: 'class',
-    theme: {
-      extend: {
-        colors: { bg:'#0a0a0a', card:'#111111', border:'#1f1f1f', muted:'#888888' },
-        fontFamily: { sans: ['Inter','ui-sans-serif','system-ui','sans-serif'] }
-      }
-    }
-  }
-</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  body { background:#0a0a0a; color:#fff; }
-  .glass { background: rgba(17,17,17,0.7); backdrop-filter: blur(12px); }
-  .scrollbar::-webkit-scrollbar { width:6px; }
-  .scrollbar::-webkit-scrollbar-thumb { background:#2a2a2a; border-radius:3px; }
-  .fade-in { animation: fadeIn .25s ease; }
-  @keyframes fadeIn { from { opacity:0; transform:translateY(6px);} to { opacity:1; transform:none;} }
+  :root { --bg:#0a0a0a; --card:#111111; --border:#1f1f1f; --text:#ffffff; --muted:#888888; --accent:#3b82f6; --accent2:#fb923c; --glow:rgba(59,130,246,.35); }
+  html.light { --bg:#f7f8fa; --card:#ffffff; --border:#e5e7eb; --text:#111827; --muted:#6b7280; --accent:#2563eb; --accent2:#ea580c; --glow:rgba(37,99,235,.25); }
+  body { background:var(--bg); color:var(--text); font-family:'Inter','Noto Sans Arabic',system-ui,sans-serif; transition:background .25s,color .25s; }
+  html[lang="ar"] body { font-family:'Noto Sans Arabic','Inter',system-ui,sans-serif; }
+  .bg-card2 { background:var(--card); } .border-c { border-color:var(--border); } .text-muted2 { color:var(--muted); }
+  .glass { background: color-mix(in srgb, var(--card) 70%, transparent); backdrop-filter: blur(12px); }
+  .scrollbar::-webkit-scrollbar { width:6px; } .scrollbar::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+  .fade-in { animation: fadeIn .25s ease; } @keyframes fadeIn { from { opacity:0; transform:translateY(6px);} to { opacity:1; transform:none;} }
+  .logo-glow { transition: text-shadow .25s, filter .25s; } .logo-glow:hover { text-shadow:0 0 18px var(--glow),0 0 36px var(--glow); filter:brightness(1.1); }
+  .card-click { cursor:pointer; transition: transform .15s, border-color .15s; } .card-click:hover { transform:translateY(-2px); border-color:var(--accent); }
+  .emoji-btn { transition: transform .12s; } .emoji-btn:hover { transform:scale(1.15); } .emoji-btn.active { background:var(--accent); color:#fff; }
+  .ring-accent:focus { outline:none; box-shadow:0 0 0 2px var(--accent); }
+  .btn-primary { background:var(--accent); color:#fff; } .btn-primary:hover { filter:brightness(1.08); }
+  .chip { background: color-mix(in srgb, var(--accent) 12%, transparent); color:var(--accent); border:1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
+  .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 </style>
 </head>
-<body class="font-sans antialiased">
+<body class="antialiased">
 
-<div id="app" class="min-h-screen">
-  <header class="sticky top-0 z-40 glass border-b border-border">
-    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center gap-4">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center font-bold">M</div>
-        <span class="font-semibold tracking-tight">Al Maarifa</span>
+<div id="app" class="min-h-screen flex flex-col">
+  <header class="sticky top-0 z-40 glass border-b" style="border-color:var(--border)">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center gap-3">
+      <a id="logo" href="#" class="flex items-center gap-2 logo-glow select-none">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold" style="background:var(--text);color:var(--bg)">M</div>
+        <span class="font-semibold tracking-tight" data-i18n="app_name">Al Maarifa</span>
+      </a>
+      <div class="flex-1 max-w-md mx-auto hidden sm:block">
+        <input id="search" type="text" data-i18n-placeholder="search_placeholder" placeholder="Search by name or class…"
+          class="w-full rounded-full px-4 py-2 text-sm ring-accent" style="background:var(--card);border:1px solid var(--border);color:var(--text)" />
       </div>
-      <div class="flex-1 max-w-md mx-auto">
-        <input id="search" type="text" placeholder="Search by name or class…"
-          class="w-full bg-card border border-border rounded-full px-4 py-2 text-sm focus:outline-none focus:border-white/40 transition" />
-      </div>
       <div class="flex items-center gap-2">
-        <button id="createBtn" class="hidden px-4 py-2 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90 transition">+ Profile</button>
+        <button id="settingsBtn" class="p-2 rounded-full hover:opacity-80" aria-label="Settings">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button id="createBtn" class="hidden px-4 py-2 rounded-full text-sm font-medium btn-primary" data-i18n="create_profile">+ Profile</button>
         <div id="authArea"></div>
       </div>
     </div>
+    <div class="sm:hidden px-4 pb-3">
+      <input id="searchMobile" type="text" data-i18n-placeholder="search_placeholder" placeholder="Search by name or class…"
+        class="w-full rounded-full px-4 py-2 text-sm ring-accent" style="background:var(--card);border:1px solid var(--border);color:var(--text)" />
+    </div>
   </header>
 
-  <div class="max-w-6xl mx-auto px-4 mt-6">
-    <div class="inline-flex bg-card border border-border rounded-full p-1">
-      <button data-tab="feed" class="tabBtn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-black">Feed</button>
-      <button data-tab="leaderboard" class="tabBtn px-4 py-1.5 rounded-full text-sm font-medium text-muted hover:text-white">Leaderboard</button>
+  <div class="max-w-6xl mx-auto px-4 mt-4 flex flex-wrap items-center gap-3">
+    <div class="inline-flex bg-card2 border-c border rounded-full p-1">
+      <button data-tab="feed" class="tabBtn px-4 py-1.5 rounded-full text-sm font-medium btn-primary" data-i18n="tab_feed">Feed</button>
+      <button data-tab="recommended" class="tabBtn px-4 py-1.5 rounded-full text-sm font-medium" style="color:var(--muted)" data-i18n="tab_recommended">Recommended</button>
+      <button data-tab="foryou" class="tabBtn px-4 py-1.5 rounded-full text-sm font-medium" style="color:var(--muted)" data-i18n="tab_foryou">For You</button>
+      <button data-tab="leaderboard" class="tabBtn px-4 py-1.5 rounded-full text-sm font-medium" style="color:var(--muted)" data-i18n="tab_leaderboard">Leaderboard</button>
+    </div>
+    <div class="ml-auto flex items-center gap-2 text-sm" style="color:var(--muted)">
+      <span data-i18n="joined">Joined</span>
+      <span id="joinCount" class="font-semibold" style="color:var(--text)">0</span>
+      <span data-i18n="users">users</span>
     </div>
   </div>
 
-  <main id="feedView" class="max-w-6xl mx-auto px-4 py-6">
+  <main id="feedView" class="max-w-6xl mx-auto px-4 py-6 flex-1">
     <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-    <div id="emptyState" class="hidden text-center text-muted py-20">
-      <p class="text-lg">No profiles yet.</p>
-      <p class="text-sm mt-1">Sign in and create the first one.</p>
+    <div id="emptyState" class="hidden text-center py-20" style="color:var(--muted)">
+      <p class="text-lg" data-i18n="no_profiles">No profiles yet.</p>
+      <p class="text-sm mt-1" data-i18n="create_first">Sign in and create the first one.</p>
     </div>
   </main>
 
-  <main id="lbView" class="max-w-3xl mx-auto px-4 py-6 hidden">
+  <main id="recommendedView" class="max-w-6xl mx-auto px-4 py-6 flex-1 hidden">
+    <div id="recGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    <div id="recEmpty" class="hidden text-center py-20" style="color:var(--muted)">
+      <p class="text-lg" data-i18n="no_recs">No recommendations yet.</p>
+    </div>
+  </main>
+
+  <main id="foryouView" class="max-w-6xl mx-auto px-4 py-6 flex-1 hidden">
+    <div id="fyGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    <div id="fyEmpty" class="hidden text-center py-20" style="color:var(--muted)">
+      <p class="text-lg" data-i18n="no_fy">Nothing personalized yet. Browse some profiles first.</p>
+    </div>
+  </main>
+
+  <main id="lbView" class="max-w-3xl mx-auto px-4 py-6 flex-1 hidden">
     <div id="lbList" class="space-y-3"></div>
   </main>
+
+  <footer class="mt-10 py-6 text-center text-xs" style="color:var(--muted);border-top:1px solid var(--border)">
+    <p class="font-medium" data-i18n="credits">Credits</p>
+    <p>Oussama — Owner / CEO · Yasser — Director & Idea Mastermind · Adam — Special Contributor</p>
+  </footer>
 </div>
 
 <!-- Auth modal -->
 <div id="authModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70">
-  <div class="bg-card border border-border rounded-2xl p-8 w-full max-w-sm text-center fade-in">
-    <h2 class="text-xl font-semibold">Welcome to Al Maarifa</h2>
-    <p class="text-muted text-sm mt-2">Sign in with Google to view profiles, post, and rate.</p>
-    <button id="googleSignIn" class="mt-6 w-full flex items-center justify-center gap-2 bg-white text-black rounded-full py-2.5 font-medium hover:bg-white/90 transition">
+  <div class="bg-card2 border-c border rounded-2xl p-8 w-full max-w-sm text-center fade-in">
+    <h2 class="text-xl font-semibold" data-i18n="welcome">Welcome to Al Maarifa</h2>
+    <p class="text-sm mt-2" style="color:var(--muted)" data-i18n="signin_prompt">Sign in with Google to view profiles, post, and rate.</p>
+    <button id="googleSignIn" class="mt-6 w-full flex items-center justify-center gap-2 rounded-full py-2.5 font-medium btn-primary">
       <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-      Continue with Google
+      <span data-i18n="signin_google">Continue with Google</span>
     </button>
+  </div>
+</div>
+
+<!-- Onboarding modal -->
+<div id="onboardModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70">
+  <div class="bg-card2 border-c border rounded-2xl p-6 w-full max-w-md fade-in max-h-[90vh] overflow-y-auto scrollbar">
+    <h2 class="text-lg font-semibold" data-i18n="welcome_onboard">Welcome to Al Maarifa</h2>
+    <p class="text-xs mt-2 p-3 rounded-lg" style="background:color-mix(in srgb,var(--accent) 8%,transparent);color:var(--text)" data-i18n="disclaimer">
+      Everything you see here, including photos of people or objects, is intended purely for entertainment and fun. This website is temporary and is planned to be deleted in the near future. It is simply a place to have fun and share content for a limited period of time.
+    </p>
+    <div class="mt-4 space-y-3">
+      <div>
+        <label class="text-sm" style="color:var(--muted)" data-i18n="nickname">Nickname</label>
+        <input id="nickInput" type="text" maxlength="24" placeholder="Your nickname" class="mt-1 w-full rounded-lg px-3 py-2 text-sm ring-accent" style="background:var(--bg);border:1px solid var(--border);color:var(--text)" />
+      </div>
+      <div>
+        <label class="text-sm" style="color:var(--muted)" data-i18n="avatar_choice">Profile picture</label>
+        <div class="mt-1 flex gap-2">
+          <button id="avGoogle" class="flex-1 px-3 py-2 rounded-lg text-sm border-c border" style="background:var(--bg);color:var(--text)" data-i18n="use_google_photo">Use Google photo</button>
+          <button id="avUrl" class="flex-1 px-3 py-2 rounded-lg text-sm border-c border" style="background:var(--bg);color:var(--text)" data-i18n="use_url_photo">Use image URL</button>
+        </div>
+        <input id="avUrlInput" type="url" placeholder="https://..." class="mt-2 w-full rounded-lg px-3 py-2 text-sm ring-accent hidden" style="background:var(--bg);border:1px solid var(--border);color:var(--text)" />
+        <div id="avPreview" class="mt-2 hidden"><img class="w-16 h-16 rounded-full object-cover border-c border" /></div>
+      </div>
+      <label class="flex items-start gap-2 text-sm" style="color:var(--muted)">
+        <input id="acceptDisclaimer" type="checkbox" class="mt-1" />
+        <span data-i18n="accept_terms">I Understand & Accept</span>
+      </label>
+      <p id="onboardErr" class="text-red-400 text-sm hidden"></p>
+      <button id="onboardSubmit" class="w-full rounded-full py-2.5 font-medium btn-primary disabled:opacity-50" data-i18n="enter_site">Enter site</button>
+    </div>
   </div>
 </div>
 
 <!-- Create profile modal -->
 <div id="createModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70">
-  <div class="bg-card border border-border rounded-2xl p-6 w-full max-w-md fade-in">
+  <div class="bg-card2 border-c border rounded-2xl p-6 w-full max-w-md fade-in max-h-[90vh] overflow-y-auto scrollbar">
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-semibold">New Profile</h2>
-      <button data-close="createModal" class="text-muted hover:text-white">✕</button>
+      <h2 class="text-lg font-semibold" data-i18n="new_profile">New Profile</h2>
+      <button data-close="createModal" style="color:var(--muted)">✕</button>
     </div>
     <div class="space-y-4">
       <div>
-        <label class="text-sm text-muted">Name</label>
-        <input id="pName" type="text" maxlength="40" class="mt-1 w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/40" />
+        <label class="text-sm" style="color:var(--muted)" data-i18n="name">Name</label>
+        <input id="pName" type="text" maxlength="40" class="mt-1 w-full rounded-lg px-3 py-2 text-sm ring-accent" style="background:var(--bg);border:1px solid var(--border);color:var(--text)" />
       </div>
       <div>
-        <label class="text-sm text-muted">Class / Grade</label>
-        <input id="pGrade" type="text" maxlength="20" placeholder="e.g. 10B" class="mt-1 w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/40" />
+        <label class="text-sm" style="color:var(--muted)" data-i18n="grade">Class / Grade (optional)</label>
+        <input id="pGrade" type="text" maxlength="20" placeholder="e.g. 10B" class="mt-1 w-full rounded-lg px-3 py-2 text-sm ring-accent" style="background:var(--bg);border:1px solid var(--border);color:var(--text)" />
       </div>
       <div>
-        <label class="text-sm text-muted">Image URL</label>
-        <input id="pImageUrl" type="url" placeholder="https://i.imgur.com/....jpg" class="mt-1 w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/40" />
-        <p class="text-xs text-muted mt-1">Paste a direct image link (Imgur, etc.).</p>
-        <div id="imgPreview" class="mt-3 hidden"><img class="w-full h-40 object-cover rounded-lg border border-border" onerror="this.parentElement.classList.add('hidden')" /></div>
+        <label class="text-sm" style="color:var(--muted)" data-i18n="description">Description</label>
+        <textarea id="pDesc" maxlength="500" rows="4" class="mt-1 w-full rounded-lg px-3 py-2 text-sm ring-accent" style="background:var(--bg);border:1px solid var(--border);color:var(--text)" placeholder="Describe the person or object (min 100 chars)…"></textarea>
+        <div class="flex justify-between text-xs mt-1" style="color:var(--muted)">
+          <span id="descHint" data-i18n="min_100">Minimum 100 characters</span>
+          <span><span id="descCount">0</span>/500</span>
+        </div>
       </div>
-      <button id="submitProfile" class="w-full bg-white text-black rounded-full py-2.5 font-medium hover:bg-white/90 transition disabled:opacity-50">Create</button>
+      <div>
+        <label class="text-sm" style="color:var(--muted)" data-i18n="image_url">Image URL</label>
+        <input id="pImageUrl" type="url" placeholder="https://i.imgur.com/....jpg" class="mt-1 w-full rounded-lg px-3 py-2 text-sm ring-accent" style="background:var(--bg);border:1px solid var(--border);color:var(--text)" />
+        <p class="text-xs mt-1" style="color:var(--muted)" data-i18n="img_help_intro">How to get an image URL:</p>
+        <details class="text-xs mt-1" style="color:var(--muted)">
+          <summary class="cursor-pointer" style="color:var(--accent)" data-i18n="img_help_toggle">Show steps</summary>
+          <ol class="list-decimal ml-4 mt-1 space-y-1">
+            <li data-i18n="img_step1">Visit one of these free image hosts:</li>
+            <li><a href="https://imgto.link/free-image-hosting" target="_blank" rel="noopener" style="color:var(--accent)">imgto.link/free-image-hosting</a> or <a href="https://postimages.org/" target="_blank" rel="noopener" style="color:var(--accent)">postimages.org</a></li>
+            <li data-i18n="img_step2">Upload your image.</li>
+            <li data-i18n="img_step3">Copy the direct image URL provided.</li>
+            <li data-i18n="img_step4">Paste it into the Image URL field above.</li>
+          </ol>
+        </details>
+        <div id="imgPreview" class="mt-3 hidden"><img class="w-full h-40 object-cover rounded-lg border-c border" onerror="this.parentElement.classList.add('hidden')" /></div>
+      </div>
+      <button id="submitProfile" class="w-full rounded-full py-2.5 font-medium btn-primary disabled:opacity-50" data-i18n="create">Create</button>
       <p id="createErr" class="text-red-400 text-sm hidden"></p>
     </div>
   </div>
@@ -109,423 +189,694 @@
 
 <!-- Profile detail modal -->
 <div id="detailModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70">
-  <div class="bg-card border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar fade-in">
-    <div class="sticky top-0 bg-card/90 backdrop-blur border-b border-border px-6 py-4 flex items-center justify-between">
+  <div class="bg-card2 border-c border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar fade-in">
+    <div class="sticky top-0 bg-card2/90 backdrop-blur border-b px-6 py-4 flex items-center justify-between" style="border-color:var(--border)">
       <h2 id="dName" class="text-lg font-semibold"></h2>
-      <button data-close="detailModal" class="text-muted hover:text-white">✕</button>
+      <button data-close="detailModal" style="color:var(--muted)">✕</button>
     </div>
     <div class="p-6 space-y-6">
       <div class="flex flex-col sm:flex-row gap-6">
-        <img id="dImg" class="w-full sm:w-48 h-48 object-cover rounded-xl border border-border bg-bg" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect width=%22200%22 height=%22200%22 fill=%22%23111%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23555%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22>No image</text></svg>'" />
+        <img id="dImg" class="w-full sm:w-48 h-48 object-cover rounded-xl border-c border bg-bg" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect width=%22200%22 height=%22200%22 fill=%22%23111%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23555%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22>No image</text></svg>'" />
         <div class="flex-1 space-y-3">
-          <div class="flex items-center gap-2">
-            <span id="dGrade" class="text-sm text-muted"></span>
-            <span id="dWarned" class="hidden text-xs px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">Warned</span>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span id="dGrade" class="text-sm" style="color:var(--muted)"></span>
+            <span id="dWarned" class="hidden text-xs px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30" data-i18n="warned">Warned</span>
           </div>
+          <p id="dDesc" class="text-sm" style="color:var(--text)"></p>
           <div class="flex items-baseline gap-2">
             <span id="dScore" class="text-4xl font-bold">—</span>
-            <span class="text-muted text-sm">/10</span>
-            <span id="dCount" class="text-muted text-sm"></span>
+            <span style="color:var(--muted)" class="text-sm">/10</span>
+            <span id="dCount" class="text-sm" style="color:var(--muted)"></span>
           </div>
-          <div id="ratingBox" class="space-y-2">
-            <p class="text-sm text-muted">Your rating</p>
-            <div id="ratingBtns" class="flex flex-wrap gap-1.5"></div>
-            <p id="ratingMsg" class="text-xs text-muted"></p>
+          <div class="space-y-2">
+            <p class="text-sm" style="color:var(--muted)" data-i18n="your_rating">Your rating</p>
+            <div class="flex gap-2">
+              <input id="ratingInput" type="number" step="0.1" min="0.1" max="10" placeholder="e.g. 8.3" class="w-24 rounded-lg px-3 py-2 text-sm ring-accent" style="background:var(--bg);border:1px solid var(--border);color:var(--text)" />
+              <button id="ratingSubmit" class="px-4 py-2 rounded-full text-sm font-medium btn-primary" data-i18n="rate">Rate</button>
+            </div>
+            <p id="ratingMsg" class="text-xs" style="color:var(--muted)"></p>
+            <p id="ratingErr" class="text-xs text-red-400 hidden"></p>
           </div>
-          <div id="adminBox" class="hidden flex flex-wrap gap-2 pt-2 border-t border-border">
-            <button data-admin="warn" class="px-3 py-1.5 rounded-full text-xs border border-yellow-500/40 text-yellow-300 hover:bg-yellow-500/10">Warn</button>
-            <button data-admin="ban" class="px-3 py-1.5 rounded-full text-xs border border-red-500/40 text-red-300 hover:bg-red-500/10">Ban/Hide</button>
-            <button data-admin="delete" class="px-3 py-1.5 rounded-full text-xs border border-red-500/40 text-red-300 hover:bg-red-500/10">Delete</button>
+          <div class="space-y-2 pt-2 border-t" style="border-color:var(--border)">
+            <p class="text-sm" style="color:var(--muted)" data-i18n="reactions">Reactions</p>
+            <div id="reactionRow" class="flex flex-wrap gap-2"></div>
+          </div>
+          <div id="adminBox" class="hidden flex flex-wrap gap-2 pt-2 border-t" style="border-color:var(--border)">
+            <button data-admin="warn" class="px-3 py-1.5 rounded-full text-xs border border-yellow-500/40 text-yellow-300 hover:bg-yellow-500/10" data-i18n="warn">Warn</button>
+            <button data-admin="ban" class="px-3 py-1.5 rounded-full text-xs border border-red-500/40 text-red-300 hover:bg-red-500/10" data-i18n="ban">Ban/Hide</button>
+            <button data-admin="delete" class="px-3 py-1.5 rounded-full text-xs border border-red-500/40 text-red-300 hover:bg-red-500/10" data-i18n="delete">Delete</button>
+            <button data-admin="report_review" class="px-3 py-1.5 rounded-full text-xs border border-blue-500/40 text-blue-300 hover:bg-blue-500/10" data-i18n="review_reports">Review Reports</button>
           </div>
         </div>
       </div>
 
       <div>
-        <h3 class="font-medium mb-3">Comments</h3>
+        <h3 class="font-medium mb-3" data-i18n="comments">Comments</h3>
         <div id="commentsList" class="space-y-3 max-h-60 overflow-y-auto scrollbar pr-1"></div>
         <div id="commentForm" class="hidden mt-3 flex gap-2">
-          <input id="commentInput" type="text" maxlength="300" placeholder="Add a comment…" class="flex-1 bg-bg border border-border rounded-full px-4 py-2 text-sm focus:outline-none focus:border-white/40" />
-          <button id="commentSend" class="px-4 py-2 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90">Send</button>
+          <input id="commentInput" type="text" maxlength="300" data-i18n-placeholder="add_comment" placeholder="Add a comment…" class="flex-1 rounded-full px-4 py-2 text-sm ring-accent" style="background:var(--bg);border:1px solid var(--border);color:var(--text)" />
+          <button id="commentSend" class="px-4 py-2 rounded-full text-sm font-medium btn-primary" data-i18n="send">Send</button>
         </div>
-        <p id="commentHint" class="text-xs text-muted mt-2"></p>
+        <p id="commentHint" class="text-xs mt-2" style="color:var(--muted)"></p>
+      </div>
+
+      <div class="pt-2 border-t" style="border-color:var(--border)">
+        <button id="reportBtn" class="text-xs px-3 py-1.5 rounded-full border border-red-500/40 text-red-300 hover:bg-red-500/10" data-i18n="report_image">Report image</button>
       </div>
     </div>
   </div>
 </div>
 
-<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2 rounded-full bg-white text-black text-sm font-medium shadow-lg fade-in"></div>
+<!-- Report modal -->
+<div id="reportModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70">
+  <div class="bg-card2 border-c border rounded-2xl p-6 w-full max-w-md fade-in">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold" data-i18n="report_title">Report Image</h2>
+      <button data-close="reportModal" style="color:var(--muted)">✕</button>
+    </div>
+    <div class="space-y-3">
+      <div>
+        <label class="text-sm" style="color:var(--muted)" data-i18n="report_reason">Reason</label>
+        <select id="reportReason" class="mt-1 w-full rounded-lg px-3 py-2 text-sm ring-accent" style="background:var(--bg);border:1px solid var(--border);color:var(--text)">
+          <option value="inappropriate" data-i18n="r_inappropriate">Inappropriate content</option>
+          <option value="spam" data-i18n="r_spam">Spam</option>
+          <option value="harassment" data-i18n="r_harassment">Harassment</option>
+          <option value="other" data-i18n="r_other">Other</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-sm" style="color:var(--muted)" data-i18n="report_details">Details (optional)</label>
+        <textarea id="reportDetails" rows="3" maxlength="300" class="mt-1 w-full rounded-lg px-3 py-2 text-sm ring-accent" style="background:var(--bg);border:1px solid var(--border);color:var(--text)"></textarea>
+      </div>
+      <button id="reportSubmit" class="w-full rounded-full py-2.5 font-medium btn-primary" data-i18n="submit_report">Submit report</button>
+      <p id="reportErr" class="text-red-400 text-sm hidden"></p>
+      <p id="reportOk" class="text-green-400 text-sm hidden" data-i18n="report_sent">Report submitted. Thank you.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Moderation modal -->
+<div id="modModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70">
+  <div class="bg-card2 border-c border rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto scrollbar fade-in p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold" data-i18n="moderation">Moderation</h2>
+      <button data-close="modModal" style="color:var(--muted)">✕</button>
+    </div>
+    <div id="reportsList" class="space-y-3"></div>
+  </div>
+</div>
+
+<!-- Settings modal -->
+<div id="settingsModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70">
+  <div class="bg-card2 border-c border rounded-2xl p-6 w-full max-w-sm fade-in">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold" data-i18n="settings">Settings</h2>
+      <button data-close="settingsModal" style="color:var(--muted)">✕</button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="text-sm" style="color:var(--muted)" data-i18n="theme">Theme</label>
+        <div class="mt-1 flex gap-2">
+          <button id="themeLight" class="flex-1 px-3 py-2 rounded-lg text-sm border-c border" style="background:var(--bg);color:var(--text)" data-i18n="light_mode">Light</button>
+          <button id="themeDark" class="flex-1 px-3 py-2 rounded-lg text-sm border-c border" style="background:var(--bg);color:var(--text)" data-i18n="dark_mode">Dark</button>
+        </div>
+      </div>
+      <div>
+        <label class="text-sm" style="color:var(--muted)" data-i18n="language">Language</label>
+        <select id="langSelect" class="mt-1 w-full rounded-lg px-3 py-2 text-sm ring-accent" style="background:var(--bg);border:1px solid var(--border);color:var(--text)">
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+          <option value="ar">الدارجة (Darija)</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-sm" style="color:var(--muted)" data-i18n="image_size">Image size</label>
+        <select id="imgSizeSelect" class="mt-1 w-full rounded-lg px-3 py-2 text-sm ring-accent" style="background:var(--bg);border:1px solid var(--border);color:var(--text)">
+          <option value="small" data-i18n="size_small">Small</option>
+          <option value="medium" data-i18n="size_medium" selected>Medium</option>
+          <option value="large" data-i18n="size_large">Large</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2 rounded-full text-sm font-medium shadow-lg fade-in" style="background:var(--text);color:var(--bg)"></div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
-  import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, runTransaction, where, limit, increment, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCUPW2VwfF9Ae5KQMelYGfLnjYbz6eFmG4",
-    authDomain: "al-maarifa-3fc45.firebaseapp.com",
-    projectId: "al-maarifa-3fc45",
-    storageBucket: "al-maarifa-3fc45.firebasestorage.app",
-    messagingSenderId: "936309588942",
-    appId: "1:936309588942:web:68aec7b0f200710576a19f",
-    measurementId: "G-X6JBCW26JC"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyCUPW2VwfF9Ae5KQMelYGfLnjYbz6eFmG4",
+  authDomain: "al-maarifa-3fc45.firebaseapp.com",
+  projectId: "al-maarifa-3fc45",
+  storageBucket: "al-maarifa-3fc45.firebasestorage.app",
+  messagingSenderId: "936309588942",
+  appId: "1:936309588942:web:68aec7b0f200710576a19f",
+  measurementId: "G-X6JBCW26JC"
+};
+const ADMIN_EMAIL = "anaflousoussama555@gmail.com";
+const EMAILJS_SERVICE = "";
+const EMAILJS_TEMPLATE = "";
+const EMAILJS_PUBLIC_KEY = "";
 
-  const ADMIN_EMAIL = "anaflousoussama555@gmail.com";
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const F = { collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, runTransaction, where, limit, increment, getDoc, setDoc };
 
+let currentUser = null;
+let userProfile = null;
+let profiles = [];
+let profilesUnsub = null;
+let commentsUnsub = null;
+let myRatingUnsub = null;
+let reactionsUnsub = null;
+let myRating = null;
+let currentProfileId = null;
+let viewedIds = new Set(JSON.parse(localStorage.getItem('viewed') || '[]'));
+let imgSize = localStorage.getItem('imgSize') || 'medium';
+const EMOJIS = ['❤️','🔥','😂','😮','👍','🎉'];
+
+const T = {
+en: { app_name:"Al Maarifa", search_placeholder:"Search by name or class…", create_profile:"+ Profile", tab_feed:"Feed", tab_recommended:"Recommended", tab_foryou:"For You", tab_leaderboard:"Leaderboard", joined:"Joined", users:"users", no_profiles:"No profiles yet.", create_first:"Sign in and create the first one.", no_recs:"No recommendations yet.", no_fy:"Nothing personalized yet. Browse some profiles first.", welcome:"Welcome to Al Maarifa", signin_prompt:"Sign in with Google to view profiles, post, and rate.", signin_google:"Continue with Google", welcome_onboard:"Welcome to Al Maarifa", disclaimer:"Everything you see here, including photos of people or objects, is intended purely for entertainment and fun. This website is temporary and is planned to be deleted in the near future. It is simply a place to have fun and share content for a limited period of time.", nickname:"Nickname", avatar_choice:"Profile picture", use_google_photo:"Use Google photo", use_url_photo:"Use image URL", accept_terms:"I Understand & Accept", enter_site:"Enter site", new_profile:"New Profile", name:"Name", grade:"Class / Grade (optional)", description:"Description", min_100:"Minimum 100 characters", image_url:"Image URL", img_help_intro:"How to get an image URL:", img_help_toggle:"Show steps", img_step1:"Visit one of these free image hosts:", img_step2:"Upload your image.", img_step3:"Copy the direct image URL provided.", img_step4:"Paste it into the Image URL field above.", create:"Create", warned:"Warned", your_rating:"Your rating", rate:"Rate", reactions:"Reactions", comments:"Comments", add_comment:"Add a comment…", send:"Send", report_image:"Report image", report_title:"Report Image", report_reason:"Reason", r_inappropriate:"Inappropriate content", r_spam:"Spam", r_harassment:"Harassment", r_other:"Other", report_details:"Details (optional)", submit_report:"Submit report", report_sent:"Report submitted. Thank you.", settings:"Settings", theme:"Theme", light_mode:"Light", dark_mode:"Dark", language:"Language", image_size:"Image size", size_small:"Small", size_medium:"Medium", size_large:"Large", credits:"Credits", warn:"Warn", ban:"Ban/Hide", delete:"Delete", review_reports:"Review Reports", moderation:"Moderation", own_profile:"You can't rate your own profile" },
+fr: { app_name:"Al Maarifa", search_placeholder:"Rechercher par nom ou classe…", create_profile:"+ Profil", tab_feed:"Fil", tab_recommended:"Recommandés", tab_foryou:"Pour vous", tab_leaderboard:"Classement", joined:"Inscrits", users:"utilisateurs", no_profiles:"Aucun profil pour l'instant.", create_first:"Connectez-vous et créez le premier.", no_recs:"Pas encore de recommandations.", no_fy:"Rien de personnalisé pour l'instant. Parcourez des profils d'abord.", welcome:"Bienvenue sur Al Maarifa", signin_prompt:"Connectez-vous avec Google pour voir, publier et noter.", signin_google:"Continuer avec Google", welcome_onboard:"Bienvenue sur Al Maarifa", disclaimer:"Tout ce que vous voyez ici, y compris les photos de personnes ou d'objets, est destiné uniquement au divertissement. Ce site est temporaire et sera supprimé dans un avenir proche. C'est simplement un endroit pour s'amuser et partager du contenu pour une période limitée.", nickname:"Pseudo", avatar_choice:"Photo de profil", use_google_photo:"Photo Google", use_url_photo:"URL d'image", accept_terms:"Je comprends et j'accepte", enter_site:"Entrer sur le site", new_profile:"Nouveau profil", name:"Nom", grade:"Classe / Niveau (optionnel)", description:"Description", min_100:"Minimum 100 caractères", image_url:"URL de l'image", img_help_intro:"Comment obtenir une URL d'image :", img_help_toggle:"Afficher les étapes", img_step1:"Visitez l'un de ces hébergeurs gratuits :", img_step2:"Téléchargez votre image.", img_step3:"Copiez l'URL directe fournie.", img_step4:"Collez-la dans le champ ci-dessus.", create:"Créer", warned:"Averti", your_rating:"Votre note", rate:"Noter", reactions:"Réactions", comments:"Commentaires", add_comment:"Ajouter un commentaire…", send:"Envoyer", report_image:"Signaler l'image", report_title:"Signaler l'image", report_reason:"Raison", r_inappropriate:"Contenu inapproprié", r_spam:"Spam", r_harassment:"Harcèlement", r_other:"Autre", report_details:"Détails (optionnel)", submit_report:"Envoyer le signalement", report_sent:"Signalement envoyé. Merci.", settings:"Paramètres", theme:"Thème", light_mode:"Clair", dark_mode:"Sombre", language:"Langue", image_size:"Taille d'image", size_small:"Petite", size_medium:"Moyenne", size_large:"Grande", credits:"Crédits", warn:"Avertir", ban:"Bannir/Masquer", delete:"Supprimer", review_reports:"Voir les signalements", moderation:"Modération" },
+ar: { app_name:"Al Maarifa", search_placeholder:"ابحث بالاسم أو القسم…", create_profile:"+ ملف", tab_feed:"الرئيسية", tab_recommended:"موصى به", tab_foryou:"لك", tab_leaderboard:"الترتيب", joined:"انضم", users:"مستخدم", no_profiles:"لا توجد ملفات بعد.", create_first:"سجل دخول وأنشئ الأول.", no_recs:"لا توجد توصيات بعد.", no_fy:"لا يوجد محتوى مخصص بعد. تصفح بعض الملفات أولاً.", welcome:"مرحبا بك في Al Maarifa", signin_prompt:"سجل دخول بGoogle لعرض الملفات والنشر والتقييم.", signin_google:"المتابعة بGoogle", welcome_onboard:"مرحبا بك في Al Maarifa", disclaimer:"كل ما تراه هنا، بما في ذلك صور الأشخاص أو الأشياء، مخصص فقط للترفيه والمتعة. هذا الموقع مؤقت ومخطط لحذفه في المستقبل القريب. إنه مجرد مكان للمرح ومشاركة المحتوى لفترة محدودة.", nickname:"اللقب", avatar_choice:"صورة الملف", use_google_photo:"استخدم صورة Google", use_url_photo:"استخدم رابط صورة", accept_terms:"أفهم وأقبل", enter_site:"دخول الموقع", new_profile:"ملف جديد", name:"الاسم", grade:"القسم / المستوى (اختياري)", description:"الوصف", min_100:"الحد الأدنى 100 حرف", image_url:"رابط الصورة", img_help_intro:"كيفية الحصول على رابط صورة:", img_help_toggle:"عرض الخطوات", img_step1:"قم بزيارة أحد هذه المواقع المجانية:", img_step2:"رفع صورتك.", img_step3:"نسخ رابط الصورة المباشر.", img_step4:"الصقها في الحقل أعلاه.", create:"إنشاء", warned:"محذر", your_rating:"تقييمك", rate:"تقييم", reactions:"ردود الفعل", comments:"تعليقات", add_comment:"أضف تعليقاً…", send:"إرسال", report_image:"الإبلاغ عن صورة", report_title:"الإبلاغ عن صورة", report_reason:"السبب", r_inappropriate:"محتوى غير لائق", r_spam:"رسائل مزعجة", r_harassment:"مضايقة", r_other:"أخرى", report_details:"تفاصيل (اختياري)", submit_report:"إرسال الإبلاغ", report_sent:"تم إرسال الإبلاغ. شكراً لك.", settings:"الإعدادات", theme:"المظهر", light_mode:"فاتح", dark_mode:"داكن", language:"اللغة", image_size:"حجم الصورة", size_small:"صغير", size_medium:"متوسط", size_large:"كبير", credits:"الاعتمادات", warn:"تحذير", ban:"حظر/إخفاء", delete:"حذف", review_reports:"مراجعة الإبلاغات", moderation:"الإشراف" }
+};
+let currentLang = localStorage.getItem('lang') || 'en';
+function applyLang(lang) {
+  currentLang = lang; localStorage.setItem('lang', lang);
+  const dict = T[lang] || T.en;
+  document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if (dict[k] !== undefined) el.textContent = dict[k]; });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { const k = el.getAttribute('data-i18n-placeholder'); if (dict[k] !== undefined) el.setAttribute('placeholder', dict[k]); });
+  const html = document.documentElement;
+  if (lang === 'ar') { html.setAttribute('dir','rtl'); html.setAttribute('lang','ar'); }
+  else { html.setAttribute('dir','ltr'); html.setAttribute('lang', lang === 'fr' ? 'fr' : 'en'); }
+  const sel = document.getElementById('langSelect'); if (sel) sel.value = lang;
+}
+
+function applyTheme(t) { localStorage.setItem('theme', t); document.documentElement.classList.toggle('light', t === 'light'); document.documentElement.classList.toggle('dark', t === 'dark'); }
+applyTheme(localStorage.getItem('theme') || 'dark');
+
+let currentUser = null, userProfile = null, profiles = [], profilesUnsub = null, commentsUnsub = null, myRatingUnsub = null, reactionsUnsub = null, myRating = null, currentProfileId = null;
+let viewedIds = new Set(JSON.parse(localStorage.getItem('viewed') || '[]'));
+let imgSize = localStorage.getItem('imgSize') || 'medium';
+
+function $(id){ return document.getElementById(id); }
+function openModal(id){ const m=$(id); m.classList.remove('hidden'); m.classList.add('flex'); }
+function closeModal(id){ const m=$(id); m.classList.add('hidden'); m.classList.remove('flex'); }
+function showToast(msg){ const t=$('toast'); t.textContent=msg; t.classList.remove('hidden'); clearTimeout(window._t); window._t=setTimeout(()=>t.classList.add('hidden'),2600); }
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
+function timeAgo(ts){ if(!ts) return ''; const d=ts.toDate?ts.toDate():new Date(ts); const s=Math.floor((Date.now()-d.getTime())/1000); if(s<60) return 'just now'; if(s<3600) return Math.floor(s/60)+'m ago'; if(s<86400) return Math.floor(s/3600)+'h ago'; return Math.floor(s/86400)+'d ago'; }
+function isAdmin(){ return !!currentUser && currentUser.email === ADMIN_EMAIL; }
+function nickname(){ return (userProfile && userProfile.nickname) || (currentUser && (currentUser.displayName || currentUser.email.split('@')[0])) || 'Anon'; }
+function avatarUrl(){ return (userProfile && userProfile.avatarUrl) || (currentUser && currentUser.photoURL) || ''; }
+
+// dynamic imports
+let FB = null;
+async function boot() {
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js");
+  const authMod = await import("https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js");
+  const fsMod = await import("https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js");
+  const firebaseConfig = { apiKey:"AIzaSyCUPW2VwfF9Ae5KQMelYGfLnjYbz6eFmG4", authDomain:"al-maarifa-3fc45.firebaseapp.com", projectId:"al-maarifa-3fc45", storageBucket:"al-maarifa-3fc45.firebasestorage.app", messagingSenderId:"936309588942", appId:"1:936309588942:web:68aec7b0f200710576a19f", measurementId:"G-X6JBCW26JC" };
   const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+  const auth = authMod.getAuth(app);
+  const db = fsMod.getFirestore(app);
+  FB = { app, auth, db, ...authMod, ...fsMod };
+  window.FB = FB;
 
-  let currentUser = null;
-  let profiles = [];
-  let profilesUnsub = null;
-  let commentsUnsub = null;
-  let myRatingUnsub = null;
-  let myRating = null;
-  let currentProfileId = null;
-
-  /* ---------- AUTH ---------- */
-  onAuthStateChanged(auth, (user) => {
+  FB.onAuthStateChanged(auth, async (user) => {
     currentUser = user;
     renderAuth();
     if (user) {
-      if (!profilesUnsub) loadProfiles();
-      closeModal('authModal');
+      await loadUserProfile(user);
+      if (!userProfile || !userProfile.onboarded) { openModal('onboardModal'); setupOnboarding(user); }
+      else { closeModal('onboardModal'); if (!profilesUnsub) loadProfiles(); loadJoinCount(); }
     } else {
+      userProfile = null;
       if (profilesUnsub) { profilesUnsub(); profilesUnsub = null; }
       profiles = [];
-      renderFeed();
-      renderLeaderboard();
+      renderFeed(); renderRecommended(); renderForYou(); renderLeaderboard();
       openModal('authModal');
     }
   });
 
-  async function signIn() {
-    try { await signInWithPopup(auth, new GoogleAuthProvider()); }
-    catch (e) { showToast(e.message); }
-  }
-  async function signOutUser() { await signOut(auth); }
-  function isAdmin() { return !!currentUser && currentUser.email === ADMIN_EMAIL; }
+  wireUI();
+  applyLang(currentLang);
+}
 
-  function renderAuth() {
-    const area = document.getElementById('authArea');
-    const createBtn = document.getElementById('createBtn');
-    if (currentUser) {
-      createBtn.classList.remove('hidden');
-      area.innerHTML = `
-        <div class="flex items-center gap-2">
-          <img src="${currentUser.photoURL || ''}" class="w-8 h-8 rounded-full border border-border" />
-          <span class="text-sm hidden sm:inline">${escapeHtml(currentUser.displayName || currentUser.email)}</span>
-          <button id="signOutBtn" class="text-muted hover:text-white text-sm">Sign out</button>
-        </div>`;
-      document.getElementById('signOutBtn').addEventListener('click', signOutUser);
-    } else {
-      createBtn.classList.add('hidden');
-      area.innerHTML = `<button id="signInBtn" class="px-4 py-2 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90">Sign in</button>`;
-      document.getElementById('signInBtn').addEventListener('click', () => openModal('authModal'));
-    }
-  }
+async function loadUserProfile(user) {
+  const snap = await FB.getDoc(FB.doc(FB.db, 'users', user.uid));
+  userProfile = snap.exists() ? snap.data() : null;
+}
 
-  /* ---------- PROFILES ---------- */
-  function loadProfiles() {
-    const q = query(collection(db, 'profiles'), orderBy('createdAt', 'desc'));
-    profilesUnsub = onSnapshot(q, (snap) => {
-      profiles = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderFeed();
-      renderLeaderboard();
-    }, (err) => showToast(err.message));
-  }
+function setupOnboarding(user) {
+  const avGoogle = $('avGoogle'), avUrl = $('avUrl'), avUrlInput = $('avUrlInput'), avPreview = $('avPreview');
+  let chosenAvatar = user.photoURL || '';
+  avGoogle.classList.add('btn-primary');
+  avGoogle.onclick = () => { chosenAvatar = user.photoURL || ''; avUrlInput.classList.add('hidden'); avPreview.classList.toggle('hidden', !chosenAvatar); if(chosenAvatar) avPreview.querySelector('img').src = chosenAvatar; avGoogle.classList.add('btn-primary'); avUrl.classList.remove('btn-primary'); };
+  avUrl.onclick = () => { avUrlInput.classList.remove('hidden'); avGoogle.classList.remove('btn-primary'); avUrl.classList.add('btn-primary'); };
+  avUrlInput.addEventListener('input', () => { chosenAvatar = avUrlInput.value.trim(); if(/^https?:\/\//.test(chosenAvatar)){ avPreview.classList.remove('hidden'); avPreview.querySelector('img').src = chosenAvatar; } else avPreview.classList.add('hidden'); });
+  $('onboardSubmit').onclick = async () => {
+    const nick = $('nickInput').value.trim();
+    const accepted = $('acceptDisclaimer').checked;
+    const err = $('onboardErr'); err.classList.add('hidden');
+    if (!nick) { err.textContent = 'Nickname required.'; err.classList.remove('hidden'); return; }
+    if (!accepted) { err.textContent = 'Please accept the disclaimer.'; err.classList.remove('hidden'); return; }
+    try {
+      await FB.setDoc(FB.doc(FB.db, 'users', user.uid), {
+        uid: user.uid, email: user.email, nickname: nick,
+        avatarUrl: chosenAvatar || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(nick.charAt(0)) + '&background=3b82f6&color=fff'),
+        onboarded: true, acceptedDisclaimer: true, joinedAt: FB.serverTimestamp()
+      });
+      await FB.runTransaction(FB.db, async (t) => {
+        const cRef = FB.doc(FB.db, 'stats', 'counters');
+        const snap = await t.get(cRef);
+        if (snap.exists()) t.update(cRef, { userCount: FB.increment(1) });
+        else t.set(cRef, { userCount: 1 });
+      });
+      userProfile = { uid:user.uid, nickname:nick, avatarUrl: chosenAvatar, onboarded:true };
+      closeModal('onboardModal');
+      if (!profilesUnsub) loadProfiles();
+      loadJoinCount();
+      showToast('Welcome, ' + nick + '!');
+    } catch(e){ err.textContent = e.message; err.classList.remove('hidden'); }
+  };
+}
 
-  function renderFeed() {
-    const grid = document.getElementById('grid');
-    const empty = document.getElementById('emptyState');
-    const q = document.getElementById('search').value.trim().toLowerCase();
-    let list = profiles.filter(p => !p.banned || isAdmin());
-    if (q) list = list.filter(p => (p.name||'').toLowerCase().includes(q) || (p.grade||'').toLowerCase().includes(q));
-    if (!list.length) { grid.innerHTML = ''; empty.classList.remove('hidden'); return; }
-    empty.classList.add('hidden');
-    grid.innerHTML = list.map(cardHtml).join('');
-    grid.querySelectorAll('[data-open]').forEach(el => el.addEventListener('click', () => openDetail(el.dataset.open)));
-  }
+async function loadJoinCount() {
+  FB.onSnapshot(FB.doc(FB.db, 'stats', 'counters'), (snap) => {
+    const c = snap.exists() ? (snap.data().userCount || 0) : 0;
+    $('joinCount').textContent = c;
+  });
+}
 
-  function cardHtml(p) {
-    const avg = p.ratingCount ? (p.ratingSum / p.ratingCount).toFixed(1) : '—';
-    const count = p.ratingCount || 0;
-    const warned = p.warned ? `<span class="absolute top-2 left-2 text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">Warned</span>` : '';
-    const banned = p.banned ? `<span class="absolute top-2 left-2 text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">Banned</span>` : '';
+function renderAuth() {
+  const area = $('authArea'); const createBtn = $('createBtn');
+  if (currentUser) {
+    createBtn.classList.remove('hidden');
+    const av = avatarUrl();
+    area.innerHTML = `
+      <div class="flex items-center gap-2">
+        ${av ? `<img src="${escapeAttr(av)}" class="w-8 h-8 rounded-full border-c border object-cover" />` : `<div class="w-8 h-8 rounded-full flex items-center justify-center font-bold" style="background:var(--accent);color:#fff">${escapeHtml(nickname().charAt(0).toUpperCase())}</div>`}
+        <span class="text-sm hidden sm:inline">${escapeHtml(nickname())}</span>
+        <button id="signOutBtn" style="color:var(--muted)" class="text-sm hover:opacity-80">Sign out</button>
+      </div>`;
+    $('signOutBtn').addEventListener('click', async () => { await FB.signOut(FB.auth); });
+  } else {
+    createBtn.classList.add('hidden');
+    area.innerHTML = `<button id="signInBtn" class="px-4 py-2 rounded-full text-sm font-medium btn-primary">${T[currentLang].signin_google}</button>`;
+    $('signInBtn').addEventListener('click', () => openModal('authModal'));
+  }
+}
+
+async function signIn() { try { await FB.signInWithPopup(FB.auth, new FB.GoogleAuthProvider()); } catch(e){ showToast(e.message); } }
+
+function loadProfiles() {
+  const q = FB.query(FB.collection(FB.db,'profiles'), FB.orderBy('createdAt','desc'));
+  profilesUnsub = FB.onSnapshot(q, (snap) => {
+    profiles = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+    renderFeed(); renderRecommended(); renderForYou(); renderLeaderboard();
+  }, (err) => showToast(err.message));
+}
+
+function cardSizeClass(){ return imgSize==='small'?'h-32':imgSize==='large'?'h-64':'h-48'; }
+
+function cardHtml(p) {
+  const avg = p.ratingCount ? (p.ratingSum / p.ratingCount).toFixed(1) : '—';
+  const count = p.ratingCount || 0;
+  const warned = p.warned ? `<span class="absolute top-2 left-2 text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">Warned</span>` : '';
+  const banned = p.banned ? `<span class="absolute top-2 left-2 text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">Banned</span>` : '';
+  return `
+  <div class="bg-card2 border-c border rounded-2xl overflow-hidden card-click fade-in" data-open="${p.id}">
+    <div class="relative">
+      <img src="${escapeAttr(p.imageUrl)}" alt="${escapeAttr(p.name)}" class="w-full ${cardSizeClass()} object-cover bg-bg" loading="lazy"
+        onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22><rect width=%22400%22 height=%22200%22 fill=%22%23111%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23555%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22>No image</text></svg>'" />
+      ${warned}${banned}
+      <div class="absolute top-2 right-2 bg-black/70 backdrop-blur px-2.5 py-1 rounded-full text-xs font-semibold">${avg}/10</div>
+    </div>
+    <div class="p-4">
+      <h3 class="font-semibold truncate">${escapeHtml(p.name)}</h3>
+      <p class="text-sm truncate" style="color:var(--muted)">${escapeHtml(p.grade || '')}${p.grade?' · ':''}${count} rating${count===1?'':'s'}</p>
+      ${p.description ? `<p class="text-xs mt-1 line-clamp-2" style="color:var(--muted)">${escapeHtml(p.description.slice(0,90))}${p.description.length>90?'…':''}</p>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderFeed() {
+  const grid = $('grid'); const empty = $('emptyState');
+  const q = (($('search').value || $('searchMobile').value) || '').trim().toLowerCase();
+  let list = profiles.filter(p => !p.banned || isAdmin());
+  if (q) list = list.filter(p => (p.name||'').toLowerCase().includes(q) || (p.grade||'').toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q));
+  if (!list.length) { grid.innerHTML=''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  grid.innerHTML = list.map(cardHtml).join('');
+  grid.querySelectorAll('[data-open]').forEach(el => el.addEventListener('click', () => openDetail(el.dataset.open)));
+}
+
+function engagementScore(p){ return (p.ratingCount||0)*((p.ratingSum||0)/(p.ratingCount||1||1)) + (p.reactionCount||0)*0.5; }
+function renderRecommended() {
+  const grid = $('recGrid'); const empty = $('recEmpty');
+  let list = [...profiles].filter(p => !p.banned).sort((a,b) => engagementScore(b)-engagementScore(a)).slice(0,24);
+  if (!list.length) { grid.innerHTML=''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  grid.innerHTML = list.map(cardHtml).join('');
+  grid.querySelectorAll('[data-open]').forEach(el => el.addEventListener('click', () => openDetail(el.dataset.open)));
+}
+function renderForYou() {
+  const grid = $('fyGrid'); const empty = $('fyEmpty');
+  const viewed = viewedIds;
+  let candidates = profiles.filter(p => !p.banned && !viewed.has(p.id));
+  const gradeWeights = {};
+  profiles.forEach(p => { if (viewed.has(p.id) && p.grade) gradeWeights[p.grade] = (gradeWeights[p.grade]||0)+1; });
+  candidates.sort((a,b) => {
+    const ga = gradeWeights[a.grade]||0, gb = gradeWeights[b.grade]||0;
+    if (gb !== ga) return gb - ga;
+    return engagementScore(b) - engagementScore(a);
+  });
+  if (candidates.length < 6) candidates = [...profiles].filter(p=>!p.banned).sort(()=>Math.random()-.5);
+  if (!candidates.length) { grid.innerHTML=''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  grid.innerHTML = candidates.slice(0,24).map(cardHtml).join('');
+  grid.querySelectorAll('[data-open]').forEach(el => el.addEventListener('click', () => openDetail(el.dataset.open)));
+}
+
+function renderLeaderboard() {
+  const list = [...profiles].filter(p => !p.banned && (p.ratingCount||0)>0)
+    .sort((a,b) => { const av=a.ratingSum/a.ratingCount, bv=b.ratingSum/b.ratingCount; if(bv!==av) return bv-av; return (b.ratingCount||0)-(a.ratingCount||0); })
+    .slice(0,10);
+  const el = $('lbList');
+  if (!list.length) { el.innerHTML = `<p class="text-center py-10" style="color:var(--muted)">No ratings yet.</p>`; return; }
+  el.innerHTML = list.map((p,i) => {
+    const avg = (p.ratingSum/p.ratingCount).toFixed(1);
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`#${i+1}`;
     return `
-    <div class="bg-card border border-border rounded-2xl overflow-hidden hover:border-white/20 transition fade-in">
-      <div class="relative">
-        <img src="${escapeAttr(p.imageUrl)}" alt="${escapeAttr(p.name)}" class="w-full h-48 object-cover bg-bg" loading="lazy"
-          onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22><rect width=%22400%22 height=%22200%22 fill=%22%23111%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23555%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22>No image</text></svg>'" />
-        ${warned}${banned}
-        <div class="absolute top-2 right-2 bg-black/70 backdrop-blur px-2.5 py-1 rounded-full text-xs font-semibold">${avg}/10</div>
+    <div class="flex items-center gap-4 bg-card2 border-c border rounded-2xl p-4 fade-in card-click" data-open="${p.id}">
+      <div class="w-10 text-center text-lg font-bold">${medal}</div>
+      <img src="${escapeAttr(p.imageUrl)}" class="w-12 h-12 rounded-xl object-cover border-c border bg-bg" onerror="this.style.opacity=.3" />
+      <div class="flex-1 min-w-0">
+        <div class="font-semibold truncate">${escapeHtml(p.name)}</div>
+        <div class="text-sm truncate" style="color:var(--muted)">${escapeHtml(p.grade||'')} · by ${escapeHtml(p.createdByName||'')}</div>
       </div>
-      <div class="p-4">
-        <div class="flex items-start justify-between gap-2">
-          <div>
-            <h3 class="font-semibold">${escapeHtml(p.name)}</h3>
-            <p class="text-muted text-sm">${escapeHtml(p.grade || '')} · ${count} rating${count===1?'':'s'}</p>
-          </div>
-          <button data-open="${p.id}" class="text-sm text-muted hover:text-white">Open →</button>
-        </div>
+      <div class="text-right">
+        <div class="text-2xl font-bold">${avg}</div>
+        <div class="text-xs" style="color:var(--muted)">${p.ratingCount} ratings</div>
       </div>
     </div>`;
-  }
+  }).join('');
+  el.querySelectorAll('[data-open]').forEach(el => el.addEventListener('click', () => openDetail(el.dataset.open)));
+}
 
-  function renderLeaderboard() {
-    const list = [...profiles]
-      .filter(p => !p.banned && (p.ratingCount||0) > 0)
-      .sort((a,b) => {
-        const av = a.ratingSum/a.ratingCount, bv = b.ratingSum/b.ratingCount;
-        if (bv !== av) return bv - av;
-        return (b.ratingCount||0) - (a.ratingCount||0);
-      })
-      .slice(0,10);
-    const el = document.getElementById('lbList');
-    if (!list.length) { el.innerHTML = `<p class="text-muted text-center py-10">No ratings yet.</p>`; return; }
-    el.innerHTML = list.map((p,i) => {
-      const avg = (p.ratingSum/p.ratingCount).toFixed(1);
-      const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`#${i+1}`;
-      return `
-      <div class="flex items-center gap-4 bg-card border border-border rounded-2xl p-4 fade-in">
-        <div class="w-10 text-center text-lg font-bold">${medal}</div>
-        <img src="${escapeAttr(p.imageUrl)}" class="w-12 h-12 rounded-xl object-cover border border-border bg-bg" onerror="this.style.opacity=.3" />
-        <div class="flex-1 min-w-0">
-          <div class="font-semibold truncate">${escapeHtml(p.name)}</div>
-          <div class="text-muted text-sm truncate">${escapeHtml(p.grade||'')}</div>
+// Create profile
+const imgUrlInput = $('pImageUrl');
+imgUrlInput.addEventListener('input', () => {
+  const v = imgUrlInput.value.trim();
+  const box = $('imgPreview');
+  if (/^https?:\/\/.+/i.test(v)) { box.querySelector('img').src = v; box.classList.remove('hidden'); }
+  else box.classList.add('hidden');
+});
+const descInput = $('pDesc');
+descInput.addEventListener('input', () => {
+  $('descCount').textContent = descInput.value.length;
+  const hint = $('descHint');
+  hint.style.color = descInput.value.length < 100 ? '#f87171' : 'var(--muted)';
+});
+
+async function createProfile() {
+  const btn = $('submitProfile'); const err = $('createErr');
+  err.classList.add('hidden');
+  const name = $('pName').value.trim();
+  const grade = $('pGrade').value.trim();
+  const description = descInput.value.trim();
+  const imageUrl = imgUrlInput.value.trim();
+  if (!name) { err.textContent='Name required.'; err.classList.remove('hidden'); return; }
+  if (description.length < 100) { err.textContent='Description must be at least 100 characters.'; err.classList.remove('hidden'); return; }
+  if (description.length > 500) { err.textContent='Description too long (max 500).'; err.classList.remove('hidden'); return; }
+  if (!/^https?:\/\/.+/i.test(imageUrl)) { err.textContent='Image URL must start with http:// or https://.'; err.classList.remove('hidden'); return; }
+  btn.disabled = true; btn.textContent = 'Creating…';
+  try {
+    await FB.addDoc(FB.collection(FB.db,'profiles'), {
+      name, grade, description, imageUrl,
+      createdBy: currentUser.uid,
+      createdByName: nickname(),
+      createdAt: FB.serverTimestamp(),
+      ratingSum: 0, ratingCount: 0,
+      reactionCount: 0,
+      warned: false, banned: false
+    });
+    closeModal('createModal'); resetCreateForm(); showToast('Profile created');
+  } catch(e){ err.textContent=e.message; err.classList.remove('hidden'); }
+  finally { btn.disabled=false; btn.textContent = T[currentLang].create || 'Create'; }
+}
+function resetCreateForm() {
+  $('pName').value=''; $('pGrade').value=''; descInput.value=''; imgUrlInput.value='';
+  $('descCount').textContent='0'; $('imgPreview').classList.add('hidden');
+}
+
+// Detail
+async function openDetail(id) {
+  currentProfileId = id;
+  viewedIds.add(id); localStorage.setItem('viewed', JSON.stringify([...viewedIds]));
+  const p = profiles.find(x=>x.id===id); if(!p) return;
+  $('dName').textContent = p.name;
+  $('dImg').src = p.imageUrl;
+  $('dGrade').textContent = p.grade ? p.grade : '';
+  $('dWarned').classList.toggle('hidden', !p.warned);
+  $('dDesc').textContent = p.description || '';
+  renderScore(p);
+  $('ratingInput').value = myRating ? myRating : '';
+  $('ratingErr').classList.add('hidden');
+  $('ratingMsg').textContent = myRating ? `You rated ${myRating}/10. Enter a new value to change.` : 'Enter a rating 0.1–10.0';
+  $('adminBox').classList.toggle('hidden', !isAdmin());
+  if (commentsUnsub) commentsUnsub();
+  commentsUnsub = FB.onSnapshot(FB.query(FB.collection(FB.db,'profiles',id,'comments'), FB.orderBy('createdAt','asc')), (snap) => {
+    const list = $('commentsList');
+    if (snap.empty) { list.innerHTML = `<p class="text-sm" style="color:var(--muted)">No comments yet.</p>`; return; }
+    list.innerHTML = snap.docs.map(d => {
+      const c = d.data();
+      return `<div class="bg-bg border-c border rounded-xl px-3 py-2">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-sm font-medium">${escapeHtml(c.name||'Anon')}</span>
+          <span class="text-xs" style="color:var(--muted)">${timeAgo(c.createdAt)}</span>
         </div>
-        <div class="text-right">
-          <div class="text-2xl font-bold">${avg}</div>
-          <div class="text-muted text-xs">${p.ratingCount} ratings</div>
+        <p class="text-sm">${escapeHtml(c.text)}</p>
+      </div>`;
+    }).join('');
+  });
+  if (myRatingUnsub) myRatingUnsub();
+  myRatingUnsub = FB.onSnapshot(FB.doc(FB.db,'profiles',id,'ratings',currentUser.uid), (d) => {
+    myRating = d.exists() ? d.data().value : null;
+    if (myRating !== null) $('ratingInput').value = myRating;
+  });
+  if (reactionsUnsub) reactionsUnsub();
+  reactionsUnsub = FB.onSnapshot(FB.collection(FB.db,'profiles',id,'reactions'), (snap) => {
+    const counts = {}; let myEmoji = null;
+    snap.forEach(d => { const r=d.data(); counts[r.emoji]=(counts[r.emoji]||0)+1; if (r.uid===currentUser.uid) myEmoji=r.emoji; });
+    renderReactions(counts, myEmoji);
+  });
+  const form = $('commentForm'); const hint = $('commentHint');
+  if (currentUser) { form.classList.remove('hidden'); hint.textContent=''; }
+  else { form.classList.add('hidden'); hint.textContent='Sign in to comment.'; }
+  openModal('detailModal');
+}
+
+function renderScore(p) {
+  const score = p.ratingCount ? (p.ratingSum/p.ratingCount).toFixed(1) : '—';
+  $('dScore').textContent = score;
+  $('dCount').textContent = p.ratingCount ? `(${p.ratingCount} rating${p.ratingCount===1?'':'s'})` : '(no ratings yet)';
+}
+
+function renderReactions(counts, myEmoji) {
+  const row = $('reactionRow');
+  row.innerHTML = ['❤️','🔥','😂','😮','👍','🎉'].map(e => {
+    const c = counts[e] || 0;
+    const active = myEmoji === e ? 'active' : '';
+    return `<button class="emoji-btn ${active} px-3 py-1.5 rounded-full text-sm border-c border flex items-center gap-1" data-emoji="${e}" style="background:var(--bg);color:var(--text)">${e} <span class="text-xs" style="color:var(--muted)">${c}</span></button>`;
+  }).join('');
+  row.querySelectorAll('[data-emoji]').forEach(b => b.addEventListener('click', () => reactEmoji(b.dataset.emoji)));
+}
+
+async function reactEmoji(emoji) {
+  if (!currentUser) { openModal('authModal'); return; }
+  const rRef = FB.doc(FB.db,'profiles',currentProfileId,'reactions',currentUser.uid);
+  try {
+    await FB.runTransaction(FB.db, async (t) => {
+      const snap = await t.get(rRef);
+      if (snap.exists() && snap.data().emoji === emoji) t.delete(rRef);
+      else t.set(rRef, { emoji, uid: currentUser.uid, createdAt: FB.serverTimestamp() });
+    });
+  } catch(e){ showToast(e.message); }
+}
+
+async function rateProfile() {
+  if (!currentUser) { openModal('authModal'); return; }
+  const p = profiles.find(x=>x.id===currentProfileId);
+  if (p && p.createdBy === currentUser.uid) { $('ratingErr').textContent = T[currentLang].own_profile || "You can't rate your own profile"; $('ratingErr').classList.remove('hidden'); return; }
+  const raw = $('ratingInput').value.trim();
+  if (!/^\d{1,2}(\.\d)?$/.test(raw)) { $('ratingErr').textContent = 'Use one decimal (e.g. 8.3).'; $('ratingErr').classList.remove('hidden'); return; }
+  const v = parseFloat(raw);
+  if (v < 0.1 || v > 10.0) { $('ratingErr').textContent = 'Must be between 0.1 and 10.0.'; $('ratingErr').classList.remove('hidden'); return; }
+  $('ratingErr').classList.add('hidden');
+  const profileRef = FB.doc(FB.db,'profiles',currentProfileId);
+  const ratingRef = FB.doc(FB.db,'profiles',currentProfileId,'ratings',currentUser.uid);
+  try {
+    await FB.runTransaction(FB.db, async (t) => {
+      const pSnap = await t.get(profileRef);
+      const rSnap = await t.get(ratingRef);
+      const data = pSnap.data();
+      let sum = data.ratingSum || 0; let count = data.ratingCount || 0;
+      if (rSnap.exists()) { sum = sum - rSnap.data().value + v; }
+      else { sum += v; count += 1; }
+      t.set(ratingRef, { value: v, updatedAt: FB.serverTimestamp() });
+      t.update(profileRef, { ratingSum: sum, ratingCount: count });
+    });
+    showToast((T[currentLang].rated||'Rated') + ' ' + v + '/10');
+  } catch(e){ $('ratingErr').textContent = e.message; $('ratingErr').classList.remove('hidden'); }
+}
+
+async function addComment() {
+  if (!currentUser) return;
+  const input = $('commentInput'); const text = input.value.trim();
+  if (!text) return;
+  try {
+    await FB.addDoc(FB.collection(FB.db,'profiles',currentProfileId,'comments'), {
+      text, uid: currentUser.uid, name: nickname(), createdAt: FB.serverTimestamp()
+    });
+    input.value = '';
+  } catch(e){ showToast(e.message); }
+}
+
+// Admin
+async function adminAction(action) {
+  if (!isAdmin() || !currentProfileId) return;
+  const ref = FB.doc(FB.db,'profiles',currentProfileId);
+  try {
+    if (action === 'warn') { await FB.updateDoc(ref, { warned: true }); showToast('Warning issued'); }
+    else if (action === 'ban') {
+      const p = profiles.find(x=>x.id===currentProfileId);
+      await FB.updateDoc(ref, { banned: !p.banned });
+      showToast(p.banned ? 'Unbanned' : 'Banned/hidden');
+    } else if (action === 'delete') {
+      if (!confirm('Delete this profile permanently?')) return;
+      await FB.deleteDoc(ref);
+      closeModal('detailModal'); showToast('Deleted');
+    } else if (action === 'report_review') {
+      openModal('modModal'); loadReports();
+    }
+  } catch(e){ showToast(e.message); }
+}
+
+async function loadReports() {
+  FB.onSnapshot(FB.query(FB.collection(FB.db,'reports'), FB.orderBy('createdAt','desc')), (snap) => {
+    const el = $('reportsList');
+    if (snap.empty) { el.innerHTML = `<p style="color:var(--muted)">No reports.</p>`; return; }
+    el.innerHTML = snap.docs.map(d => {
+      const r = d.data();
+      return `<div class="bg-bg border-c border rounded-xl p-3 space-y-1">
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-medium">${escapeHtml(r.reason)}</span>
+          <span class="text-xs" style="color:var(--muted)">${timeAgo(r.createdAt)}</span>
+        </div>
+        <p class="text-xs" style="color:var(--muted)">By: ${escapeHtml(r.reporterNickname)} · Post: ${escapeHtml(r.profileId)}</p>
+        <p class="text-xs" style="color:var(--muted)">Image: <a href="${escapeAttr(r.imageUrl)}" target="_blank" style="color:var(--accent)">link</a></p>
+        ${r.details ? `<p class="text-xs">${escapeHtml(r.details)}</p>` : ''}
+        <div class="flex gap-2 pt-1">
+          <button class="text-xs px-2 py-1 rounded border border-gray-500/40" onclick="dismissReport('${d.id}')">Dismiss</button>
+          <button class="text-xs px-2 py-1 rounded border border-red-500/40 text-red-300" onclick="removeReported('${d.id}','${r.profileId}')">Remove post</button>
+          <button class="text-xs px-2 py-1 rounded border border-red-500/40 text-red-300" onclick="banReported('${r.createdBy}')">Ban user</button>
         </div>
       </div>`;
     }).join('');
-  }
-
-  /* ---------- CREATE ---------- */
-  const imgUrlInput = document.getElementById('pImageUrl');
-  imgUrlInput.addEventListener('input', () => {
-    const v = imgUrlInput.value.trim();
-    const box = document.getElementById('imgPreview');
-    if (/^https?:\/\/.+/i.test(v)) {
-      box.querySelector('img').src = v;
-      box.classList.remove('hidden');
-    } else {
-      box.classList.add('hidden');
-    }
   });
+}
+window.dismissReport = async (rid) => { await FB.updateDoc(FB.doc(FB.db,'reports',rid), { status:'dismissed' }); };
+window.removeReported = async (rid, pid) => {
+  if (!confirm('Delete reported post?')) return;
+  await FB.deleteDoc(FB.doc(FB.db,'profiles',pid));
+  await FB.updateDoc(FB.doc(FB.db,'reports',rid), { status:'removed' });
+  closeModal('modModal');
+};
+window.banReported = async (uid) => {
+  if (!uid || !confirm('Ban this user?')) return;
+  await FB.updateDoc(FB.doc(FB.db,'users',uid), { suspended: true });
+  profiles.filter(p=>p.createdBy===uid).forEach(async p => { await FB.updateDoc(FB.doc(FB.db,'profiles',p.id), { banned: true }); });
+  showToast('User banned');
+};
 
-  async function createProfile() {
-    const btn = document.getElementById('submitProfile');
-    const err = document.getElementById('createErr');
-    err.classList.add('hidden');
-    const name = document.getElementById('pName').value.trim();
-    const grade = document.getElementById('pGrade').value.trim();
-    const imageUrl = imgUrlInput.value.trim();
-    if (!name || !grade || !imageUrl) { err.textContent = 'Name, class and image URL are required.'; err.classList.remove('hidden'); return; }
-    if (!/^https?:\/\/.+/i.test(imageUrl)) { err.textContent = 'Image URL must start with http:// or https://.'; err.classList.remove('hidden'); return; }
-    btn.disabled = true; btn.textContent = 'Creating…';
-    try {
-      await addDoc(collection(db, 'profiles'), {
-        name, grade, imageUrl,
-        createdBy: currentUser.uid,
-        createdByName: currentUser.displayName || currentUser.email,
-        createdAt: serverTimestamp(),
-        ratingSum: 0, ratingCount: 0,
-        warned: false, banned: false
-      });
-      closeModal('createModal');
-      resetCreateForm();
-      showToast('Profile created');
-    } catch (e) {
-      err.textContent = e.message; err.classList.remove('hidden');
-    } finally {
-      btn.disabled = false; btn.textContent = 'Create';
-    }
-  }
-  function resetCreateForm() {
-    document.getElementById('pName').value = '';
-    document.getElementById('pGrade').value = '';
-    imgUrlInput.value = '';
-    document.getElementById('imgPreview').classList.add('hidden');
-  }
-
-  /* ---------- DETAIL ---------- */
-  async function openDetail(id) {
-    currentProfileId = id;
-    const p = profiles.find(x => x.id === id);
-    if (!p) return;
-    document.getElementById('dName').textContent = p.name;
-    document.getElementById('dImg').src = p.imageUrl;
-    document.getElementById('dGrade').textContent = p.grade || '';
-    document.getElementById('dWarned').classList.toggle('hidden', !p.warned);
-    renderScore(p);
-    const box = document.getElementById('ratingBtns');
-    box.innerHTML = '';
-    for (let i=1;i<=10;i++){
-      const b = document.createElement('button');
-      b.textContent = i;
-      b.className = 'w-9 h-9 rounded-lg border border-border text-sm hover:border-white/40 transition';
-      b.addEventListener('click', () => rateProfile(i));
-      box.appendChild(b);
-    }
-    document.getElementById('adminBox').classList.toggle('hidden', !isAdmin());
-    if (commentsUnsub) commentsUnsub();
-    commentsUnsub = onSnapshot(
-      query(collection(db, 'profiles', id, 'comments'), orderBy('createdAt','asc')),
-      (snap) => {
-        const list = document.getElementById('commentsList');
-        if (snap.empty) { list.innerHTML = `<p class="text-muted text-sm">No comments yet.</p>`; return; }
-        list.innerHTML = snap.docs.map(d => {
-          const c = d.data();
-          return `<div class="bg-bg border border-border rounded-xl px-3 py-2">
-            <div class="flex items-center gap-2 mb-1">
-              <span class="text-sm font-medium">${escapeHtml(c.name||'Anon')}</span>
-              <span class="text-muted text-xs">${timeAgo(c.createdAt)}</span>
-            </div>
-            <p class="text-sm">${escapeHtml(c.text)}</p>
-          </div>`;
-        }).join('');
-      }
-    );
-    if (myRatingUnsub) myRatingUnsub();
-    myRatingUnsub = onSnapshot(doc(db, 'profiles', id, 'ratings', currentUser.uid), (d) => {
-      myRating = d.exists() ? d.data().value : null;
-      updateRatingUI();
+// Report
+$('reportBtn').addEventListener('click', () => { if(!currentUser){openModal('authModal');return;} openModal('reportModal'); });
+$('reportSubmit').addEventListener('click', async () => {
+  const err = $('reportErr'); const ok = $('reportOk');
+  err.classList.add('hidden'); ok.classList.add('hidden');
+  if (!currentProfileId) return;
+  const p = profiles.find(x=>x.id===currentProfileId);
+  try {
+    await FB.addDoc(FB.collection(FB.db,'reports'), {
+      profileId: currentProfileId, imageUrl: p.imageUrl,
+      reason: $('reportReason').value, details: $('reportDetails').value.trim(),
+      reportedNickname: p.name, createdBy: p.createdBy,
+      reporterUid: currentUser.uid, reporterNickname: nickname(),
+      createdAt: FB.serverTimestamp(), status: 'open'
     });
-    const form = document.getElementById('commentForm');
-    const hint = document.getElementById('commentHint');
-    if (currentUser) { form.classList.remove('hidden'); hint.textContent = ''; }
-    else { form.classList.add('hidden'); hint.textContent = 'Sign in to comment.'; }
-    openModal('detailModal');
-  }
-
-  function renderScore(p) {
-    const score = p.ratingCount ? (p.ratingSum/p.ratingCount).toFixed(1) : '—';
-    document.getElementById('dScore').textContent = score;
-    document.getElementById('dCount').textContent = p.ratingCount ? `(${p.ratingCount} rating${p.ratingCount===1?'':'s'})` : '(no ratings yet)';
-  }
-
-  function updateRatingUI() {
-    const btns = document.getElementById('ratingBtns').querySelectorAll('button');
-    btns.forEach(b => {
-      const v = Number(b.textContent);
-      if (myRating === v) { b.classList.add('bg-white','text-black'); b.classList.remove('border-border'); }
-      else { b.classList.remove('bg-white','text-black'); b.classList.add('border-border'); }
-    });
-    const msg = document.getElementById('ratingMsg');
-    msg.textContent = myRating ? `You rated this ${myRating}/10. Click another to change.` : 'Pick a number to rate.';
-  }
-
-  async function rateProfile(value) {
-    if (!currentUser) { openModal('authModal'); return; }
-    const p = profiles.find(x => x.id === currentProfileId);
-    if (p && p.createdBy === currentUser.uid) { showToast("You can't rate your own profile"); return; }
-    try {
-      const profileRef = doc(db, 'profiles', currentProfileId);
-      const ratingRef = doc(db, 'profiles', currentProfileId, 'ratings', currentUser.uid);
-      await runTransaction(db, async (t) => {
-        const pSnap = await t.get(profileRef);
-        const rSnap = await t.get(ratingRef);
-        const data = pSnap.data();
-        let sum = data.ratingSum || 0;
-        let count = data.ratingCount || 0;
-        if (rSnap.exists()) { sum = sum - rSnap.data().value + value; }
-        else { sum += value; count += 1; }
-        t.set(ratingRef, { value, updatedAt: serverTimestamp() });
-        t.update(profileRef, { ratingSum: sum, ratingCount: count });
-      });
-      showToast(`Rated ${value}/10`);
-    } catch (e) { showToast(e.message); }
-  }
-
-  async function addComment() {
-    if (!currentUser) return;
-    const input = document.getElementById('commentInput');
-    const text = input.value.trim();
-    if (!text) return;
-    try {
-      await addDoc(collection(db, 'profiles', currentProfileId, 'comments'), {
-        text, uid: currentUser.uid,
-        name: currentUser.displayName || currentUser.email.split('@')[0],
-        createdAt: serverTimestamp()
-      });
-      input.value = '';
-    } catch (e) { showToast(e.message); }
-  }
-
-  /* ---------- ADMIN ---------- */
-  async function adminAction(action) {
-    if (!isAdmin() || !currentProfileId) return;
-    const ref = doc(db, 'profiles', currentProfileId);
-    try {
-      if (action === 'warn') {
-        await updateDoc(ref, { warned: true });
-        showToast('Warning issued');
-      } else if (action === 'ban') {
-        const p = profiles.find(x=>x.id===currentProfileId);
-        await updateDoc(ref, { banned: !p.banned });
-        showToast(p.banned ? 'Unbanned' : 'Banned/hidden');
-      } else if (action === 'delete') {
-        if (!confirm('Delete this profile permanently?')) return;
-        await deleteDoc(ref);
-        closeModal('detailModal');
-        showToast('Deleted');
-      }
-    } catch (e) { showToast(e.message); }
-  }
-
-  /* ---------- UI HELPERS ---------- */
-  function switchTab(tab) {
-    document.getElementById('feedView').classList.toggle('hidden', tab !== 'feed');
-    document.getElementById('lbView').classList.toggle('hidden', tab !== 'leaderboard');
-    document.querySelectorAll('.tabBtn').forEach(b => {
-      const on = b.dataset.tab === tab;
-      b.classList.toggle('bg-white', on); b.classList.toggle('text-black', on);
-      b.classList.toggle('text-muted', !on);
-    });
-  }
-  function openModal(id) { const m = document.getElementById(id); m.classList.remove('hidden'); m.classList.add('flex'); }
-  function closeModal(id) {
-    const m = document.getElementById(id);
-    m.classList.add('hidden'); m.classList.remove('flex');
-    if (id === 'detailModal') {
-      currentProfileId = null;
-      if (commentsUnsub) { commentsUnsub(); commentsUnsub = null; }
-      if (myRatingUnsub) { myRatingUnsub(); myRatingUnsub = null; }
+    if (EMAILJS_SERVICE && window.emailjs) {
+      try { window.emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, { to_email:'anaflousoussama555@gmail.com', image_url:p.imageUrl, post_id:currentProfileId, reason:$('reportReason').value, details:$('reportDetails').value.trim(), reported_user:p.name, reporter:nickname() }, EMAILJS_PUBLIC_KEY); } catch(_) {}
     }
-  }
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.remove('hidden');
-    clearTimeout(window._toastT);
-    window._toastT = setTimeout(() => t.classList.add('hidden'), 2600);
-  }
-  function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-  function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
-  function timeAgo(ts){
-    if (!ts) return '';
-    const d = ts.toDate ? ts.toDate() : new Date(ts);
-    const s = Math.floor((Date.now()-d.getTime())/1000);
-    if (s<60) return 'just now';
-    if (s<3600) return Math.floor(s/60)+'m ago';
-    if (s<86400) return Math.floor(s/3600)+'h ago';
-    return Math.floor(s/86400)+'d ago';
-  }
+    ok.classList.remove('hidden'); $('reportDetails').value = '';
+  } catch(e){ err.textContent = e.message; err.classList.remove('hidden'); }
+});
 
-  /* ---------- WIRE UP ---------- */
-  document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('search').addEventListener('input', renderFeed);
-    document.querySelectorAll('.tabBtn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
-    document.getElementById('createBtn').addEventListener('click', () => openModal('createModal'));
-    document.getElementById('submitProfile').addEventListener('click', createProfile);
-    document.getElementById('commentSend').addEventListener('click', addComment);
-    document.getElementById('googleSignIn').addEventListener('click', signIn);
-    document.querySelectorAll('[data-admin]').forEach(b => b.addEventListener('click', () => adminAction(b.dataset.admin)));
-    document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeModal(b.dataset.close)));
-    document.querySelectorAll('.fixed.inset-0').forEach(m => m.addEventListener('click', e => { if (e.target === m) { m.classList.add('hidden'); m.classList.remove('flex'); } }));
+// Settings
+$('settingsBtn').addEventListener('click', () => openModal('settingsModal'));
+$('themeLight').addEventListener('click', () => applyTheme('light'));
+$('themeDark').addEventListener('click', () => applyTheme('dark'));
+$('langSelect').addEventListener('change', (e) => applyLang(e.target.value));
+$('imgSizeSelect').addEventListener('change', (e) => { imgSize = e.target.value; localStorage.setItem('imgSize', imgSize); renderFeed(); renderRecommended(); renderForYou(); });
+
+// Logo click
+$('logo').addEventListener('click', (e) => {
+  e.preventDefault();
+  window.open('https://imgs.search.brave.com/oLqY0zCEZAnSRkAN2vvU73yfFBPlJ70JNe5WZpWMOwg/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRpYS50ZW5vci5jb20vMHJLTDVkdE1Qa2dBQUFBTS9tb25rZXkuZ2lm.gif','_blank');
+});
+
+function wireUI() {
+  $('search').addEventListener('input', renderFeed);
+  $('searchMobile').addEventListener('input', (e) => { $('search').value = e.target.value; renderFeed(); });
+  document.querySelectorAll('.tabBtn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+  $('createBtn').addEventListener('click', () => openModal('createModal'));
+  $('submitProfile').addEventListener('click', createProfile);
+  $('commentSend').addEventListener('click', addComment);
+  $('googleSignIn').addEventListener('click', signIn);
+  document.querySelectorAll('[data-admin]').forEach(b => b.addEventListener('click', () => adminAction(b.dataset.admin)));
+  document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeModal(b.dataset.close)));
+  document.querySelectorAll('.fixed.inset-0').forEach(m => m.addEventListener('click', e => { if (e.target === m) { m.classList.add('hidden'); m.classList.remove('flex'); } }));
+  $('ratingSubmit').addEventListener('click', rateProfile);
+  $('reportBtn').addEventListener('click', () => { if(!currentUser){openModal('authModal');return;} openModal('reportModal'); });
+}
+
+function switchTab(tab) {
+  ['feedView','recommendedView','foryouView','lbView'].forEach(id => $(id).classList.add('hidden'));
+  const map = { feed:'feedView', recommended:'recommendedView', foryou:'foryouView', leaderboard:'lbView' };
+  $(map[tab]).classList.remove('hidden');
+  document.querySelectorAll('.tabBtn').forEach(b => {
+    const on = b.dataset.tab === tab;
+    if (on) { b.classList.add('btn-primary'); b.style.color = '#fff'; }
+    else { b.classList.remove('btn-primary'); b.style.color = 'var(--muted)'; }
   });
+  if (tab === 'recommended') renderRecommended();
+  if (tab === 'foryou') renderForYou();
+}
+
+if (EMAILJS_SERVICE) {
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+  s.onload = () => { try { window.emailjs.init(EMAILJS_PUBLIC_KEY); } catch(_) {} };
+  document.head.appendChild(s);
+}
+
+boot();
 </script>
 </body>
 </html>

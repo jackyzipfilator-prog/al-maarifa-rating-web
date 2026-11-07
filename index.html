@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Al Maarifa — School Social Rating</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: { bg:'#0a0a0a', card:'#111111', border:'#1f1f1f', muted:'#888888' },
+        fontFamily: { sans: ['Inter','ui-sans-serif','system-ui','sans-serif'] }
+      }
+    }
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { background:#0a0a0a; color:#fff; }
+  .glass { background: rgba(17,17,17,0.7); backdrop-filter: blur(12px); }
+  .scrollbar::-webkit-scrollbar { width:6px; }
+  .scrollbar::-webkit-scrollbar-thumb { background:#2a2a2a; border-radius:3px; }
+  .fade-in { animation: fadeIn .25s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px);} to { opacity:1; transform:none;} }
+</style>
+</head>
+<body class="font-sans antialiased">
+
+<div id="app" class="min-h-screen">
+  <header class="sticky top-0 z-40 glass border-b border-border">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center font-bold">M</div>
+        <span class="font-semibold tracking-tight">Al Maarifa</span>
+      </div>
+      <div class="flex-1 max-w-md mx-auto">
+        <input id="search" type="text" placeholder="Search by name or class…"
+          class="w-full bg-card border border-border rounded-full px-4 py-2 text-sm focus:outline-none focus:border-white/40 transition" />
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="createBtn" class="hidden px-4 py-2 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90 transition">+ Profile</button>
+        <div id="authArea"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-6xl mx-auto px-4 mt-6">
+    <div class="inline-flex bg-card border border-border rounded-full p-1">
+      <button data-tab="feed" class="tabBtn px-4 py-1.5 rounded-full text-sm font-medium bg-white text-black">Feed</button>
+      <button data-tab="leaderboard" class="tabBtn px-4 py-1.5 rounded-full text-sm font-medium text-muted hover:text-white">Leaderboard</button>
+    </div>
+  </div>
+
+  <main id="feedView" class="max-w-6xl mx-auto px-4 py-6">
+    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    <div id="emptyState" class="hidden text-center text-muted py-20">
+      <p class="text-lg">No profiles yet.</p>
+      <p class="text-sm mt-1">Sign in and create the first one.</p>
+    </div>
+  </main>
+
+  <main id="lbView" class="max-w-3xl mx-auto px-4 py-6 hidden">
+    <div id="lbList" class="space-y-3"></div>
+  </main>
+</div>
+
+<!-- Auth modal -->
+<div id="authModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70">
+  <div class="bg-card border border-border rounded-2xl p-8 w-full max-w-sm text-center fade-in">
+    <h2 class="text-xl font-semibold">Welcome to Al Maarifa</h2>
+    <p class="text-muted text-sm mt-2">Sign in with Google to view profiles, post, and rate.</p>
+    <button id="googleSignIn" class="mt-6 w-full flex items-center justify-center gap-2 bg-white text-black rounded-full py-2.5 font-medium hover:bg-white/90 transition">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Continue with Google
+    </button>
+  </div>
+</div>
+
+<!-- Create profile modal -->
+<div id="createModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70">
+  <div class="bg-card border border-border rounded-2xl p-6 w-full max-w-md fade-in">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold">New Profile</h2>
+      <button data-close="createModal" class="text-muted hover:text-white">✕</button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="text-sm text-muted">Name</label>
+        <input id="pName" type="text" maxlength="40" class="mt-1 w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/40" />
+      </div>
+      <div>
+        <label class="text-sm text-muted">Class / Grade</label>
+        <input id="pGrade" type="text" maxlength="20" placeholder="e.g. 10B" class="mt-1 w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/40" />
+      </div>
+      <div>
+        <label class="text-sm text-muted">Image URL</label>
+        <input id="pImageUrl" type="url" placeholder="https://i.imgur.com/....jpg" class="mt-1 w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/40" />
+        <p class="text-xs text-muted mt-1">Paste a direct image link (Imgur, etc.).</p>
+        <div id="imgPreview" class="mt-3 hidden"><img class="w-full h-40 object-cover rounded-lg border border-border" onerror="this.parentElement.classList.add('hidden')" /></div>
+      </div>
+      <button id="submitProfile" class="w-full bg-white text-black rounded-full py-2.5 font-medium hover:bg-white/90 transition disabled:opacity-50">Create</button>
+      <p id="createErr" class="text-red-400 text-sm hidden"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Profile detail modal -->
+<div id="detailModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70">
+  <div class="bg-card border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar fade-in">
+    <div class="sticky top-0 bg-card/90 backdrop-blur border-b border-border px-6 py-4 flex items-center justify-between">
+      <h2 id="dName" class="text-lg font-semibold"></h2>
+      <button data-close="detailModal" class="text-muted hover:text-white">✕</button>
+    </div>
+    <div class="p-6 space-y-6">
+      <div class="flex flex-col sm:flex-row gap-6">
+        <img id="dImg" class="w-full sm:w-48 h-48 object-cover rounded-xl border border-border bg-bg" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect width=%22200%22 height=%22200%22 fill=%22%23111%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23555%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22>No image</text></svg>'" />
+        <div class="flex-1 space-y-3">
+          <div class="flex items-center gap-2">
+            <span id="dGrade" class="text-sm text-muted"></span>
+            <span id="dWarned" class="hidden text-xs px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">Warned</span>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span id="dScore" class="text-4xl font-bold">—</span>
+            <span class="text-muted text-sm">/10</span>
+            <span id="dCount" class="text-muted text-sm"></span>
+          </div>
+          <div id="ratingBox" class="space-y-2">
+            <p class="text-sm text-muted">Your rating</p>
+            <div id="ratingBtns" class="flex flex-wrap gap-1.5"></div>
+            <p id="ratingMsg" class="text-xs text-muted"></p>
+          </div>
+          <div id="adminBox" class="hidden flex flex-wrap gap-2 pt-2 border-t border-border">
+            <button data-admin="warn" class="px-3 py-1.5 rounded-full text-xs border border-yellow-500/40 text-yellow-300 hover:bg-yellow-500/10">Warn</button>
+            <button data-admin="ban" class="px-3 py-1.5 rounded-full text-xs border border-red-500/40 text-red-300 hover:bg-red-500/10">Ban/Hide</button>
+            <button data-admin="delete" class="px-3 py-1.5 rounded-full text-xs border border-red-500/40 text-red-300 hover:bg-red-500/10">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="font-medium mb-3">Comments</h3>
+        <div id="commentsList" class="space-y-3 max-h-60 overflow-y-auto scrollbar pr-1"></div>
+        <div id="commentForm" class="hidden mt-3 flex gap-2">
+          <input id="commentInput" type="text" maxlength="300" placeholder="Add a comment…" class="flex-1 bg-bg border border-border rounded-full px-4 py-2 text-sm focus:outline-none focus:border-white/40" />
+          <button id="commentSend" class="px-4 py-2 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90">Send</button>
+        </div>
+        <p id="commentHint" class="text-xs text-muted mt-2"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2 rounded-full bg-white text-black text-sm font-medium shadow-lg fade-in"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+  import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCUPW2VwfF9Ae5KQMelYGfLnjYbz6eFmG4",
+    authDomain: "al-maarifa-3fc45.firebaseapp.com",
+    projectId: "al-maarifa-3fc45",
+    storageBucket: "al-maarifa-3fc45.firebasestorage.app",
+    messagingSenderId: "936309588942",
+    appId: "1:936309588942:web:68aec7b0f200710576a19f",
+    measurementId: "G-X6JBCW26JC"
+  };
+
+  const ADMIN_EMAIL = "anaflousoussama555@gmail.com";
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let currentUser = null;
+  let profiles = [];
+  let profilesUnsub = null;
+  let commentsUnsub = null;
+  let myRatingUnsub = null;
+  let myRating = null;
+  let currentProfileId = null;
+
+  /* ---------- AUTH ---------- */
+  onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    renderAuth();
+    if (user) {
+      if (!profilesUnsub) loadProfiles();
+      closeModal('authModal');
+    } else {
+      if (profilesUnsub) { profilesUnsub(); profilesUnsub = null; }
+      profiles = [];
+      renderFeed();
+      renderLeaderboard();
+      openModal('authModal');
+    }
+  });
+
+  async function signIn() {
+    try { await signInWithPopup(auth, new GoogleAuthProvider()); }
+    catch (e) { showToast(e.message); }
+  }
+  async function signOutUser() { await signOut(auth); }
+  function isAdmin() { return !!currentUser && currentUser.email === ADMIN_EMAIL; }
+
+  function renderAuth() {
+    const area = document.getElementById('authArea');
+    const createBtn = document.getElementById('createBtn');
+    if (currentUser) {
+      createBtn.classList.remove('hidden');
+      area.innerHTML = `
+        <div class="flex items-center gap-2">
+          <img src="${currentUser.photoURL || ''}" class="w-8 h-8 rounded-full border border-border" />
+          <span class="text-sm hidden sm:inline">${escapeHtml(currentUser.displayName || currentUser.email)}</span>
+          <button id="signOutBtn" class="text-muted hover:text-white text-sm">Sign out</button>
+        </div>`;
+      document.getElementById('signOutBtn').addEventListener('click', signOutUser);
+    } else {
+      createBtn.classList.add('hidden');
+      area.innerHTML = `<button id="signInBtn" class="px-4 py-2 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90">Sign in</button>`;
+      document.getElementById('signInBtn').addEventListener('click', () => openModal('authModal'));
+    }
+  }
+
+  /* ---------- PROFILES ---------- */
+  function loadProfiles() {
+    const q = query(collection(db, 'profiles'), orderBy('createdAt', 'desc'));
+    profilesUnsub = onSnapshot(q, (snap) => {
+      profiles = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderFeed();
+      renderLeaderboard();
+    }, (err) => showToast(err.message));
+  }
+
+  function renderFeed() {
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('emptyState');
+    const q = document.getElementById('search').value.trim().toLowerCase();
+    let list = profiles.filter(p => !p.banned || isAdmin());
+    if (q) list = list.filter(p => (p.name||'').toLowerCase().includes(q) || (p.grade||'').toLowerCase().includes(q));
+    if (!list.length) { grid.innerHTML = ''; empty.classList.remove('hidden'); return; }
+    empty.classList.add('hidden');
+    grid.innerHTML = list.map(cardHtml).join('');
+    grid.querySelectorAll('[data-open]').forEach(el => el.addEventListener('click', () => openDetail(el.dataset.open)));
+  }
+
+  function cardHtml(p) {
+    const avg = p.ratingCount ? (p.ratingSum / p.ratingCount).toFixed(1) : '—';
+    const count = p.ratingCount || 0;
+    const warned = p.warned ? `<span class="absolute top-2 left-2 text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">Warned</span>` : '';
+    const banned = p.banned ? `<span class="absolute top-2 left-2 text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">Banned</span>` : '';
+    return `
+    <div class="bg-card border border-border rounded-2xl overflow-hidden hover:border-white/20 transition fade-in">
+      <div class="relative">
+        <img src="${escapeAttr(p.imageUrl)}" alt="${escapeAttr(p.name)}" class="w-full h-48 object-cover bg-bg" loading="lazy"
+          onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22><rect width=%22400%22 height=%22200%22 fill=%22%23111%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23555%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22>No image</text></svg>'" />
+        ${warned}${banned}
+        <div class="absolute top-2 right-2 bg-black/70 backdrop-blur px-2.5 py-1 rounded-full text-xs font-semibold">${avg}/10</div>
+      </div>
+      <div class="p-4">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <h3 class="font-semibold">${escapeHtml(p.name)}</h3>
+            <p class="text-muted text-sm">${escapeHtml(p.grade || '')} · ${count} rating${count===1?'':'s'}</p>
+          </div>
+          <button data-open="${p.id}" class="text-sm text-muted hover:text-white">Open →</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function renderLeaderboard() {
+    const list = [...profiles]
+      .filter(p => !p.banned && (p.ratingCount||0) > 0)
+      .sort((a,b) => {
+        const av = a.ratingSum/a.ratingCount, bv = b.ratingSum/b.ratingCount;
+        if (bv !== av) return bv - av;
+        return (b.ratingCount||0) - (a.ratingCount||0);
+      })
+      .slice(0,10);
+    const el = document.getElementById('lbList');
+    if (!list.length) { el.innerHTML = `<p class="text-muted text-center py-10">No ratings yet.</p>`; return; }
+    el.innerHTML = list.map((p,i) => {
+      const avg = (p.ratingSum/p.ratingCount).toFixed(1);
+      const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`#${i+1}`;
+      return `
+      <div class="flex items-center gap-4 bg-card border border-border rounded-2xl p-4 fade-in">
+        <div class="w-10 text-center text-lg font-bold">${medal}</div>
+        <img src="${escapeAttr(p.imageUrl)}" class="w-12 h-12 rounded-xl object-cover border border-border bg-bg" onerror="this.style.opacity=.3" />
+        <div class="flex-1 min-w-0">
+          <div class="font-semibold truncate">${escapeHtml(p.name)}</div>
+          <div class="text-muted text-sm truncate">${escapeHtml(p.grade||'')}</div>
+        </div>
+        <div class="text-right">
+          <div class="text-2xl font-bold">${avg}</div>
+          <div class="text-muted text-xs">${p.ratingCount} ratings</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ---------- CREATE ---------- */
+  const imgUrlInput = document.getElementById('pImageUrl');
+  imgUrlInput.addEventListener('input', () => {
+    const v = imgUrlInput.value.trim();
+    const box = document.getElementById('imgPreview');
+    if (/^https?:\/\/.+/i.test(v)) {
+      box.querySelector('img').src = v;
+      box.classList.remove('hidden');
+    } else {
+      box.classList.add('hidden');
+    }
+  });
+
+  async function createProfile() {
+    const btn = document.getElementById('submitProfile');
+    const err = document.getElementById('createErr');
+    err.classList.add('hidden');
+    const name = document.getElementById('pName').value.trim();
+    const grade = document.getElementById('pGrade').value.trim();
+    const imageUrl = imgUrlInput.value.trim();
+    if (!name || !grade || !imageUrl) { err.textContent = 'Name, class and image URL are required.'; err.classList.remove('hidden'); return; }
+    if (!/^https?:\/\/.+/i.test(imageUrl)) { err.textContent = 'Image URL must start with http:// or https://.'; err.classList.remove('hidden'); return; }
+    btn.disabled = true; btn.textContent = 'Creating…';
+    try {
+      await addDoc(collection(db, 'profiles'), {
+        name, grade, imageUrl,
+        createdBy: currentUser.uid,
+        createdByName: currentUser.displayName || currentUser.email,
+        createdAt: serverTimestamp(),
+        ratingSum: 0, ratingCount: 0,
+        warned: false, banned: false
+      });
+      closeModal('createModal');
+      resetCreateForm();
+      showToast('Profile created');
+    } catch (e) {
+      err.textContent = e.message; err.classList.remove('hidden');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Create';
+    }
+  }
+  function resetCreateForm() {
+    document.getElementById('pName').value = '';
+    document.getElementById('pGrade').value = '';
+    imgUrlInput.value = '';
+    document.getElementById('imgPreview').classList.add('hidden');
+  }
+
+  /* ---------- DETAIL ---------- */
+  async function openDetail(id) {
+    currentProfileId = id;
+    const p = profiles.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('dName').textContent = p.name;
+    document.getElementById('dImg').src = p.imageUrl;
+    document.getElementById('dGrade').textContent = p.grade || '';
+    document.getElementById('dWarned').classList.toggle('hidden', !p.warned);
+    renderScore(p);
+    const box = document.getElementById('ratingBtns');
+    box.innerHTML = '';
+    for (let i=1;i<=10;i++){
+      const b = document.createElement('button');
+      b.textContent = i;
+      b.className = 'w-9 h-9 rounded-lg border border-border text-sm hover:border-white/40 transition';
+      b.addEventListener('click', () => rateProfile(i));
+      box.appendChild(b);
+    }
+    document.getElementById('adminBox').classList.toggle('hidden', !isAdmin());
+    if (commentsUnsub) commentsUnsub();
+    commentsUnsub = onSnapshot(
+      query(collection(db, 'profiles', id, 'comments'), orderBy('createdAt','asc')),
+      (snap) => {
+        const list = document.getElementById('commentsList');
+        if (snap.empty) { list.innerHTML = `<p class="text-muted text-sm">No comments yet.</p>`; return; }
+        list.innerHTML = snap.docs.map(d => {
+          const c = d.data();
+          return `<div class="bg-bg border border-border rounded-xl px-3 py-2">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-sm font-medium">${escapeHtml(c.name||'Anon')}</span>
+              <span class="text-muted text-xs">${timeAgo(c.createdAt)}</span>
+            </div>
+            <p class="text-sm">${escapeHtml(c.text)}</p>
+          </div>`;
+        }).join('');
+      }
+    );
+    if (myRatingUnsub) myRatingUnsub();
+    myRatingUnsub = onSnapshot(doc(db, 'profiles', id, 'ratings', currentUser.uid), (d) => {
+      myRating = d.exists() ? d.data().value : null;
+      updateRatingUI();
+    });
+    const form = document.getElementById('commentForm');
+    const hint = document.getElementById('commentHint');
+    if (currentUser) { form.classList.remove('hidden'); hint.textContent = ''; }
+    else { form.classList.add('hidden'); hint.textContent = 'Sign in to comment.'; }
+    openModal('detailModal');
+  }
+
+  function renderScore(p) {
+    const score = p.ratingCount ? (p.ratingSum/p.ratingCount).toFixed(1) : '—';
+    document.getElementById('dScore').textContent = score;
+    document.getElementById('dCount').textContent = p.ratingCount ? `(${p.ratingCount} rating${p.ratingCount===1?'':'s'})` : '(no ratings yet)';
+  }
+
+  function updateRatingUI() {
+    const btns = document.getElementById('ratingBtns').querySelectorAll('button');
+    btns.forEach(b => {
+      const v = Number(b.textContent);
+      if (myRating === v) { b.classList.add('bg-white','text-black'); b.classList.remove('border-border'); }
+      else { b.classList.remove('bg-white','text-black'); b.classList.add('border-border'); }
+    });
+    const msg = document.getElementById('ratingMsg');
+    msg.textContent = myRating ? `You rated this ${myRating}/10. Click another to change.` : 'Pick a number to rate.';
+  }
+
+  async function rateProfile(value) {
+    if (!currentUser) { openModal('authModal'); return; }
+    const p = profiles.find(x => x.id === currentProfileId);
+    if (p && p.createdBy === currentUser.uid) { showToast("You can't rate your own profile"); return; }
+    try {
+      const profileRef = doc(db, 'profiles', currentProfileId);
+      const ratingRef = doc(db, 'profiles', currentProfileId, 'ratings', currentUser.uid);
+      await runTransaction(db, async (t) => {
+        const pSnap = await t.get(profileRef);
+        const rSnap = await t.get(ratingRef);
+        const data = pSnap.data();
+        let sum = data.ratingSum || 0;
+        let count = data.ratingCount || 0;
+        if (rSnap.exists()) { sum = sum - rSnap.data().value + value; }
+        else { sum += value; count += 1; }
+        t.set(ratingRef, { value, updatedAt: serverTimestamp() });
+        t.update(profileRef, { ratingSum: sum, ratingCount: count });
+      });
+      showToast(`Rated ${value}/10`);
+    } catch (e) { showToast(e.message); }
+  }
+
+  async function addComment() {
+    if (!currentUser) return;
+    const input = document.getElementById('commentInput');
+    const text = input.value.trim();
+    if (!text) return;
+    try {
+      await addDoc(collection(db, 'profiles', currentProfileId, 'comments'), {
+        text, uid: currentUser.uid,
+        name: currentUser.displayName || currentUser.email.split('@')[0],
+        createdAt: serverTimestamp()
+      });
+      input.value = '';
+    } catch (e) { showToast(e.message); }
+  }
+
+  /* ---------- ADMIN ---------- */
+  async function adminAction(action) {
+    if (!isAdmin() || !currentProfileId) return;
+    const ref = doc(db, 'profiles', currentProfileId);
+    try {
+      if (action === 'warn') {
+        await updateDoc(ref, { warned: true });
+        showToast('Warning issued');
+      } else if (action === 'ban') {
+        const p = profiles.find(x=>x.id===currentProfileId);
+        await updateDoc(ref, { banned: !p.banned });
+        showToast(p.banned ? 'Unbanned' : 'Banned/hidden');
+      } else if (action === 'delete') {
+        if (!confirm('Delete this profile permanently?')) return;
+        await deleteDoc(ref);
+        closeModal('detailModal');
+        showToast('Deleted');
+      }
+    } catch (e) { showToast(e.message); }
+  }
+
+  /* ---------- UI HELPERS ---------- */
+  function switchTab(tab) {
+    document.getElementById('feedView').classList.toggle('hidden', tab !== 'feed');
+    document.getElementById('lbView').classList.toggle('hidden', tab !== 'leaderboard');
+    document.querySelectorAll('.tabBtn').forEach(b => {
+      const on = b.dataset.tab === tab;
+      b.classList.toggle('bg-white', on); b.classList.toggle('text-black', on);
+      b.classList.toggle('text-muted', !on);
+    });
+  }
+  function openModal(id) { const m = document.getElementById(id); m.classList.remove('hidden'); m.classList.add('flex'); }
+  function closeModal(id) {
+    const m = document.getElementById(id);
+    m.classList.add('hidden'); m.classList.remove('flex');
+    if (id === 'detailModal') {
+      currentProfileId = null;
+      if (commentsUnsub) { commentsUnsub(); commentsUnsub = null; }
+      if (myRatingUnsub) { myRatingUnsub(); myRatingUnsub = null; }
+    }
+  }
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.remove('hidden');
+    clearTimeout(window._toastT);
+    window._toastT = setTimeout(() => t.classList.add('hidden'), 2600);
+  }
+  function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
+  function timeAgo(ts){
+    if (!ts) return '';
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    const s = Math.floor((Date.now()-d.getTime())/1000);
+    if (s<60) return 'just now';
+    if (s<3600) return Math.floor(s/60)+'m ago';
+    if (s<86400) return Math.floor(s/3600)+'h ago';
+    return Math.floor(s/86400)+'d ago';
+  }
+
+  /* ---------- WIRE UP ---------- */
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('search').addEventListener('input', renderFeed);
+    document.querySelectorAll('.tabBtn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+    document.getElementById('createBtn').addEventListener('click', () => openModal('createModal'));
+    document.getElementById('submitProfile').addEventListener('click', createProfile);
+    document.getElementById('commentSend').addEventListener('click', addComment);
+    document.getElementById('googleSignIn').addEventListener('click', signIn);
+    document.querySelectorAll('[data-admin]').forEach(b => b.addEventListener('click', () => adminAction(b.dataset.admin)));
+    document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeModal(b.dataset.close)));
+    document.querySelectorAll('.fixed.inset-0').forEach(m => m.addEventListener('click', e => { if (e.target === m) { m.classList.add('hidden'); m.classList.remove('flex'); } }));
+  });
+</script>
+</body>
+</html>

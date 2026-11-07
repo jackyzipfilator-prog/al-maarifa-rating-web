@@ -1,23 +1,34 @@
-# Al Maarifa — School Social Rating
+# 2BAC-PC-11 Rating
 
-Single-file app (no build step). Firebase Auth + Firestore only (Spark/free plan, no credit card).
+Single-file web application for 2BAC PC-11 students and friends to showcase and rate photos based on creativity, quality, editing, and presentation.
 
-## Setup
-1. Create Firebase project → enable Google Auth → create Firestore DB (production mode).
-2. Paste your `firebaseConfig` into `index.html` (already filled for `al-maarifa-3fc45`).
-3. Publish `firestore.rules` to Firebase console → Firestore → Rules.
-4. Run locally with VS Code "Live Server", or push to GitHub Pages / Vercel.
+Powered by Firebase Auth (Google) + Cloud Firestore (Spark/Free plan). Hosted on Vercel / GitHub Pages.
 
-## Admin / Owner
-Signed-in account `anaflousoussama555@gmail.com` unlocks Warn / Ban-Hide / Delete / Review Reports on every profile.
+---
 
-## Email notifications for reports (optional, free)
-Reports are always saved to Firestore. To also get an email at `anaflousoussama555@gmail.com`:
-1. Create a free account at https://www.emailjs.com
-2. Add an Email Service (Gmail) and an Email Template with variables: `to_email`, `image_url`, `post_id`, `reason`, `details`, `reported_user`, `reporter`.
-3. Put the Service ID, Template ID, and Public Key into `EMAILJS_SERVICE`, `EMAILJS_TEMPLATE`, `EMAILJS_PUBLIC_KEY` in `index.html`.
+## Owners & Administration
+Only these two authorized emails hold full administrative, publishing, and moderation privileges:
+- `anaflousoussama555@gmail.com` — **Main Owner / CEO**
+- `Yagsahz@gmail.com` / `yagsahz@gmail.com` — **Vice President / Co-Owner**
 
-## Notes
-- No Firebase Storage: images are pasted URLs (host via imgto.link or postimages.org).
-- Theme + language (EN/FR/Darija with RTL) persist in localStorage.
-- Ratings are decimal 0.1–10.0; reactions are separate from ratings.
+All other visitors enter as **Guests** with mandatory nickname selection and community rules acceptance.
+
+---
+
+## Deployment & Setup
+
+### 1. Firebase Rules (IMPORTANT)
+Whenever rules are updated, copy and paste the contents into the Firebase Console:
+1. Open [Firebase Console](https://console.firebase.google.com) → Select project `al-maarifa-3fc45`.
+2. **Firestore Database** → **Rules** tab → Paste the contents of `firestore.rules` → Click **Publish**.
+3. **Storage** → **Rules** tab → Paste the contents of `storage.rules` → Click **Publish**.
+
+### 2. Running Locally or Deploying
+- Run with VS Code "Live Server" or any local static server (`npx serve .` or `python -m http.server 3000`).
+- Deploy by committing with GitHub Desktop and pushing to GitHub (connected to Vercel).
+
+---
+
+## Core Guidelines
+- **URL-Based Images Only**: The platform stores direct image URLs (from `postimages.org` or `imgto.link`), never hosting image files on Firebase Storage.
+- **Ethics Rule**: Ratings are strictly focused on image creativity, editing, and presentation — never physical appearance.

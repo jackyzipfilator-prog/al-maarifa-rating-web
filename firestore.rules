@@ -2,56 +2,86 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function isSignedIn() { return request.auth != null; }
-    function isAdmin() { return isSignedIn() && request.auth.token.email == "anaflousoussama555@gmail.com"; }
-    function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
+    
+    // Hard-coded owners with full admin & publishing authority
+    function isOwnerEmail() {
+      return isSignedIn() && (
+        request.auth.token.email.lower() == "anaflousoussama555@gmail.com" ||
+        request.auth.token.email.lower() == "yagsahz@gmail.com"
+      );
+    }
+    function isAdmin() { return isOwnerEmail(); }
+    function isUser(uid) { return isSignedIn() && request.auth.uid == uid; }
 
+    // Users profile collection
     match /users/{uid} {
       allow read: if isSignedIn();
-      allow create: if isOwner(uid)
+      allow create: if isUser(uid)
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.onboarded == true;
-      allow update: if isOwner(uid) || isAdmin();
+      allow update: if isUser(uid) || isAdmin();
       allow delete: if isAdmin();
     }
 
+    // Stats counter for registered users
     match /stats/{docId} {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
     }
 
+    // Images / Profiles: ONLY the two owners can create or delete
     match /profiles/{pid} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn()
+      allow create: if isAdmin()
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.ratingSum == 0
-        && request.resource.data.ratingCount == 0
-        && request.resource.data.description.size() >= 100
-        && request.resource.data.description.size() <= 500;
+        && request.resource.data.ratingCount == 0;
       allow update: if isSignedIn() && (
         isAdmin() ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ratingSum','ratingCount','reactionCount','warned','banned']))
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'ratingSum', 'ratingCount', 'reactionCount', 'commentCount', 'warned', 'banned'
+        ]))
       );
       allow delete: if isAdmin();
 
+      // Subcollection: Ratings (1 rating per user per image, 0.1 to 10.0)
       match /ratings/{uid} {
         allow read: if isSignedIn();
         allow write: if isSignedIn() && uid == request.auth.uid
           && request.resource.data.value is number
           && request.resource.data.value >= 0.1
           && request.resource.data.value <= 10.0;
+        allow delete: if isAdmin() || (isSignedIn() && uid == request.auth.uid);
       }
+
+      // Subcollection: Reactions
       match /reactions/{uid} {
         allow read: if isSignedIn();
         allow write: if isSignedIn() && uid == request.auth.uid;
         allow delete: if isSignedIn() && uid == request.auth.uid;
       }
+
+      // Subcollection: Comments (includes likes and replies support)
       match /comments/{cid} {
         allow read: if isSignedIn();
         allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+        allow update: if isSignedIn() && (
+          isAdmin() ||
+          (resource.data.uid == request.auth.uid && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text', 'edited', 'updatedAt'])) ||
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeCount'])
+        );
         allow delete: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
+
+        // Subcollection: Comment likes
+        match /likes/{luid} {
+          allow read: if isSignedIn();
+          allow write: if isSignedIn() && luid == request.auth.uid;
+          allow delete: if isSignedIn() && luid == request.auth.uid;
+        }
       }
     }
 
+    // Moderation reports queue
     match /reports/{rid} {
       allow read: if isAdmin();
       allow create: if isSignedIn()

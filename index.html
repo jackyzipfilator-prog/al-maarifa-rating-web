@@ -16,7 +16,7 @@
     --border: #1e293b;
     --text: #f8fafc;
     --muted: #94a3b8;
-    --accent: #a3e635; /* Neon lime matching logo */
+    --accent: #a3e635; /* Neon lime matching official logo */
     --accent-glow: rgba(163, 230, 53, 0.35);
     --owner: #10b981;
     --owner-glow: rgba(16, 185, 129, 0.4);
@@ -40,7 +40,6 @@
     transition: background .25s, color .25s;
     min-height: 100vh;
   }
-  /* Subtle space / nebula background */
   .space-bg {
     background-image: 
       radial-gradient(circle at 50% 0%, rgba(163, 230, 53, 0.08) 0%, transparent 45%),
@@ -55,17 +54,30 @@
   .glass { background: color-mix(in srgb, var(--card) 75%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
   .scrollbar::-webkit-scrollbar { width: 6px; }
   .scrollbar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-  .fade-in { animation: fadeIn .22s ease-out; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-  .card-click { cursor: pointer; transition: transform .18s cubic-bezier(0.4, 0, 0.2, 1), border-color .18s, box-shadow .18s; }
-  .card-click:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5), 0 0 15px var(--accent-glow); }
+  
+  /* Shimmer effect for images */
+  .shimmer-box {
+    background: linear-gradient(90deg, var(--card) 0%, color-mix(in srgb, var(--card) 85%, #fff) 50%, var(--card) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s infinite;
+  }
+  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+  .fade-in { animation: fadeIn .22s cubic-bezier(0.16, 1, 0.3, 1); }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+  
+  .card-click { cursor: pointer; transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1), border-color .2s, box-shadow .2s; }
+  .card-click:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 12px 30px -5px rgba(0,0,0,0.5), 0 0 16px var(--accent-glow); }
+  
   .emoji-btn { transition: transform .12s, background .15s; }
-  .emoji-btn:hover { transform: scale(1.15); }
+  .emoji-btn:hover { transform: scale(1.18); }
   .emoji-btn.active { background: var(--accent); color: #000; font-weight: bold; }
+  
   .ring-accent:focus { outline: none; box-shadow: 0 0 0 2px var(--accent); }
   .btn-primary { background: var(--accent); color: #000; font-weight: 600; transition: filter .15s, transform .12s; }
   .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
   .btn-primary:active { transform: translateY(0); }
+  
   .badge-owner {
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.35));
     border: 1px solid #10b981;
@@ -78,10 +90,13 @@
     color: #fb923c;
   }
   .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .chip { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
+
+  /* Particle Canvas overlay */
+  #burstCanvas { pointer-events: none; position: fixed; inset: 0; z-index: 9999; }
 </style>
 </head>
 <body class="antialiased space-bg">
+<canvas id="burstCanvas"></canvas>
 <div id="fatalErr" class="hidden fixed top-0 left-0 right-0 z-[100] p-3 text-center text-sm font-semibold" style="background:#dc2626;color:#fff"></div>
 
 <div id="app" class="min-h-screen flex flex-col">
@@ -89,7 +104,7 @@
   <header class="sticky top-0 z-40 glass border-b border-c">
     <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
       <!-- Official Logo and Branding -->
-      <div id="logoArea" class="flex items-center gap-3 cursor-pointer select-none">
+      <div id="logoArea" class="flex items-center gap-3 cursor-pointer select-none" title="2BAC-PC-11 Rating (Click to return to top)">
         <img src="logo.jpg" alt="2BAC PC-11 Logo" class="w-10 h-10 rounded-xl object-cover border border-c shadow-[0_0_12px_var(--accent-glow)] transition-transform hover:scale-105" />
         <div class="flex flex-col">
           <div class="flex items-center gap-2">
@@ -103,15 +118,26 @@
       <!-- Search Field (Desktop) -->
       <div class="flex-1 max-w-md mx-4 hidden md:block">
         <div class="relative">
-          <input id="search" type="text" data-i18n-placeholder="search_placeholder" placeholder="Search by name, class, tag…"
-            class="w-full rounded-full pl-9 pr-4 py-2 text-sm ring-accent bg-card2 border border-c text-white" />
+          <input id="search" type="text" data-i18n-placeholder="search_placeholder" placeholder="Search by name, class, tag… (Ctrl+K)"
+            class="w-full rounded-full pl-9 pr-12 py-2 text-sm ring-accent bg-card2 border border-c text-white placeholder-muted2" />
           <svg class="w-4 h-4 absolute left-3 top-2.5 text-muted2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <kbd class="hidden sm:inline-block absolute right-3 top-2.5 px-1.5 py-0.5 text-[10px] font-mono text-muted2 bg-bg border border-c rounded">Ctrl+K</kbd>
         </div>
       </div>
 
       <!-- Action items -->
-      <div class="flex items-center gap-2.5">
-        <button id="settingsBtn" class="p-2 rounded-full hover:bg-card2 border border-transparent hover:border-c transition-colors" aria-label="Settings" title="Settings">
+      <div class="flex items-center gap-2">
+        <!-- Notification Bell -->
+        <button id="notifBtn" class="relative p-2 rounded-full hover:bg-card2 border border-transparent hover:border-c transition-colors text-muted2 hover:text-white" aria-label="Notifications" title="Notifications">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span id="notifBadge" class="hidden absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-lime-400 ring-2 ring-card2"></span>
+        </button>
+
+        <button id="aboutBtn" class="p-2 rounded-full hover:bg-card2 border border-transparent hover:border-c transition-colors text-muted2 hover:text-white" aria-label="About & Rules" title="About & Rules">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>
+        </button>
+
+        <button id="settingsBtn" class="p-2 rounded-full hover:bg-card2 border border-transparent hover:border-c transition-colors text-muted2 hover:text-white" aria-label="Settings" title="Settings">
           <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
 
@@ -135,11 +161,15 @@
     </div>
   </header>
 
-  <!-- Sub-header & Navigation Tabs (Feed REMOVED; Recommended is default) -->
+  <!-- Sub-header & Navigation Tabs -->
   <div class="max-w-6xl mx-auto px-4 mt-5 flex flex-wrap items-center justify-between gap-3">
     <div class="inline-flex bg-card2 border border-c rounded-full p-1 shadow-sm">
       <button data-tab="recommended" class="tabBtn px-4 py-1.5 rounded-full text-sm font-semibold btn-primary" data-i18n="tab_recommended">Recommended</button>
       <button data-tab="foryou" class="tabBtn px-4 py-1.5 rounded-full text-sm font-medium text-muted2" data-i18n="tab_foryou">For You</button>
+      <button data-tab="saved" class="tabBtn px-4 py-1.5 rounded-full text-sm font-medium text-muted2 flex items-center gap-1.5" data-i18n="tab_saved">
+        <span>Saved</span>
+        <span id="savedTabCount" class="text-[10px] px-1.5 py-0.2 rounded-full bg-bg border border-c">0</span>
+      </button>
       <button data-tab="leaderboard" class="tabBtn px-4 py-1.5 rounded-full text-sm font-medium text-muted2" data-i18n="tab_leaderboard">Leaderboard</button>
     </div>
 
@@ -173,6 +203,22 @@
     </div>
   </main>
 
+  <!-- Saved / Bookmarked Photos View -->
+  <main id="savedView" class="max-w-6xl mx-auto px-4 py-6 flex-1 hidden w-full">
+    <div class="mb-4">
+      <h2 class="text-lg font-bold text-white flex items-center gap-2">
+        <span>🔖</span> <span>Your Saved Bookmarks</span>
+      </h2>
+      <p class="text-xs text-muted2">Private collection of photos you've saved</p>
+    </div>
+    <div id="savedGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    <div id="savedEmpty" class="hidden text-center py-24 text-muted2 space-y-2">
+      <div class="text-4xl">🔖</div>
+      <p class="text-lg font-medium text-white">No saved photos yet.</p>
+      <p class="text-sm">Click the bookmark icon on any photo card to save it here!</p>
+    </div>
+  </main>
+
   <!-- Leaderboard View -->
   <main id="lbView" class="max-w-3xl mx-auto px-4 py-6 flex-1 hidden w-full">
     <div class="mb-4 text-center">
@@ -182,9 +228,9 @@
     <div id="lbList" class="space-y-3"></div>
   </main>
 
-  <!-- Footer with official credits -->
+  <!-- Footer with official credits & utility links -->
   <footer class="mt-12 py-8 text-center text-xs text-muted2 border-t border-c glass">
-    <div class="max-w-4xl mx-auto px-4 space-y-2">
+    <div class="max-w-4xl mx-auto px-4 space-y-3">
       <div class="flex items-center justify-center gap-2">
         <img src="logo.jpg" alt="2BAC PC-11" class="w-5 h-5 rounded-md object-cover" />
         <span class="font-bold text-white tracking-wide">2BAC-PC-11 RATING</span>
@@ -194,6 +240,17 @@
         · Yasser (<a href="mailto:Yagsahz@gmail.com" class="text-lime-400 hover:underline">Yagsahz@gmail.com</a>) — Vice President / Co-Owner
       </p>
       <p class="text-[11px] text-muted2">Adam — Special Contributor · Dedicated for fun, creativity, and class memory</p>
+      
+      <!-- Utility Links -->
+      <div class="flex items-center justify-center gap-4 pt-2 text-[11px] border-t border-c/50">
+        <button id="footerAboutBtn" class="hover:text-lime-400 transition-colors">About & Rules</button>
+        <span>·</span>
+        <button id="footerFaqBtn" class="hover:text-lime-400 transition-colors">FAQ</button>
+        <span>·</span>
+        <button id="suggestBtn" class="hover:text-lime-400 transition-colors">💡 Suggest an Idea</button>
+        <span>·</span>
+        <button id="changelogBtn" class="hover:text-lime-400 transition-colors">v2.0 What's New</button>
+      </div>
     </div>
   </footer>
 </div>
@@ -285,6 +342,131 @@
   </div>
 </div>
 
+<!-- Notification Modal -->
+<div id="notifModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
+  <div class="bg-card2 border border-c rounded-3xl p-6 w-full max-w-md fade-in shadow-2xl max-h-[85vh] overflow-y-auto scrollbar">
+    <div class="flex items-center justify-between pb-3 border-b border-c mb-4">
+      <div class="flex items-center gap-2">
+        <span class="text-lime-400 text-lg">🔔</span>
+        <h2 class="text-lg font-bold text-white">Notifications</h2>
+      </div>
+      <button data-close="notifModal" class="text-muted2 hover:text-white">✕</button>
+    </div>
+    <div id="notifList" class="space-y-2.5"></div>
+  </div>
+</div>
+
+<!-- About & Community Rules / FAQ Modal -->
+<div id="aboutModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-md p-4">
+  <div class="bg-card2 border border-c rounded-3xl p-6 sm:p-8 w-full max-w-xl fade-in shadow-2xl max-h-[90vh] overflow-y-auto scrollbar space-y-6">
+    <div class="flex items-center justify-between pb-3 border-b border-c">
+      <div class="flex items-center gap-3">
+        <img src="logo.jpg" class="w-9 h-9 rounded-xl object-cover border border-c" />
+        <h2 class="text-lg font-bold text-white">About 2BAC-PC-11 Rating</h2>
+      </div>
+      <button data-close="aboutModal" class="text-muted2 hover:text-white text-lg">✕</button>
+    </div>
+
+    <!-- Core Purpose -->
+    <div class="space-y-2 text-xs sm:text-sm text-white/90 leading-relaxed">
+      <h3 class="font-bold text-lime-400 uppercase tracking-wider text-xs">✨ Our Purpose & Spirit</h3>
+      <p>
+        2BAC-PC-11 Rating is built as a shared memory album and entertainment space for the 2BAC PC-11 class. It celebrates student creativity, photography skills, fun editing, science lab memories, and artistic presentation.
+      </p>
+    </div>
+
+    <!-- Ethics Rule Box -->
+    <div class="p-4 rounded-2xl bg-lime-500/10 border border-lime-500/30 text-lime-200 text-xs sm:text-sm space-y-1.5">
+      <span class="font-bold text-lime-400 block text-xs uppercase tracking-wider">⚖️ The Golden Ethics Rule</span>
+      <p class="font-medium text-white">
+        "Rate the creativity, quality, editing, and presentation of the images — never the physical appearance of people."
+      </p>
+      <p class="text-[11px] text-muted2">
+        Harassment, bullying, or rating personal looks is strictly prohibited and leads to immediate suspension.
+      </p>
+    </div>
+
+    <!-- FAQ Accordion -->
+    <div class="space-y-3 text-xs sm:text-sm">
+      <h3 class="font-bold text-white uppercase tracking-wider text-xs">❓ Frequently Asked Questions</h3>
+      <div class="p-3 bg-bg border border-c rounded-xl space-y-1">
+        <p class="font-semibold text-white">How does the 0.1 – 10.0 rating work?</p>
+        <p class="text-muted2 text-xs">Each guest gets 1 active vote per photo. You can edit your vote anytime. The community average is recalculated atomically.</p>
+      </div>
+      <div class="p-3 bg-bg border border-c rounded-xl space-y-1">
+        <p class="font-semibold text-white">How does the Recommended feed rank photos?</p>
+        <p class="text-muted2 text-xs">It uses a virality score combining total votes, discussions/comments, reactions, average rating, and a 24-hour recency boost.</p>
+      </div>
+      <div class="p-3 bg-bg border border-c rounded-xl space-y-1">
+        <p class="font-semibold text-white">Where are the photos stored?</p>
+        <p class="text-muted2 text-xs">No files are uploaded to Firebase Storage. Only external image URLs (via postimages.org or imgto.link) are saved.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Suggest a Feature / Feedback Modal -->
+<div id="feedbackModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
+  <div class="bg-card2 border border-c rounded-3xl p-6 w-full max-w-md fade-in shadow-2xl">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2">
+        <span class="text-lime-400 text-lg">💡</span>
+        <h2 class="text-lg font-bold text-white">Suggest an Idea</h2>
+      </div>
+      <button data-close="feedbackModal" class="text-muted2 hover:text-white">✕</button>
+    </div>
+    <div class="space-y-3">
+      <div>
+        <label class="text-xs font-semibold text-muted2">Category</label>
+        <select id="fbCategory" class="mt-1 w-full rounded-xl px-3 py-2 text-sm ring-accent bg-bg border border-c text-white">
+          <option value="feature">New Feature Idea</option>
+          <option value="visual">Visual Design & Theme</option>
+          <option value="game">Class Game / Challenge</option>
+          <option value="bug">Report a Bug / Issue</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-muted2">Idea / Feedback Details</label>
+        <textarea id="fbDetails" rows="4" maxlength="400" placeholder="What should we add or improve next for 2BAC PC-11?"
+          class="mt-1 w-full rounded-xl px-3 py-2 text-sm ring-accent bg-bg border border-c text-white"></textarea>
+      </div>
+      <button id="fbSubmit" class="w-full rounded-full py-2.5 font-semibold btn-primary text-sm">
+        Send Idea to Owners
+      </button>
+      <p id="fbErr" class="text-red-400 text-xs hidden"></p>
+      <p id="fbOk" class="text-lime-400 text-xs hidden">Thank you! Your idea was sent to Oussama and Yasser.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Changelog Modal -->
+<div id="changelogModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
+  <div class="bg-card2 border border-c rounded-3xl p-6 sm:p-8 w-full max-w-md fade-in shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto scrollbar">
+    <div class="flex items-center justify-between pb-2 border-b border-c">
+      <h2 class="text-lg font-bold text-white">What's New in v2.0</h2>
+      <button data-close="changelogModal" class="text-muted2 hover:text-white">✕</button>
+    </div>
+    <div class="space-y-3 text-xs sm:text-sm text-muted2">
+      <div class="p-3 rounded-xl bg-bg border border-c space-y-1">
+        <span class="font-bold text-lime-400 text-xs">🚀 Official 2BAC-PC-11 Branding</span>
+        <p>New neon lime atom logo, dark carbon space theme, and prominent CEO & Co-Owner badges.</p>
+      </div>
+      <div class="p-3 rounded-xl bg-bg border border-c space-y-1">
+        <span class="font-bold text-lime-400 text-xs">💬 Full Instagram Comments</span>
+        <p>Threaded replies, owner comment pinning, sorting (Top/Newest), and inline editing.</p>
+      </div>
+      <div class="p-3 rounded-xl bg-bg border border-c space-y-1">
+        <span class="font-bold text-lime-400 text-xs">🔖 Bookmarks & Saved Photos</span>
+        <p>Save any photo to your private Bookmarks tab anytime.</p>
+      </div>
+      <div class="p-3 rounded-xl bg-bg border border-c space-y-1">
+        <span class="font-bold text-lime-400 text-xs">🔊 Optional UI Sound Effects & Particles</span>
+        <p>Pure synthesizer audio feedback and celebratory bursts for votes & reactions.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Create / Publish Image Modal (OWNERS ONLY) -->
 <div id="createModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
   <div class="bg-card2 border border-c rounded-3xl p-6 sm:p-8 w-full max-w-lg fade-in max-h-[92vh] overflow-y-auto scrollbar shadow-2xl">
@@ -357,7 +539,15 @@
         <h2 id="dName" class="text-lg font-bold truncate text-white"></h2>
         <span id="dOwnerTag" class="hidden badge-owner px-2 py-0.5 rounded-full text-[10px] font-bold">👑 OFFICIAL</span>
       </div>
-      <button data-close="detailModal" class="text-muted2 hover:text-white text-lg p-1">✕</button>
+      <div class="flex items-center gap-2">
+        <button id="dShareBtn" class="p-1.5 rounded-full hover:bg-bg border border-c text-muted2 hover:text-lime-400 transition-colors" title="Share Photo Link">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8m-4-6-4-4-4 4m4-4v13"/></svg>
+        </button>
+        <button id="dBookmarkBtn" class="p-1.5 rounded-full hover:bg-bg border border-c text-muted2 hover:text-lime-400 transition-colors" title="Save / Bookmark">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button data-close="detailModal" class="text-muted2 hover:text-white text-lg p-1">✕</button>
+      </div>
     </div>
 
     <div class="p-6 space-y-6">
@@ -435,14 +625,22 @@
 
       <!-- Instagram/YouTube Style Comments & Threaded Replies -->
       <div class="pt-4 border-t border-c">
-        <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
           <div class="flex items-center gap-2">
             <h3 class="font-bold text-sm sm:text-base text-white" data-i18n="comments">Comments & Discussion</h3>
             <span id="commentBadgeCount" class="text-xs px-2 py-0.5 rounded-full bg-card2 border border-c text-muted2">0</span>
           </div>
+
+          <!-- Comment Sorting Controls -->
+          <div class="flex items-center gap-1.5 text-xs">
+            <span class="text-muted2 text-[11px]">Sort:</span>
+            <button id="sortTop" class="px-2.5 py-1 rounded-lg bg-bg border border-lime-400 text-lime-400 font-semibold text-[11px]">Top</button>
+            <button id="sortNewest" class="px-2.5 py-1 rounded-lg bg-bg border border-c text-muted2 hover:text-white text-[11px]">Newest</button>
+            <button id="sortOldest" class="px-2.5 py-1 rounded-lg bg-bg border border-c text-muted2 hover:text-white text-[11px]">Oldest</button>
+          </div>
         </div>
 
-        <div id="commentsList" class="space-y-3 max-h-72 overflow-y-auto scrollbar pr-1"></div>
+        <div id="commentsList" class="space-y-3 max-h-80 overflow-y-auto scrollbar pr-1"></div>
 
         <!-- Inline Reply Indicator Banner -->
         <div id="replyTargetBanner" class="hidden mt-3 px-3 py-2 rounded-xl bg-lime-500/10 border border-lime-500/30 flex items-center justify-between text-xs text-lime-300">
@@ -474,7 +672,7 @@
 <div id="reportModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
   <div class="bg-card2 border border-c rounded-3xl p-6 w-full max-w-md fade-in shadow-2xl">
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-bold text-white" data-i18n="report_title">Report Photo</h2>
+      <h2 class="text-lg font-bold text-white" data-i18n="report_title">Report Content</h2>
       <button data-close="reportModal" class="text-muted2 hover:text-white">✕</button>
     </div>
     <div class="space-y-3">
@@ -501,51 +699,94 @@
   </div>
 </div>
 
-<!-- Moderation Modal (OWNERS ONLY) -->
+<!-- Enhanced Moderation & Feedback Modal (OWNERS ONLY) -->
 <div id="modModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-md p-4">
   <div class="bg-card2 border border-c rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto scrollbar fade-in p-6 shadow-2xl">
     <div class="flex items-center justify-between mb-4 pb-2 border-b border-c">
       <div class="flex items-center gap-2">
         <span class="badge-owner px-2 py-0.5 rounded-full text-[10px] font-bold">OWNERS ONLY</span>
-        <h2 class="text-lg font-bold text-white" data-i18n="moderation">Owner Moderation Queue</h2>
+        <h2 class="text-lg font-bold text-white">Owner Moderation & Suggestions</h2>
       </div>
       <button data-close="modModal" class="text-muted2 hover:text-white">✕</button>
     </div>
+
+    <!-- Moderation Tabs (Reports vs Student Suggestions) -->
+    <div class="flex items-center gap-2 mb-4 border-b border-c pb-2">
+      <button id="modTabReports" class="px-3 py-1 rounded-xl text-xs font-semibold btn-primary">Reports Queue</button>
+      <button id="modTabIdeas" class="px-3 py-1 rounded-xl text-xs font-semibold border border-c text-muted2 hover:text-white">Student Suggestions</button>
+    </div>
+
+    <!-- Moderation Filters -->
+    <div id="reportsFilterRow" class="flex flex-wrap items-center gap-2 mb-4">
+      <input id="modSearch" type="text" placeholder="Filter reports by user or text…"
+        class="flex-1 min-w-[200px] rounded-xl px-3 py-1.5 text-xs ring-accent bg-bg border border-c text-white" />
+      <select id="modReasonFilter" class="rounded-xl px-3 py-1.5 text-xs bg-bg border border-c text-white">
+        <option value="all">All Reasons</option>
+        <option value="harassment">Harassment / Appearance</option>
+        <option value="inappropriate">Inappropriate</option>
+        <option value="spam">Spam</option>
+        <option value="comment">Comment Reports</option>
+      </select>
+    </div>
+
     <div id="reportsList" class="space-y-3"></div>
+    <div id="ideasModList" class="space-y-3 hidden"></div>
   </div>
 </div>
 
-<!-- Settings Modal -->
+<!-- Settings Modal with Sound and Motion controls -->
 <div id="settingsModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
-  <div class="bg-card2 border border-c rounded-3xl p-6 w-full max-w-sm fade-in shadow-2xl">
-    <div class="flex items-center justify-between mb-4">
+  <div class="bg-card2 border border-c rounded-3xl p-6 w-full max-w-sm fade-in shadow-2xl space-y-4">
+    <div class="flex items-center justify-between pb-2 border-b border-c">
       <h2 class="text-lg font-bold text-white" data-i18n="settings">Settings</h2>
       <button data-close="settingsModal" class="text-muted2 hover:text-white">✕</button>
     </div>
-    <div class="space-y-4">
-      <div>
-        <label class="text-xs font-semibold text-muted2" data-i18n="theme">Theme</label>
-        <div class="mt-1 flex gap-2">
-          <button id="themeDark" class="flex-1 px-3 py-2 rounded-xl text-xs font-semibold border border-c bg-bg text-white" data-i18n="dark_mode">Dark (Default)</button>
-          <button id="themeLight" class="flex-1 px-3 py-2 rounded-xl text-xs font-semibold border border-c bg-bg text-white" data-i18n="light_mode">Light</button>
-        </div>
+
+    <div>
+      <label class="text-xs font-semibold text-muted2" data-i18n="theme">Theme</label>
+      <div class="mt-1 flex gap-2">
+        <button id="themeDark" class="flex-1 px-3 py-2 rounded-xl text-xs font-semibold border border-c bg-bg text-white" data-i18n="dark_mode">Dark (Default)</button>
+        <button id="themeLight" class="flex-1 px-3 py-2 rounded-xl text-xs font-semibold border border-c bg-bg text-white" data-i18n="light_mode">Light</button>
       </div>
+    </div>
+
+    <div>
+      <label class="text-xs font-semibold text-muted2" data-i18n="language">Language</label>
+      <select id="langSelect" class="mt-1 w-full rounded-xl px-3 py-2 text-sm ring-accent bg-bg border border-c text-white">
+        <option value="en">🇺🇸 English</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="ar">🇲🇦 الدارجة (Darija)</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="text-xs font-semibold text-muted2" data-i18n="image_size">Card Image Size</label>
+      <select id="imgSizeSelect" class="mt-1 w-full rounded-xl px-3 py-2 text-sm ring-accent bg-bg border border-c text-white">
+        <option value="small" data-i18n="size_small">Compact</option>
+        <option value="medium" data-i18n="size_medium" selected>Standard</option>
+        <option value="large" data-i18n="size_large">Large Preview</option>
+      </select>
+    </div>
+
+    <!-- UI Sounds Toggle -->
+    <div class="pt-2 border-t border-c flex items-center justify-between">
       <div>
-        <label class="text-xs font-semibold text-muted2" data-i18n="language">Language</label>
-        <select id="langSelect" class="mt-1 w-full rounded-xl px-3 py-2 text-sm ring-accent bg-bg border border-c text-white">
-          <option value="en">🇺🇸 English</option>
-          <option value="fr">🇫🇷 Français</option>
-          <option value="ar">🇲🇦 الدارجة (Darija)</option>
-        </select>
+        <label class="text-xs font-semibold text-white block">Sound Effects</label>
+        <span class="text-[10px] text-muted2">Interface clicks & votes (Off by default)</span>
       </div>
+      <div class="flex items-center gap-2">
+        <button id="testSoundBtn" class="px-2 py-1 rounded text-[10px] bg-bg border border-c text-muted2 hover:text-white" title="Test audio">Preview</button>
+        <input id="soundToggle" type="checkbox" class="accent-lime-500 w-4 h-4 cursor-pointer" />
+      </div>
+    </div>
+
+    <!-- Reduced Motion Toggle -->
+    <div class="pt-2 border-t border-c flex items-center justify-between">
       <div>
-        <label class="text-xs font-semibold text-muted2" data-i18n="image_size">Card Image Size</label>
-        <select id="imgSizeSelect" class="mt-1 w-full rounded-xl px-3 py-2 text-sm ring-accent bg-bg border border-c text-white">
-          <option value="small" data-i18n="size_small">Compact</option>
-          <option value="medium" data-i18n="size_medium" selected>Standard</option>
-          <option value="large" data-i18n="size_large">Large Preview</option>
-        </select>
+        <label class="text-xs font-semibold text-white block">Reduced Motion</label>
+        <span class="text-[10px] text-muted2">Disable particle bursts</span>
       </div>
+      <input id="motionToggle" type="checkbox" class="accent-lime-500 w-4 h-4 cursor-pointer" />
     </div>
   </div>
 </div>
@@ -589,15 +830,123 @@ const FB = {
 };
 window.FB = FB;
 
+// Synthesizer Web Audio API (Zero audio files needed, pure clean synthesizer)
+let audioCtx = null;
+let soundEnabled = localStorage.getItem('sound_enabled') === 'true';
+let reducedMotion = localStorage.getItem('reduced_motion') === 'true';
+
+function initAudio() {
+  if (!audioCtx) {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (AudioContext) audioCtx = new AudioContext();
+  }
+}
+
+function playPop() {
+  if (!soundEnabled) return;
+  try {
+    initAudio();
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.08);
+  } catch (_) {}
+}
+
+function playSuccessChime() {
+  if (!soundEnabled) return;
+  try {
+    initAudio();
+    if (!audioCtx) return;
+    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+    notes.forEach((freq, idx) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.06);
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime + idx * 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.005, audioCtx.currentTime + idx * 0.06 + 0.2);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(audioCtx.currentTime + idx * 0.06);
+      osc.stop(audioCtx.currentTime + idx * 0.06 + 0.2);
+    });
+  } catch (_) {}
+}
+
+// Particle Canvas Burst
+const canvas = $('burstCanvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function triggerBurst(x, y) {
+  if (reducedMotion) return;
+  const colors = ['#a3e635', '#ffffff', '#10b981', '#38bdf8', '#fb923c'];
+  for (let i = 0; i < 24; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 2 + Math.random() * 5;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 1.5,
+      size: 2 + Math.random() * 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      alpha: 1,
+      decay: 0.02 + Math.random() * 0.02
+    });
+  }
+}
+
+function updateParticles() {
+  if (particles.length > 0) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.12; // gravity
+      p.alpha -= p.decay;
+      if (p.alpha <= 0) {
+        particles.splice(i, 1);
+        continue;
+      }
+      ctx.globalAlpha = p.alpha;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  requestAnimationFrame(updateParticles);
+}
+requestAnimationFrame(updateParticles);
+
 const EMOJIS = ['❤️','🔥','😂','😮','👍','🎉'];
 
 const T = {
   en: {
     app_name: "2BAC-PC-11 Rating",
-    search_placeholder: "Search by name, class, tag…",
+    search_placeholder: "Search by name, class, tag… (Ctrl+K)",
     create_profile: "+ Add Image",
     tab_recommended: "Recommended",
     tab_foryou: "For You",
+    tab_saved: "Saved",
     tab_leaderboard: "Leaderboard",
     joined: "Joined:",
     users: "students",
@@ -632,7 +981,7 @@ const T = {
     add_comment: "Add a positive, creative comment…",
     send: "Post",
     report_image: "Report Photo",
-    report_title: "Report Photo",
+    report_title: "Report Content",
     report_reason: "Reason",
     r_harassment: "Bullying / Harassment / Appearance rating",
     r_inappropriate: "Inappropriate content",
@@ -655,10 +1004,11 @@ const T = {
   },
   fr: {
     app_name: "2BAC-PC-11 Rating",
-    search_placeholder: "Rechercher par nom, classe, tag…",
+    search_placeholder: "Rechercher par nom, classe, tag… (Ctrl+K)",
     create_profile: "+ Ajouter image",
     tab_recommended: "Recommandés",
     tab_foryou: "Pour vous",
+    tab_saved: "Enregistrés",
     tab_leaderboard: "Classement",
     joined: "Inscrits :",
     users: "élèves",
@@ -693,7 +1043,7 @@ const T = {
     add_comment: "Ajouter un commentaire positif…",
     send: "Envoyer",
     report_image: "Signaler la photo",
-    report_title: "Signaler la photo",
+    report_title: "Signaler le contenu",
     report_reason: "Raison",
     r_harassment: "Harcèlement / Jugement sur le physique",
     r_inappropriate: "Contenu inapproprié",
@@ -715,10 +1065,11 @@ const T = {
   },
   ar: {
     app_name: "2BAC-PC-11 Rating",
-    search_placeholder: "ابحث بالاسم أو القسم…",
+    search_placeholder: "ابحث بالاسم أو القسم… (Ctrl+K)",
     create_profile: "+ إضافة صورة",
     tab_recommended: "موصى به",
     tab_foryou: "لك",
+    tab_saved: "المحفوظات",
     tab_leaderboard: "الترتيب",
     joined: "المشتركون:",
     users: "تلميذ",
@@ -753,7 +1104,7 @@ const T = {
     add_comment: "أضف تعليقاً إيجابياً ومحترماً…",
     send: "إرسال",
     report_image: "الإبلاغ عن صورة",
-    report_title: "الإبلاغ عن صورة",
+    report_title: "الإبلاغ عن محتوى",
     report_reason: "السبب",
     r_harassment: "تنمر / تعليق على الشكل الخارجي",
     r_inappropriate: "محتوى غير لائق",
@@ -811,8 +1162,13 @@ applyTheme(localStorage.getItem('theme') || 'dark');
 let currentUser = null, userProfile = null, profiles = [];
 let profilesUnsub = null, commentsUnsub = null, myRatingUnsub = null, reactionsUnsub = null;
 let myRating = null, currentProfileId = null;
-let currentReplyTarget = null; // { cid, nickname }
+let currentReplyTarget = null;
+let currentCommentSort = 'top';
+let currentReportContext = null;
+let rawComments = [];
+let savedIds = new Set(JSON.parse(localStorage.getItem('saved_images') || '[]'));
 let viewedIds = new Set(JSON.parse(localStorage.getItem('viewed') || '[]'));
+let readNotifs = new Set(JSON.parse(localStorage.getItem('read_notifs') || '[]'));
 let imgSize = localStorage.getItem('imgSize') || 'medium';
 
 function $(id) { return document.getElementById(id); }
@@ -840,7 +1196,6 @@ function timeAgo(ts) {
   return Math.floor(s / 86400) + 'd ago';
 }
 
-// Check if user is one of the two owners
 function isOwner(user) {
   if (!user || !user.email) return false;
   const em = user.email.toLowerCase().trim();
@@ -867,7 +1222,7 @@ function avatarUrl() {
   return (userProfile && userProfile.avatarUrl) || (currentUser && currentUser.photoURL) || '';
 }
 
-// Boot application and handle Auth
+// Boot application
 async function boot() {
   FB.onAuthStateChanged(FB.auth, async (user) => {
     currentUser = user;
@@ -888,30 +1243,40 @@ async function boot() {
         closeModal('authModal');
         if (!profilesUnsub) loadProfiles();
         loadJoinCount();
+        checkNotifications();
       }
     } else {
       userProfile = null;
       if (profilesUnsub) { profilesUnsub(); profilesUnsub = null; }
       profiles = [];
-      renderRecommended(); renderForYou(); renderLeaderboard();
+      renderRecommended(); renderForYou(); renderSaved(); renderLeaderboard();
       openModal('authModal');
     }
   });
 
   wireUI();
+  updateSavedBadge();
   applyLang(currentLang);
 }
 
 async function loadUserProfile(user) {
   try {
     const snap = await FB.getDoc(FB.doc(FB.db, 'users', user.uid));
-    userProfile = snap.exists() ? snap.data() : null;
+    if (snap.exists()) {
+      userProfile = snap.data();
+      if (userProfile.savedImages && Array.isArray(userProfile.savedImages)) {
+        savedIds = new Set(userProfile.savedImages);
+        localStorage.setItem('saved_images', JSON.stringify([...savedIds]));
+        updateSavedBadge();
+      }
+    } else {
+      userProfile = null;
+    }
   } catch (e) {
     console.error('Error loading profile:', e);
   }
 }
 
-// Mandatory Onboarding Setup
 function setupOnboarding(user) {
   const avGoogle = $('avGoogle'), avUrl = $('avUrl'), avUrlInput = $('avUrlInput'), avPreview = $('avPreview');
   let chosenAvatar = user.photoURL || '';
@@ -973,6 +1338,7 @@ function setupOnboarding(user) {
         bio: bio,
         avatarUrl: finalAvatar,
         role: role,
+        savedImages: [...savedIds],
         onboarded: true,
         acceptedDisclaimer: true,
         joinedAt: FB.serverTimestamp()
@@ -985,12 +1351,13 @@ function setupOnboarding(user) {
         else t.set(cRef, { userCount: 1 });
       });
 
-      userProfile = { uid: user.uid, nickname: nick, avatarUrl: finalAvatar, bio, role, onboarded: true };
+      userProfile = { uid: user.uid, nickname: nick, avatarUrl: finalAvatar, bio, role, savedImages: [...savedIds], onboarded: true };
       closeModal('onboardModal');
       closeModal('authModal');
       if (!profilesUnsub) loadProfiles();
       loadJoinCount();
       renderAuth();
+      playSuccessChime();
       showToast('Welcome to 2BAC-PC-11, ' + nick + '!');
     } catch (e) {
       err.textContent = e.message;
@@ -1011,7 +1378,6 @@ function renderAuth() {
   const createBtn = $('createBtn');
 
   if (currentUser) {
-    // Only the two Owners can publish images
     if (isAdmin()) {
       createBtn.classList.remove('hidden');
     } else {
@@ -1062,6 +1428,7 @@ function loadProfiles() {
     profiles = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderRecommended();
     renderForYou();
+    renderSaved();
     renderLeaderboard();
   }, (err) => showToast(err.message));
 }
@@ -1070,8 +1437,6 @@ function cardSizeClass() {
   return imgSize === 'small' ? 'h-36' : imgSize === 'large' ? 'h-72' : 'h-52';
 }
 
-// Recommended Virality Calculation Formula:
-// Score = (ratings * 2) + (comments * 3) + (reactions * 1.5) + (averageRating * 5) + recencyBoost
 function viralityScore(p) {
   const ratings = p.ratingCount || 0;
   const comments = p.commentCount || 0;
@@ -1095,20 +1460,29 @@ function cardHtml(p) {
   const count = p.ratingCount || 0;
   const warned = p.warned ? `<span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">⚠️ Warned</span>` : '';
   const banned = p.banned ? `<span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40">Hidden</span>` : '';
-  
-  // Trending badge if virality score is high
+  const isSaved = savedIds.has(p.id);
+  const bookmarkIcon = isSaved ? '★' : '☆';
+  const bookmarkClass = isSaved ? 'text-lime-400 border-lime-400' : 'text-muted2 hover:text-white border-c';
+
   const vScore = viralityScore(p);
   const hotBadge = vScore > 40 ? `<span class="badge-trending text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">🔥 Hot</span>` : '';
 
   return `
   <div class="bg-card2 border border-c rounded-2xl overflow-hidden card-click fade-in shadow-lg flex flex-col justify-between" data-open="${p.id}">
     <div>
-      <div class="relative overflow-hidden bg-black">
-        <img src="${escapeAttr(p.imageUrl)}" alt="${escapeAttr(p.name)}" class="w-full ${cardSizeClass()} object-cover" loading="lazy"
+      <div class="relative overflow-hidden bg-black shimmer-box">
+        <img src="${escapeAttr(p.imageUrl)}" alt="${escapeAttr(p.name)}" class="w-full ${cardSizeClass()} object-cover opacity-90 transition-opacity duration-300" loading="lazy"
+          onload="this.style.opacity=1"
           onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22><rect width=%22400%22 height=%22200%22 fill=%22%23111%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23555%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22>Broken link</text></svg>'" />
         ${warned}${banned}
-        <div class="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-extrabold text-lime-400 border border-lime-500/30 flex items-center gap-1 shadow-md">
-          <span>★</span> <span>${avg}</span><span class="text-[10px] text-muted2">/10</span>
+        
+        <div class="absolute top-2.5 right-2.5 flex items-center gap-1.5">
+          <button data-quick-save="${p.id}" class="bg-black/75 backdrop-blur-md px-2 py-1 rounded-full text-xs font-bold border ${bookmarkClass} transition-colors" title="Bookmark">
+            ${bookmarkIcon}
+          </button>
+          <div class="bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-extrabold text-lime-400 border border-lime-500/30 flex items-center gap-1 shadow-md">
+            <span>★</span> <span>${avg}</span><span class="text-[10px] text-muted2">/10</span>
+          </div>
         </div>
       </div>
       <div class="p-4">
@@ -1127,12 +1501,17 @@ function cardHtml(p) {
     </div>
     <div class="px-4 pb-3 pt-1 flex items-center justify-between text-[11px] text-muted2 border-t border-c/50">
       <span>By ${escapeHtml(p.createdByName || 'Owner')}</span>
-      <span class="text-lime-400 font-semibold group-hover:underline">Rate & Discuss →</span>
+      <div class="flex items-center gap-2">
+        <button data-quick-share="${escapeAttr(p.imageUrl)}" class="hover:text-white p-1" title="Share link">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8m-4-6-4-4-4 4m4-4v13"/></svg>
+        </button>
+        <span class="text-lime-400 font-semibold group-hover:underline">Rate & Discuss →</span>
+      </div>
     </div>
   </div>`;
 }
 
-// Recommended Tab (Viral Algorithmic Feed)
+// Recommended Tab
 function renderRecommended() {
   const grid = $('recGrid');
   const empty = $('recEmpty');
@@ -1143,7 +1522,6 @@ function renderRecommended() {
     list = list.filter(p => (p.name || '').toLowerCase().includes(q) || (p.grade || '').toLowerCase().includes(q) || (p.description || '').toLowerCase().includes(q));
   }
 
-  // Sort strictly by virality score
   list.sort((a, b) => viralityScore(b) - viralityScore(a));
 
   if (!list.length) {
@@ -1153,10 +1531,10 @@ function renderRecommended() {
   }
   empty.classList.add('hidden');
   grid.innerHTML = list.map(cardHtml).join('');
-  grid.querySelectorAll('[data-open]').forEach(el => el.addEventListener('click', () => openDetail(el.dataset.open)));
+  attachCardEvents(grid);
 }
 
-// For You Tab (Personalized discovery)
+// For You Tab
 function renderForYou() {
   const grid = $('fyGrid');
   const empty = $('fyEmpty');
@@ -1185,10 +1563,92 @@ function renderForYou() {
   }
   empty.classList.add('hidden');
   grid.innerHTML = candidates.slice(0, 24).map(cardHtml).join('');
-  grid.querySelectorAll('[data-open]').forEach(el => el.addEventListener('click', () => openDetail(el.dataset.open)));
+  attachCardEvents(grid);
 }
 
-// Leaderboard Tab (Ranked by average score with at least 1 rating)
+// Saved / Bookmarks Tab
+function renderSaved() {
+  const grid = $('savedGrid');
+  const empty = $('savedEmpty');
+  const list = profiles.filter(p => savedIds.has(p.id));
+
+  updateSavedBadge();
+
+  if (!list.length) {
+    grid.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+  grid.innerHTML = list.map(cardHtml).join('');
+  attachCardEvents(grid);
+}
+
+function updateSavedBadge() {
+  $('savedTabCount').textContent = savedIds.size;
+}
+
+function toggleSavePhoto(pid) {
+  playPop();
+  if (savedIds.has(pid)) {
+    savedIds.delete(pid);
+    showToast('Removed from Saved.');
+  } else {
+    savedIds.add(pid);
+    showToast('Photo saved to Bookmarks! 🔖');
+  }
+  localStorage.setItem('saved_images', JSON.stringify([...savedIds]));
+  updateSavedBadge();
+
+  if (currentUser) {
+    FB.updateDoc(FB.doc(FB.db, 'users', currentUser.uid), {
+      savedImages: [...savedIds]
+    }).catch(() => {});
+  }
+
+  renderSaved();
+  renderRecommended();
+  renderForYou();
+
+  const dBtn = $('dBookmarkBtn');
+  if (dBtn && currentProfileId === pid) {
+    dBtn.classList.toggle('text-lime-400', savedIds.has(pid));
+  }
+}
+
+function attachCardEvents(container) {
+  container.querySelectorAll('[data-open]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (e.target.closest('[data-quick-save]') || e.target.closest('[data-quick-share]')) return;
+      openDetail(el.dataset.open);
+    });
+  });
+  container.querySelectorAll('[data-quick-save]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleSavePhoto(btn.dataset.quickSave);
+    });
+  });
+  container.querySelectorAll('[data-quick-share]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      copyPhotoLink(btn.dataset.quickShare);
+    });
+  });
+}
+
+function copyPhotoLink(url) {
+  playPop();
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('Image link copied to clipboard! 📋');
+    });
+  } else {
+    showToast('Link: ' + url);
+  }
+}
+
+// Leaderboard Tab
 function renderLeaderboard() {
   const list = [...profiles].filter(p => !p.banned && (p.ratingCount || 0) > 0)
     .sort((a, b) => {
@@ -1286,6 +1746,7 @@ async function createProfile() {
 
     closeModal('createModal');
     resetCreateForm();
+    playSuccessChime();
     showToast('Photo successfully published!');
   } catch (e) {
     err.textContent = e.message;
@@ -1327,6 +1788,12 @@ async function openDetail(id) {
   const isOwnerPost = p.createdByEmail && OWNER_EMAILS.includes(p.createdByEmail.toLowerCase().trim());
   $('dOwnerTag').classList.toggle('hidden', !isOwnerPost);
 
+  const dBtn = $('dBookmarkBtn');
+  dBtn.classList.toggle('text-lime-400', savedIds.has(id));
+  dBtn.onclick = () => toggleSavePhoto(id);
+
+  $('dShareBtn').onclick = () => copyPhotoLink(p.imageUrl);
+
   renderScore(p);
 
   $('ratingInput').value = myRating !== null ? myRating : '';
@@ -1340,28 +1807,9 @@ async function openDetail(id) {
   commentsUnsub = FB.onSnapshot(
     FB.query(FB.collection(FB.db, 'profiles', id, 'comments'), FB.orderBy('createdAt', 'asc')),
     (snap) => {
-      const list = $('commentsList');
-      const badge = $('commentBadgeCount');
-      badge.textContent = snap.size;
-
-      if (snap.empty) {
-        list.innerHTML = `<p class="text-xs text-muted2 py-4 text-center">No comments yet. Start the conversation!</p>`;
-        return;
-      }
-
-      const allComments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      list.innerHTML = renderCommentsTree(allComments);
-
-      // Attach comment like & reply handlers
-      list.querySelectorAll('[data-like-cid]').forEach(btn => {
-        btn.addEventListener('click', () => toggleCommentLike(btn.dataset.likeCid));
-      });
-      list.querySelectorAll('[data-reply-cid]').forEach(btn => {
-        btn.addEventListener('click', () => setReplyTarget(btn.dataset.replyCid, btn.dataset.replyNick));
-      });
-      list.querySelectorAll('[data-delete-cid]').forEach(btn => {
-        btn.addEventListener('click', () => deleteComment(btn.dataset.deleteCid));
-      });
+      rawComments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      $('commentBadgeCount').textContent = rawComments.length;
+      renderSortedComments();
     }
   );
 
@@ -1421,12 +1869,19 @@ function renderReactions(counts, myEmoji) {
       <span class="text-[11px] font-bold text-muted2">${c}</span>
     </button>`;
   }).join('');
-  row.querySelectorAll('[data-emoji]').forEach(b => b.addEventListener('click', () => reactEmoji(b.dataset.emoji)));
+  row.querySelectorAll('[data-emoji]').forEach(b => b.addEventListener('click', (e) => {
+    reactEmoji(b.dataset.emoji, e.clientX, e.clientY);
+  }));
 }
 
 // React Emoji
-async function reactEmoji(emoji) {
+async function reactEmoji(emoji, clientX, clientY) {
   if (!currentUser) { openModal('authModal'); return; }
+  playPop();
+  if (emoji === '🎉' || emoji === '🔥' || emoji === '❤️') {
+    triggerBurst(clientX || window.innerWidth / 2, clientY || window.innerHeight / 2);
+  }
+
   const rRef = FB.doc(FB.db, 'profiles', currentProfileId, 'reactions', currentUser.uid);
   const pRef = FB.doc(FB.db, 'profiles', currentProfileId);
 
@@ -1450,8 +1905,8 @@ async function reactEmoji(emoji) {
   }
 }
 
-// Rate Profile
-async function rateProfile(overrideVal) {
+// Rate Profile with Particle Burst
+async function rateProfile(overrideVal, evt) {
   if (!currentUser) { openModal('authModal'); return; }
 
   const p = profiles.find(x => x.id === currentProfileId);
@@ -1500,6 +1955,10 @@ async function rateProfile(overrideVal) {
     });
 
     $('ratingInput').value = v;
+    playSuccessChime();
+    const x = evt ? evt.clientX : window.innerWidth / 2;
+    const y = evt ? evt.clientY : window.innerHeight / 2;
+    triggerBurst(x, y);
     showToast('Vote registered: ' + v + '/10');
   } catch (e) {
     $('ratingErr').textContent = e.message;
@@ -1507,7 +1966,55 @@ async function rateProfile(overrideVal) {
   }
 }
 
-// Comments UI Tree Renderer (with likes & replies)
+// Comments UI Tree Renderer
+function renderSortedComments() {
+  const list = $('commentsList');
+  if (!rawComments.length) {
+    list.innerHTML = `<p class="text-xs text-muted2 py-4 text-center">No comments yet. Start the conversation!</p>`;
+    return;
+  }
+
+  let sorted = [...rawComments];
+  if (currentCommentSort === 'top') {
+    sorted.sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0));
+  } else if (currentCommentSort === 'newest') {
+    sorted.sort((a, b) => {
+      const at = a.createdAt ? (a.createdAt.seconds || 0) : 0;
+      const bt = b.createdAt ? (b.createdAt.seconds || 0) : 0;
+      return bt - at;
+    });
+  } else {
+    sorted.sort((a, b) => {
+      const at = a.createdAt ? (a.createdAt.seconds || 0) : 0;
+      const bt = b.createdAt ? (b.createdAt.seconds || 0) : 0;
+      return at - bt;
+    });
+  }
+
+  sorted.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
+  list.innerHTML = renderCommentsTree(sorted);
+
+  list.querySelectorAll('[data-like-cid]').forEach(btn => {
+    btn.addEventListener('click', () => toggleCommentLike(btn.dataset.likeCid));
+  });
+  list.querySelectorAll('[data-reply-cid]').forEach(btn => {
+    btn.addEventListener('click', () => setReplyTarget(btn.dataset.replyCid, btn.dataset.replyNick));
+  });
+  list.querySelectorAll('[data-pin-cid]').forEach(btn => {
+    btn.addEventListener('click', () => togglePinComment(btn.dataset.pinCid));
+  });
+  list.querySelectorAll('[data-edit-cid]').forEach(btn => {
+    btn.addEventListener('click', () => editCommentPrompt(btn.dataset.editCid));
+  });
+  list.querySelectorAll('[data-report-cid]').forEach(btn => {
+    btn.addEventListener('click', () => reportCommentPrompt(btn.dataset.reportCid, btn.dataset.reportText));
+  });
+  list.querySelectorAll('[data-delete-cid]').forEach(btn => {
+    btn.addEventListener('click', () => deleteComment(btn.dataset.deleteCid));
+  });
+}
+
 function renderCommentsTree(comments) {
   const rootComments = comments.filter(c => !c.replyToId);
   const repliesByParent = {};
@@ -1527,20 +2034,29 @@ function renderCommentsTree(comments) {
 function renderCommentCard(c, isReply) {
   const isOwnerComment = c.email && OWNER_EMAILS.includes(c.email.toLowerCase().trim());
   const ownerBadge = isOwnerComment ? getOwnerBadge(c.email) : '';
-  const canDelete = isAdmin() || (currentUser && currentUser.uid === c.uid);
+  const isMine = currentUser && currentUser.uid === c.uid;
+  const canDelete = isAdmin() || isMine;
   const likes = c.likeCount || 0;
+  const pinnedTag = c.pinned ? `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-lime-400 bg-lime-500/10 px-2 py-0.5 rounded-md border border-lime-500/30">📌 Pinned</span>` : '';
+  const editedTag = c.edited ? `<span class="text-[10px] text-muted2 italic">(edited)</span>` : '';
 
   return `
-  <div class="bg-bg border border-c rounded-2xl p-3 text-xs space-y-1.5 shadow-sm">
+  <div class="bg-bg border border-c ${c.pinned ? 'border-lime-500/50 bg-lime-500/5' : ''} rounded-2xl p-3 text-xs space-y-1.5 shadow-sm" id="comment-${c.id}">
     <div class="flex items-center justify-between">
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 flex-wrap">
         <span class="font-bold text-white text-xs sm:text-sm">${escapeHtml(c.name || 'Student')}</span>
         ${ownerBadge}
-        <span class="text-[10px] text-muted2">${timeAgo(c.createdAt)}</span>
+        ${pinnedTag}
+        <span class="text-[10px] text-muted2">${timeAgo(c.createdAt)} ${editedTag}</span>
       </div>
-      ${canDelete ? `<button data-delete-cid="${c.id}" class="text-[10px] text-muted2 hover:text-red-400 p-1" title="Delete">✕</button>` : ''}
+      <div class="flex items-center gap-1.5">
+        ${isAdmin() ? `<button data-pin-cid="${c.id}" class="text-[10px] text-muted2 hover:text-lime-400" title="${c.pinned ? 'Unpin' : 'Pin to top'}">${c.pinned ? 'Unpin' : 'Pin'}</button>` : ''}
+        ${isMine ? `<button data-edit-cid="${c.id}" class="text-[10px] text-muted2 hover:text-lime-400" title="Edit">Edit</button>` : ''}
+        <button data-report-cid="${c.id}" data-report-text="${escapeAttr(c.text)}" class="text-[10px] text-muted2 hover:text-red-400" title="Report">Report</button>
+        ${canDelete ? `<button data-delete-cid="${c.id}" class="text-[10px] text-muted2 hover:text-red-400 p-0.5" title="Delete">✕</button>` : ''}
+      </div>
     </div>
-    <p class="text-xs text-white/90 leading-relaxed">${escapeHtml(c.text)}</p>
+    <div id="commentText-${c.id}" class="text-xs text-white/90 leading-relaxed whitespace-pre-wrap">${escapeHtml(c.text)}</div>
     <div class="flex items-center gap-3 pt-1 text-[11px] text-muted2">
       <button data-like-cid="${c.id}" class="flex items-center gap-1 hover:text-lime-400 transition-colors">
         <span>❤️</span> <span>${likes}</span>
@@ -1552,7 +2068,81 @@ function renderCommentCard(c, isReply) {
   </div>`;
 }
 
+$('sortTop').addEventListener('click', () => setCommentSort('top'));
+$('sortNewest').addEventListener('click', () => setCommentSort('newest'));
+$('sortOldest').addEventListener('click', () => setCommentSort('oldest'));
+
+function setCommentSort(s) {
+  playPop();
+  currentCommentSort = s;
+  ['sortTop', 'sortNewest', 'sortOldest'].forEach(id => {
+    $(id).classList.remove('border-lime-400', 'text-lime-400', 'font-semibold');
+    $(id).classList.add('border-c', 'text-muted2');
+  });
+  const map = { top: 'sortTop', newest: 'sortNewest', oldest: 'sortOldest' };
+  $(map[s]).classList.add('border-lime-400', 'text-lime-400', 'font-semibold');
+  $(map[s]).classList.remove('border-c', 'text-muted2');
+  renderSortedComments();
+}
+
+async function togglePinComment(cid) {
+  if (!isAdmin()) return;
+  playPop();
+  const c = rawComments.find(x => x.id === cid);
+  if (!c) return;
+  const cRef = FB.doc(FB.db, 'profiles', currentProfileId, 'comments', cid);
+  try {
+    await FB.updateDoc(cRef, { pinned: !c.pinned });
+    showToast(c.pinned ? 'Comment unpinned.' : 'Comment pinned to top! 📌');
+  } catch (e) {
+    showToast(e.message);
+  }
+}
+
+function editCommentPrompt(cid) {
+  const c = rawComments.find(x => x.id === cid);
+  if (!c) return;
+  const container = $(`commentText-${cid}`);
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="mt-1 space-y-2">
+      <textarea id="editInput-${cid}" rows="2" maxlength="300" class="w-full rounded-xl p-2 text-xs ring-accent bg-bg border border-c text-white">${escapeHtml(c.text)}</textarea>
+      <div class="flex gap-2 justify-end">
+        <button class="px-2.5 py-1 rounded-lg border border-c text-[11px] text-muted2 hover:text-white" onclick="renderSortedComments()">Cancel</button>
+        <button class="px-3 py-1 rounded-lg text-[11px] font-semibold btn-primary" onclick="saveEditedComment('${cid}')">Save</button>
+      </div>
+    </div>`;
+}
+
+window.saveEditedComment = async (cid) => {
+  const input = $(`editInput-${cid}`);
+  if (!input) return;
+  const newText = input.value.trim();
+  if (!newText) return;
+
+  const cRef = FB.doc(FB.db, 'profiles', currentProfileId, 'comments', cid);
+  try {
+    await FB.updateDoc(cRef, {
+      text: newText,
+      edited: true,
+      updatedAt: FB.serverTimestamp()
+    });
+    playPop();
+    showToast('Comment updated.');
+  } catch (e) {
+    showToast(e.message);
+  }
+};
+
+function reportCommentPrompt(cid, text) {
+  currentReportContext = { type: 'comment', id: cid, text };
+  $('reportDetails').value = `Reporting comment: "${text}"`;
+  openModal('reportModal');
+}
+
 function setReplyTarget(cid, nick) {
+  playPop();
   currentReplyTarget = { cid, nick };
   $('replyTargetName').textContent = '@' + nick;
   $('replyTargetBanner').classList.remove('hidden');
@@ -1564,9 +2154,9 @@ $('cancelReplyBtn').addEventListener('click', () => {
   $('replyTargetBanner').classList.add('hidden');
 });
 
-// Toggle Comment Like
 async function toggleCommentLike(cid) {
   if (!currentUser) { openModal('authModal'); return; }
+  playPop();
   const likeRef = FB.doc(FB.db, 'profiles', currentProfileId, 'comments', cid, 'likes', currentUser.uid);
   const cRef = FB.doc(FB.db, 'profiles', currentProfileId, 'comments', cid);
 
@@ -1589,7 +2179,6 @@ async function toggleCommentLike(cid) {
   }
 }
 
-// Add Comment
 async function addComment() {
   if (!currentUser) return;
   const input = $('commentInput');
@@ -1611,10 +2200,10 @@ async function addComment() {
       createdAt: FB.serverTimestamp()
     });
 
-    // Update parent post comment count
     const pRef = FB.doc(FB.db, 'profiles', currentProfileId);
     await FB.updateDoc(pRef, { commentCount: FB.increment(1) });
 
+    playPop();
     input.value = '';
     currentReplyTarget = null;
     $('replyTargetBanner').classList.add('hidden');
@@ -1623,7 +2212,6 @@ async function addComment() {
   }
 }
 
-// Delete Comment
 async function deleteComment(cid) {
   if (!confirm('Delete this comment?')) return;
   try {
@@ -1636,7 +2224,55 @@ async function deleteComment(cid) {
   }
 }
 
-// Admin Moderation Actions (OWNERS ONLY)
+function checkNotifications() {
+  const notifs = [
+    {
+      id: 'welcome_notice',
+      title: '👑 Welcome to 2BAC-PC-11 Rating',
+      body: 'Explore photos published by your class owners, rate image creativity, and bookmark your favorites!',
+      time: 'Official',
+      unread: !readNotifs.has('welcome_notice')
+    },
+    {
+      id: 'golden_rule_notice',
+      title: '⚖️ Community Rule Reminder',
+      body: 'Always vote on creativity, quality, and editing — never on looks or physical appearance.',
+      time: 'Safety',
+      unread: !readNotifs.has('golden_rule_notice')
+    }
+  ];
+
+  const hasUnread = notifs.some(n => n.unread);
+  $('notifBadge').classList.toggle('hidden', !hasUnread);
+
+  const el = $('notifList');
+  el.innerHTML = notifs.map(n => `
+    <div class="bg-bg border border-c rounded-2xl p-3.5 space-y-1 shadow-sm">
+      <div class="flex items-center justify-between">
+        <span class="font-bold text-white text-xs">${escapeHtml(n.title)}</span>
+        <span class="text-[10px] text-muted2">${n.time}</span>
+      </div>
+      <p class="text-xs text-muted2 leading-relaxed">${escapeHtml(n.body)}</p>
+    </div>
+  `).join('') + `
+    <div class="pt-2 text-center">
+      <button id="markReadBtn" class="text-xs text-lime-400 hover:underline">Mark all as read</button>
+    </div>`;
+
+  $('markReadBtn').onclick = () => {
+    notifs.forEach(n => readNotifs.add(n.id));
+    localStorage.setItem('read_notifs', JSON.stringify([...readNotifs]));
+    $('notifBadge').classList.add('hidden');
+    showToast('All notifications read.');
+  };
+}
+
+$('notifBtn').addEventListener('click', () => {
+  playPop();
+  openModal('notifModal');
+});
+
+// Admin Moderation Actions
 async function adminAction(action) {
   if (!isAdmin() || !currentProfileId) return;
   const ref = FB.doc(FB.db, 'profiles', currentProfileId);
@@ -1658,42 +2294,104 @@ async function adminAction(action) {
     } else if (action === 'report_review') {
       openModal('modModal');
       loadReports();
+      loadIdeas();
     }
   } catch (e) {
     showToast(e.message);
   }
 }
 
-// Load Reports Queue (OWNERS ONLY)
+// Load Reports Queue
+let cachedReports = [];
 async function loadReports() {
   FB.onSnapshot(FB.query(FB.collection(FB.db, 'reports'), FB.orderBy('createdAt', 'desc')), (snap) => {
-    const el = $('reportsList');
+    cachedReports = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderFilteredReports();
+  });
+}
+
+function renderFilteredReports() {
+  const el = $('reportsList');
+  const q = ($('modSearch').value || '').trim().toLowerCase();
+  const reasonFilter = $('modReasonFilter').value;
+
+  let list = cachedReports.filter(r => r.status !== 'dismissed');
+  if (reasonFilter !== 'all') {
+    list = list.filter(r => (r.reason || '').toLowerCase().includes(reasonFilter) || (r.type || '').includes(reasonFilter));
+  }
+  if (q) {
+    list = list.filter(r => (r.reason || '').toLowerCase().includes(q) || (r.details || '').toLowerCase().includes(q) || (r.reporterNickname || '').toLowerCase().includes(q));
+  }
+
+  if (!list.length) {
+    el.innerHTML = `<p class="text-xs text-muted2 py-8 text-center">No reports match your filters. Moderation queue is clean!</p>`;
+    return;
+  }
+
+  el.innerHTML = list.map(r => `
+    <div class="bg-bg border border-c rounded-2xl p-4 space-y-2 text-xs shadow-sm">
+      <div class="flex items-center justify-between">
+        <span class="font-bold text-red-400 uppercase tracking-wider text-[11px]">${escapeHtml(r.reason || 'Report')}</span>
+        <span class="text-muted2 text-[10px]">${timeAgo(r.createdAt)}</span>
+      </div>
+      <p class="text-white text-xs">${r.details ? escapeHtml(r.details) : 'No details provided.'}</p>
+      <div class="text-[11px] text-muted2 flex items-center justify-between">
+        <span>Reporter: ${escapeHtml(r.reporterNickname || 'Anon')}</span>
+        ${r.imageUrl ? `<a href="${escapeAttr(r.imageUrl)}" target="_blank" class="text-lime-400 hover:underline">View image link</a>` : ''}
+      </div>
+      <div class="flex gap-2 pt-2 border-t border-c">
+        <button class="px-3 py-1 rounded-lg border border-c text-muted2 hover:text-white" onclick="dismissReport('${r.id}')">Dismiss</button>
+        ${r.profileId ? `<button class="px-3 py-1 rounded-lg border border-red-500/40 text-red-300 hover:bg-red-500/10" onclick="removeReported('${r.id}', '${r.profileId}')">Remove Post</button>` : ''}
+        ${r.createdBy ? `<button class="px-3 py-1 rounded-lg border border-red-500/40 text-red-300 hover:bg-red-500/10" onclick="banReported('${r.createdBy}')">Suspend User</button>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+// Student Suggestions Viewer for Owners
+async function loadIdeas() {
+  FB.onSnapshot(FB.query(FB.collection(FB.db, 'feedback'), FB.orderBy('createdAt', 'desc')), (snap) => {
+    const el = $('ideasModList');
     if (snap.empty) {
-      el.innerHTML = `<p class="text-xs text-muted2 py-8 text-center">No reports in queue. Everything is calm!</p>`;
+      el.innerHTML = `<p class="text-xs text-muted2 py-8 text-center">No student suggestions submitted yet.</p>`;
       return;
     }
     el.innerHTML = snap.docs.map(d => {
-      const r = d.data();
+      const f = d.data();
       return `
-      <div class="bg-bg border border-c rounded-2xl p-4 space-y-2 text-xs shadow-sm">
+      <div class="bg-bg border border-c rounded-2xl p-4 space-y-1.5 text-xs shadow-sm">
         <div class="flex items-center justify-between">
-          <span class="font-bold text-red-400 uppercase tracking-wider text-[11px]">${escapeHtml(r.reason)}</span>
-          <span class="text-muted2 text-[10px]">${timeAgo(r.createdAt)}</span>
+          <span class="font-bold text-lime-400 uppercase tracking-wider text-[11px]">${escapeHtml(f.category || 'Idea')}</span>
+          <span class="text-muted2 text-[10px]">${timeAgo(f.createdAt)}</span>
         </div>
-        <p class="text-white text-xs">${r.details ? escapeHtml(r.details) : 'No details provided.'}</p>
-        <div class="text-[11px] text-muted2 flex items-center justify-between">
-          <span>Reporter: ${escapeHtml(r.reporterNickname || 'Anon')}</span>
-          <a href="${escapeAttr(r.imageUrl)}" target="_blank" class="text-lime-400 hover:underline">View image link</a>
-        </div>
-        <div class="flex gap-2 pt-2 border-t border-c">
-          <button class="px-3 py-1 rounded-lg border border-c text-muted2 hover:text-white" onclick="dismissReport('${d.id}')">Dismiss</button>
-          <button class="px-3 py-1 rounded-lg border border-red-500/40 text-red-300 hover:bg-red-500/10" onclick="removeReported('${d.id}', '${r.profileId}')">Remove Post</button>
-          <button class="px-3 py-1 rounded-lg border border-red-500/40 text-red-300 hover:bg-red-500/10" onclick="banReported('${r.createdBy}')">Suspend User</button>
-        </div>
+        <p class="text-white leading-relaxed">${escapeHtml(f.details)}</p>
+        <span class="text-[10px] text-muted2">Submitted by: ${escapeHtml(f.nickname || 'Student')}</span>
       </div>`;
     }).join('');
   });
 }
+
+$('modTabReports').onclick = () => {
+  $('modTabReports').classList.add('btn-primary');
+  $('modTabReports').classList.remove('border', 'border-c', 'text-muted2');
+  $('modTabIdeas').classList.remove('btn-primary');
+  $('modTabIdeas').classList.add('border', 'border-c', 'text-muted2');
+  $('reportsList').classList.remove('hidden');
+  $('reportsFilterRow').classList.remove('hidden');
+  $('ideasModList').classList.add('hidden');
+};
+
+$('modTabIdeas').onclick = () => {
+  $('modTabIdeas').classList.add('btn-primary');
+  $('modTabIdeas').classList.remove('border', 'border-c', 'text-muted2');
+  $('modTabReports').classList.remove('btn-primary');
+  $('modTabReports').classList.add('border', 'border-c', 'text-muted2');
+  $('ideasModList').classList.remove('hidden');
+  $('reportsList').classList.add('hidden');
+  $('reportsFilterRow').classList.add('hidden');
+};
+
+$('modSearch').addEventListener('input', renderFilteredReports);
+$('modReasonFilter').addEventListener('change', renderFilteredReports);
 
 window.dismissReport = async (rid) => {
   await FB.updateDoc(FB.doc(FB.db, 'reports', rid), { status: 'dismissed' });
@@ -1715,6 +2413,8 @@ window.banReported = async (uid) => {
 // Report Submission
 $('reportBtn').addEventListener('click', () => {
   if (!currentUser) { openModal('authModal'); return; }
+  currentReportContext = { type: 'image', id: currentProfileId };
+  $('reportDetails').value = '';
   openModal('reportModal');
 });
 
@@ -1724,32 +2424,37 @@ $('reportSubmit').addEventListener('click', async () => {
   err.classList.add('hidden');
   ok.classList.add('hidden');
 
-  if (!currentProfileId) return;
   const p = profiles.find(x => x.id === currentProfileId);
 
   try {
-    await FB.addDoc(FB.collection(FB.db, 'reports'), {
+    const reportData = {
+      type: currentReportContext ? currentReportContext.type : 'image',
       profileId: currentProfileId,
-      imageUrl: p.imageUrl,
       reason: $('reportReason').value,
       details: $('reportDetails').value.trim(),
-      reportedNickname: p.name,
-      createdBy: p.createdBy,
       reporterUid: currentUser.uid,
       reporterNickname: nickname(),
       createdAt: FB.serverTimestamp(),
       status: 'open'
-    });
+    };
+
+    if (p) {
+      reportData.imageUrl = p.imageUrl;
+      reportData.reportedNickname = p.name;
+      reportData.createdBy = p.createdBy;
+    }
+
+    await FB.addDoc(FB.collection(FB.db, 'reports'), reportData);
 
     if (EMAILJS_SERVICE && window.emailjs) {
       try {
         window.emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
           to_email: 'anaflousoussama555@gmail.com',
-          image_url: p.imageUrl,
+          image_url: p ? p.imageUrl : 'Comment Report',
           post_id: currentProfileId,
           reason: $('reportReason').value,
           details: $('reportDetails').value.trim(),
-          reported_user: p.name,
+          reported_user: p ? p.name : 'Unknown',
           reporter: nickname()
         }, EMAILJS_PUBLIC_KEY);
       } catch (_) {}
@@ -1764,8 +2469,55 @@ $('reportSubmit').addEventListener('click', async () => {
   }
 });
 
+// Student Feedback / Idea Box
+$('suggestBtn').onclick = () => {
+  if (!currentUser) { openModal('authModal'); return; }
+  playPop();
+  $('fbDetails').value = '';
+  $('fbErr').classList.add('hidden');
+  $('fbOk').classList.add('hidden');
+  openModal('feedbackModal');
+};
+
+$('fbSubmit').onclick = async () => {
+  const details = $('fbDetails').value.trim();
+  const category = $('fbCategory').value;
+  const err = $('fbErr');
+  const ok = $('fbOk');
+  err.classList.add('hidden');
+  ok.classList.add('hidden');
+
+  if (!details || details.length < 5) {
+    err.textContent = 'Please provide a bit more detail about your idea.';
+    err.classList.remove('hidden');
+    return;
+  }
+
+  try {
+    await FB.addDoc(FB.collection(FB.db, 'feedback'), {
+      uid: currentUser.uid,
+      nickname: nickname(),
+      category: category,
+      details: details,
+      createdAt: FB.serverTimestamp()
+    });
+    playSuccessChime();
+    ok.classList.remove('hidden');
+    $('fbDetails').value = '';
+    setTimeout(() => closeModal('feedbackModal'), 2200);
+  } catch (e) {
+    err.textContent = e.message;
+    err.classList.remove('hidden');
+  }
+};
+
 // Settings Handlers
-$('settingsBtn').addEventListener('click', () => openModal('settingsModal'));
+$('settingsBtn').addEventListener('click', () => {
+  playPop();
+  $('soundToggle').checked = soundEnabled;
+  $('motionToggle').checked = reducedMotion;
+  openModal('settingsModal');
+});
 $('themeLight').addEventListener('click', () => applyTheme('light'));
 $('themeDark').addEventListener('click', () => applyTheme('dark'));
 $('langSelect').addEventListener('change', (e) => applyLang(e.target.value));
@@ -1774,7 +2526,30 @@ $('imgSizeSelect').addEventListener('change', (e) => {
   localStorage.setItem('imgSize', imgSize);
   renderRecommended();
   renderForYou();
+  renderSaved();
 });
+
+$('soundToggle').addEventListener('change', (e) => {
+  soundEnabled = e.target.checked;
+  localStorage.setItem('sound_enabled', String(soundEnabled));
+  if (soundEnabled) playSuccessChime();
+});
+
+$('motionToggle').addEventListener('change', (e) => {
+  reducedMotion = e.target.checked;
+  localStorage.setItem('reduced_motion', String(reducedMotion));
+});
+
+$('testSoundBtn').onclick = () => {
+  initAudio();
+  playSuccessChime();
+};
+
+// About, FAQ & Changelog Triggers
+$('aboutBtn').onclick = () => { playPop(); openModal('aboutModal'); };
+$('footerAboutBtn').onclick = () => { playPop(); openModal('aboutModal'); };
+$('footerFaqBtn').onclick = () => { playPop(); openModal('aboutModal'); };
+$('changelogBtn').onclick = () => { playPop(); openModal('changelogModal'); };
 
 // Wire Up Global UI Listeners
 function wireUI() {
@@ -1791,7 +2566,7 @@ function wireUI() {
   $('googleSignIn').addEventListener('click', signIn);
 
   document.querySelectorAll('.quick-rate').forEach(b => {
-    b.addEventListener('click', () => rateProfile(parseFloat(b.dataset.val)));
+    b.addEventListener('click', (e) => rateProfile(parseFloat(b.dataset.val), e));
   });
 
   document.querySelectorAll('[data-admin]').forEach(b => b.addEventListener('click', () => adminAction(b.dataset.admin)));
@@ -1806,13 +2581,32 @@ function wireUI() {
     });
   });
 
-  $('ratingSubmit').addEventListener('click', () => rateProfile());
+  // Keyboard navigation: Escape closes modal; Ctrl+K / '/' focuses search
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.fixed.inset-0.flex').forEach(m => {
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+      });
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      $('search').focus();
+    }
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      $('search').focus();
+    }
+  });
+
+  $('ratingSubmit').addEventListener('click', (e) => rateProfile(undefined, e));
 }
 
 // Switch Tab Navigation
 function switchTab(tab) {
-  ['recommendedView', 'foryouView', 'lbView'].forEach(id => $(id).classList.add('hidden'));
-  const map = { recommended: 'recommendedView', foryou: 'foryouView', leaderboard: 'lbView' };
+  playPop();
+  ['recommendedView', 'foryouView', 'savedView', 'lbView'].forEach(id => $(id).classList.add('hidden'));
+  const map = { recommended: 'recommendedView', foryou: 'foryouView', saved: 'savedView', leaderboard: 'lbView' };
   if ($(map[tab])) $(map[tab]).classList.remove('hidden');
 
   document.querySelectorAll('.tabBtn').forEach(b => {
@@ -1828,10 +2622,10 @@ function switchTab(tab) {
 
   if (tab === 'recommended') renderRecommended();
   if (tab === 'foryou') renderForYou();
+  if (tab === 'saved') renderSaved();
   if (tab === 'leaderboard') renderLeaderboard();
 }
 
-// Optional EmailJS script init
 if (EMAILJS_SERVICE) {
   const s = document.createElement('script');
   s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
@@ -1839,7 +2633,6 @@ if (EMAILJS_SERVICE) {
   document.head.appendChild(s);
 }
 
-// Logo click resets to recommended top
 $('logoArea').addEventListener('click', () => {
   switchTab('recommended');
   window.scrollTo({ top: 0, behavior: 'smooth' });

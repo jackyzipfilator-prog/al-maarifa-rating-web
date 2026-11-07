@@ -1,29 +1,23 @@
-# Al Maarifa — School Social Rating (prototype)
+# Al Maarifa — School Social Rating
 
-Single-file app. No build step. Firebase (Auth + Firestore + Storage).
+Single-file app (no build step). Firebase Auth + Firestore only (Spark/free plan, no credit card).
 
-## 1. Firebase setup (free)
-1. console.firebase.google.com → Add project → "al-maarifa".
-2. Add a Web app (`</>`) → copy the `firebaseConfig` object.
-3. Authentication → Sign-in method → enable Google.
-4. Firestore Database → Create database → production mode → pick region.
-5. Storage → Get started.
+## Setup
+1. Create Firebase project → enable Google Auth → create Firestore DB (production mode).
+2. Paste your `firebaseConfig` into `index.html` (already filled for `al-maarifa-3fc45`).
+3. Publish `firestore.rules` to Firebase console → Firestore → Rules.
+4. Run locally with VS Code "Live Server", or push to GitHub Pages / Vercel.
 
-## 2. Paste credentials
-Open `index.html`, find the `FIREBASE CONFIG` block, replace the `YOUR_*` placeholders with your config values. `ADMIN_EMAIL` is already set to `anaflousoussama555@gmail.com`.
+## Admin / Owner
+Signed-in account `anaflousoussama555@gmail.com` unlocks Warn / Ban-Hide / Delete / Review Reports on every profile.
 
-## 3. Security rules
-- Firestore: paste contents of `firestore.rules` into Firebase console → Firestore → Rules → Publish.
-- Storage: paste contents of `storage.rules` into Firebase console → Storage → Rules → Publish.
+## Email notifications for reports (optional, free)
+Reports are always saved to Firestore. To also get an email at `anaflousoussama555@gmail.com`:
+1. Create a free account at https://www.emailjs.com
+2. Add an Email Service (Gmail) and an Email Template with variables: `to_email`, `image_url`, `post_id`, `reason`, `details`, `reported_user`, `reporter`.
+3. Put the Service ID, Template ID, and Public Key into `EMAILJS_SERVICE`, `EMAILJS_TEMPLATE`, `EMAILJS_PUBLIC_KEY` in `index.html`.
 
-## 4. Run locally (optional)
-Install VS Code + "Live Server" extension → right-click `index.html` → "Open with Live Server" (http://127.0.0.1:5500). Firebase Auth works on localhost.
-
-## 5. Deploy free on Vercel
-Push this folder to a GitHub repo → vercel.com → New Project → import → Framework Preset: Other → Deploy. Add your Vercel domain to Firebase → Authentication → Settings → Authorized domains.
-
-## 6. Deploy free on GitHub Pages (alternative)
-Repo → Settings → Pages → Source: main / root → Save. Add `username.github.io` to Firebase Authorized domains.
-
-## Owner abilities
-When signed in as `anaflousoussama555@gmail.com`, every profile card's "Open" modal shows Warn / Ban-Hide / Delete buttons. Rules enforce admin-only writes server-side.
+## Notes
+- No Firebase Storage: images are pasted URLs (host via imgto.link or postimages.org).
+- Theme + language (EN/FR/Darija with RTL) persist in localStorage.
+- Ratings are decimal 0.1–10.0; reactions are separate from ratings.

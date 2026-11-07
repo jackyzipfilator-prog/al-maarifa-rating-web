@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>2BAC-PC-11 Rating</title>
+<title>2BAC-PC-11 Rating — Baddie Looks & Vibes</title>
 <link rel="icon" type="image/jpeg" href="logo.jpg">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #090d16;
-    --card: #111726;
-    --card-hover: #162035;
-    --border: #1e293b;
+    --bg: #070a12;
+    --card: #0f1524;
+    --card-hover: #151d30;
+    --border: #1e283d;
     --text: #f8fafc;
     --muted: #94a3b8;
     --accent: #a3e635; /* Neon lime matching official logo */
-    --accent-glow: rgba(163, 230, 53, 0.35);
+    --accent-glow: rgba(163, 230, 53, 0.4);
     --owner: #10b981;
-    --owner-glow: rgba(16, 185, 129, 0.4);
+    --owner-glow: rgba(16, 185, 129, 0.45);
   }
   html.light {
     --bg: #f8fafc;
@@ -39,19 +39,24 @@
     font-family: 'Inter', 'Noto Sans Arabic', system-ui, sans-serif;
     transition: background .25s, color .25s;
     min-height: 100vh;
+    overflow-x: hidden;
   }
-  .space-bg {
-    background-image: 
-      radial-gradient(circle at 50% 0%, rgba(163, 230, 53, 0.08) 0%, transparent 45%),
-      radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.07) 0%, transparent 40%),
-      radial-gradient(circle at 15% 70%, rgba(168, 85, 247, 0.05) 0%, transparent 35%);
-    background-attachment: fixed;
+  
+  /* Parallax Galaxy Canvas */
+  #galaxyCanvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
   }
+  
   html[lang="ar"] body { font-family: 'Noto Sans Arabic', 'Inter', system-ui, sans-serif; }
   .bg-card2 { background: var(--card); }
   .border-c { border-color: var(--border); }
   .text-muted2 { color: var(--muted); }
-  .glass { background: color-mix(in srgb, var(--card) 75%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .glass { background: color-mix(in srgb, var(--card) 80%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
   .scrollbar::-webkit-scrollbar { width: 6px; }
   .scrollbar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   
@@ -63,41 +68,111 @@
   }
   @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-  .fade-in { animation: fadeIn .22s cubic-bezier(0.16, 1, 0.3, 1); }
+  .fade-in { animation: fadeIn .24s cubic-bezier(0.16, 1, 0.3, 1); }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
   
   .card-click { cursor: pointer; transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1), border-color .2s, box-shadow .2s; }
-  .card-click:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 12px 30px -5px rgba(0,0,0,0.5), 0 0 16px var(--accent-glow); }
+  .card-click:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 16px 32px -6px rgba(0,0,0,0.6), 0 0 20px var(--accent-glow); }
   
   .emoji-btn { transition: transform .12s, background .15s; }
   .emoji-btn:hover { transform: scale(1.18); }
   .emoji-btn.active { background: var(--accent); color: #000; font-weight: bold; }
   
   .ring-accent:focus { outline: none; box-shadow: 0 0 0 2px var(--accent); }
-  .btn-primary { background: var(--accent); color: #000; font-weight: 600; transition: filter .15s, transform .12s; }
-  .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-primary { background: var(--accent); color: #000; font-weight: 700; transition: filter .15s, transform .12s; }
+  .btn-primary:hover { filter: brightness(1.12); transform: translateY(-1px); }
   .btn-primary:active { transform: translateY(0); }
   
   .badge-owner {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.35));
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.45));
     border: 1px solid #10b981;
     color: #34d399;
-    box-shadow: 0 0 12px var(--owner-glow);
+    box-shadow: 0 0 14px var(--owner-glow);
   }
   .badge-trending {
-    background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(239, 68, 68, 0.25));
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.25), rgba(239, 68, 68, 0.3));
     border: 1px solid #f97316;
     color: #fb923c;
   }
   .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
+  /* Cutscene animations */
+  .cutscene-pulse { animation: pulseGlow 2.5s infinite ease-in-out; }
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 25px rgba(163, 230, 53, 0.4); transform: scale(1); }
+    50% { box-shadow: 0 0 45px rgba(163, 230, 53, 0.7); transform: scale(1.04); }
+  }
+  .cutscene-text { animation: textReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  @keyframes textReveal {
+    0% { opacity: 0; transform: translateY(20px); letter-spacing: -0.05em; }
+    100% { opacity: 1; transform: translateY(0); letter-spacing: normal; }
+  }
+
   /* Particle Canvas overlay */
   #burstCanvas { pointer-events: none; position: fixed; inset: 0; z-index: 9999; }
 </style>
 </head>
-<body class="antialiased space-bg">
+<body class="antialiased">
+<canvas id="galaxyCanvas"></canvas>
 <canvas id="burstCanvas"></canvas>
 <div id="fatalErr" class="hidden fixed top-0 left-0 right-0 z-[100] p-3 text-center text-sm font-semibold" style="background:#dc2626;color:#fff"></div>
+
+<!-- Cutscene & Rules Intro Modal (Full-Screen Sequence) -->
+<div id="cutsceneModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 backdrop-blur-xl p-4">
+  <!-- Step 1: Animated Cutscene Greeting -->
+  <div id="cutsceneStep1" class="text-center max-w-lg w-full flex flex-col items-center justify-center fade-in">
+    <div class="relative mb-6">
+      <div class="absolute -inset-4 bg-lime-500/20 rounded-3xl blur-2xl"></div>
+      <img src="logo.jpg" alt="2BAC PC-11 Logo" class="relative w-28 h-28 sm:w-36 sm:h-36 rounded-3xl object-cover border-2 border-lime-400 cutscene-pulse" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-white cutscene-text">
+      2BAC-PC-11 RATING
+    </h1>
+    <p class="text-lg sm:text-xl font-bold bg-gradient-to-r from-lime-400 via-emerald-300 to-lime-200 bg-clip-text text-transparent mt-2 cutscene-text">
+      “Hello! Come and rate with us!” ✨
+    </p>
+    <p class="text-xs sm:text-sm text-muted2 mt-3 max-w-sm cutscene-text">
+      The official baddie, looks, style & vibe check for the 2BAC PC-11 class.
+    </p>
+    <button id="cutsceneNextBtn" class="mt-8 px-8 py-3 rounded-full font-bold btn-primary text-sm shadow-[0_0_20px_var(--accent-glow)] flex items-center gap-2">
+      <span>Continue to Rules</span>
+      <span>→</span>
+    </button>
+  </div>
+
+  <!-- Step 2: Community Rules & Temporary Disclaimer -->
+  <div id="cutsceneStep2" class="hidden max-w-md w-full bg-card2 border border-c rounded-3xl p-6 sm:p-8 fade-in shadow-2xl relative">
+    <div class="text-center mb-4">
+      <span class="text-2xl">⚖️</span>
+      <h2 class="text-xl font-black text-white mt-1">Community Rules & Agreement</h2>
+      <p class="text-xs text-lime-400">Please read carefully before entering</p>
+    </div>
+
+    <div class="rounded-2xl p-4 border border-lime-500/40 bg-lime-500/10 text-white text-xs sm:text-sm space-y-3 leading-relaxed">
+      <p class="font-medium text-lime-200">
+        “This is a site where we rate girls (and sometimes boys) on looks, style, or personality.”
+      </p>
+      <p class="text-white/90">
+        “It is only for fun and goofing around between us. This is not serious and the site will be deleted after a period of time.”
+      </p>
+      <p class="font-semibold text-lime-400">
+        “Be respectful. Do not take it too seriously.”
+      </p>
+    </div>
+
+    <div class="mt-5 space-y-4">
+      <label class="flex items-start gap-2.5 text-xs text-muted2 cursor-pointer">
+        <input id="cutsceneAcceptCheck" type="checkbox" class="mt-0.5 rounded accent-lime-500 w-4 h-4 cursor-pointer" />
+        <span class="leading-snug">
+          I understand this site is temporary fun for our class, agree to keep it playful and respectful, and want to enter as Guest.
+        </span>
+      </label>
+      <button id="cutsceneEnterBtn" class="w-full rounded-full py-3 font-bold btn-primary text-sm shadow-[0_0_15px_var(--accent-glow)] opacity-50 cursor-not-allowed" disabled>
+        I Accept the Rules → Enter
+      </button>
+    </div>
+  </div>
+</div>
 
 <div id="app" class="min-h-screen flex flex-col">
   <!-- Top Navigation Header -->
@@ -108,10 +183,10 @@
         <img src="logo.jpg" alt="2BAC PC-11 Logo" class="w-10 h-10 rounded-xl object-cover border border-c shadow-[0_0_12px_var(--accent-glow)] transition-transform hover:scale-105" />
         <div class="flex flex-col">
           <div class="flex items-center gap-2">
-            <span class="font-extrabold text-base sm:text-lg tracking-tight bg-gradient-to-r from-lime-400 via-emerald-300 to-lime-200 bg-clip-text text-transparent">2BAC-PC-11</span>
-            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-lime-500/20 text-lime-400 border border-lime-500/40">RATING</span>
+            <span class="font-black text-base sm:text-lg tracking-tight bg-gradient-to-r from-lime-400 via-emerald-300 to-lime-200 bg-clip-text text-transparent">2BAC-PC-11</span>
+            <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-lime-500/20 text-lime-400 border border-lime-500/40">RATING</span>
           </div>
-          <span class="text-[10px] text-muted2 hidden sm:block">Creativity & Style Showcase</span>
+          <span class="text-[10px] text-muted2 hidden sm:block">Baddie Rating · Looks & Vibes</span>
         </div>
       </div>
 
@@ -144,7 +219,7 @@
         <!-- Only visible to the two Owners -->
         <button id="createBtn" class="hidden px-4 py-2 rounded-full text-xs sm:text-sm font-semibold btn-primary flex items-center gap-1.5 shadow-[0_0_12px_var(--accent-glow)]" data-i18n="create_profile">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
-          <span>Add Image</span>
+          <span>Post Photo</span>
         </button>
 
         <div id="authArea" class="flex items-center"></div>
@@ -164,7 +239,7 @@
   <!-- Sub-header & Navigation Tabs -->
   <div class="max-w-6xl mx-auto px-4 mt-5 flex flex-wrap items-center justify-between gap-3">
     <div class="inline-flex bg-card2 border border-c rounded-full p-1 shadow-sm">
-      <button data-tab="recommended" class="tabBtn px-4 py-1.5 rounded-full text-sm font-semibold btn-primary" data-i18n="tab_recommended">Recommended</button>
+      <button data-tab="recommended" class="tabBtn px-4 py-1.5 rounded-full text-sm font-bold btn-primary" data-i18n="tab_recommended">Recommended</button>
       <button data-tab="foryou" class="tabBtn px-4 py-1.5 rounded-full text-sm font-medium text-muted2" data-i18n="tab_foryou">For You</button>
       <button data-tab="saved" class="tabBtn px-4 py-1.5 rounded-full text-sm font-medium text-muted2 flex items-center gap-1.5" data-i18n="tab_saved">
         <span>Saved</span>
@@ -178,7 +253,7 @@
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
         <span data-i18n="joined">Joined:</span>
         <span id="joinCount" class="font-bold text-white">0</span>
-        <span data-i18n="users">students</span>
+        <span data-i18n="users">classmates</span>
       </span>
     </div>
   </div>
@@ -188,8 +263,8 @@
     <div id="recGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
     <div id="recEmpty" class="hidden text-center py-24 text-muted2 space-y-2">
       <div class="text-4xl">📸</div>
-      <p class="text-lg font-medium text-white" data-i18n="no_recs">No photos published yet.</p>
-      <p class="text-sm max-w-md mx-auto" data-i18n="recs_empty_sub">Check back soon when owners post new photos for the class to rate!</p>
+      <p class="text-lg font-bold text-white" data-i18n="no_recs">No photos posted yet.</p>
+      <p class="text-sm max-w-md mx-auto" data-i18n="recs_empty_sub">Check back soon when owners post photos for the class to rate!</p>
     </div>
   </main>
 
@@ -198,8 +273,8 @@
     <div id="fyGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
     <div id="fyEmpty" class="hidden text-center py-24 text-muted2 space-y-2">
       <div class="text-4xl">✨</div>
-      <p class="text-lg font-medium text-white" data-i18n="no_fy">Nothing personalized yet.</p>
-      <p class="text-sm" data-i18n="fy_empty_sub">Rate and react to some photos first to build your taste!</p>
+      <p class="text-lg font-bold text-white" data-i18n="no_fy">Nothing personalized yet.</p>
+      <p class="text-sm" data-i18n="fy_empty_sub">Rate and react to some photos first to build your profile!</p>
     </div>
   </main>
 
@@ -214,32 +289,32 @@
     <div id="savedGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
     <div id="savedEmpty" class="hidden text-center py-24 text-muted2 space-y-2">
       <div class="text-4xl">🔖</div>
-      <p class="text-lg font-medium text-white">No saved photos yet.</p>
-      <p class="text-sm">Click the bookmark icon on any photo card to save it here!</p>
+      <p class="text-lg font-bold text-white">No saved photos yet.</p>
+      <p class="text-sm">Click the bookmark icon on any card to save it here!</p>
     </div>
   </main>
 
   <!-- Leaderboard View -->
   <main id="lbView" class="max-w-3xl mx-auto px-4 py-6 flex-1 hidden w-full">
     <div class="mb-4 text-center">
-      <h2 class="text-xl font-bold bg-gradient-to-r from-lime-400 to-emerald-300 bg-clip-text text-transparent" data-i18n="lb_title">Top Rated Showcase</h2>
-      <p class="text-xs text-muted2 mt-1" data-i18n="lb_subtitle">Ranked by creativity, quality, and community ratings</p>
+      <h2 class="text-xl font-black bg-gradient-to-r from-lime-400 to-emerald-300 bg-clip-text text-transparent" data-i18n="lb_title">Top Baddies & Icons Leaderboard</h2>
+      <p class="text-xs text-muted2 mt-1" data-i18n="lb_subtitle">Ranked by community looks, outfit, and vibe score</p>
     </div>
     <div id="lbList" class="space-y-3"></div>
   </main>
 
-  <!-- Footer with official credits & utility links -->
+  <!-- Footer (NO REAL GMAIL ADDRESSES DISPLAYED) -->
   <footer class="mt-12 py-8 text-center text-xs text-muted2 border-t border-c glass">
     <div class="max-w-4xl mx-auto px-4 space-y-3">
       <div class="flex items-center justify-center gap-2">
         <img src="logo.jpg" alt="2BAC PC-11" class="w-5 h-5 rounded-md object-cover" />
-        <span class="font-bold text-white tracking-wide">2BAC-PC-11 RATING</span>
+        <span class="font-extrabold text-white tracking-wide">2BAC-PC-11 RATING</span>
       </div>
       <p class="font-semibold text-white/90">
-        Oussama (<a href="mailto:anaflousoussama555@gmail.com" class="text-lime-400 hover:underline">anaflousoussama555@gmail.com</a>) — Main Owner / CEO
-        · Yasser (<a href="mailto:Yagsahz@gmail.com" class="text-lime-400 hover:underline">Yagsahz@gmail.com</a>) — Vice President / Co-Owner
+        Oussama — <span class="text-lime-400 font-bold">Main Owner / CEO</span>
+        · Yasser — <span class="text-lime-400 font-bold">Vice President / Co-Owner</span>
       </p>
-      <p class="text-[11px] text-muted2">Adam — Special Contributor · Dedicated for fun, creativity, and class memory</p>
+      <p class="text-[11px] text-muted2">Adam — Special Contributor · Fun & temporary rating space between classmates</p>
       
       <!-- Utility Links -->
       <div class="flex items-center justify-center gap-4 pt-2 text-[11px] border-t border-c/50">
@@ -255,18 +330,79 @@
   </footer>
 </div>
 
+<!-- Full Profile Edit Modal (Accessible Anytime) -->
+<div id="profileEditModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-md p-4">
+  <div class="bg-card2 border border-c rounded-3xl p-6 sm:p-8 w-full max-w-md fade-in shadow-2xl space-y-4">
+    <div class="flex items-center justify-between pb-2 border-b border-c">
+      <div class="flex items-center gap-2">
+        <span class="text-lime-400 text-lg">✏️</span>
+        <h2 class="text-lg font-bold text-white">Edit Your Profile</h2>
+      </div>
+      <button data-close="profileEditModal" class="text-muted2 hover:text-white">✕</button>
+    </div>
+
+    <!-- Live Avatar Preview -->
+    <div class="flex items-center gap-4 p-3 rounded-2xl bg-bg border border-c">
+      <img id="editAvPreview" class="w-16 h-16 rounded-full object-cover border-2 border-lime-400 shadow-md" alt="Avatar" />
+      <div>
+        <p class="text-xs font-bold text-white" id="editNickLabel">Nickname</p>
+        <span class="text-[10px] text-muted2">Your identity in ratings and comments</span>
+      </div>
+    </div>
+
+    <div>
+      <label class="text-xs font-semibold text-muted2 uppercase tracking-wider">Change Nickname</label>
+      <input id="editNickInput" type="text" maxlength="24" placeholder="Enter your nickname…"
+        class="mt-1 w-full rounded-xl px-4 py-2.5 text-sm ring-accent bg-bg border border-c text-white font-medium" />
+    </div>
+
+    <div>
+      <label class="text-xs font-semibold text-muted2 uppercase tracking-wider">Profile Picture URL</label>
+      <input id="editAvatarUrlInput" type="url" placeholder="Paste direct image URL (https://...)"
+        class="mt-1 w-full rounded-xl px-4 py-2 text-sm ring-accent bg-bg border border-c text-white font-mono text-xs" />
+      <div class="flex gap-2 mt-2">
+        <button id="useGoogleAvBtn" class="text-[11px] px-3 py-1 rounded-lg border border-c text-muted2 hover:text-white">Use Google Photo</button>
+      </div>
+    </div>
+
+    <div>
+      <label class="text-xs font-semibold text-muted2 uppercase tracking-wider">Short Bio (Optional)</label>
+      <input id="editBioInput" type="text" maxlength="80" placeholder="A short bio or vibe quote…"
+        class="mt-1 w-full rounded-xl px-4 py-2 text-sm ring-accent bg-bg border border-c text-white" />
+    </div>
+
+    <button id="saveProfileBtn" class="w-full rounded-full py-3 font-bold btn-primary text-sm shadow-[0_0_15px_var(--accent-glow)]">
+      Save Changes
+    </button>
+    <p id="profileEditErr" class="text-red-400 text-xs hidden"></p>
+  </div>
+</div>
+
+<!-- Fullscreen Lightbox Modal (Respects Original Aspect Ratio) -->
+<div id="lightboxModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/95 backdrop-blur-2xl p-2 sm:p-6">
+  <div class="relative w-full h-full flex flex-col items-center justify-center">
+    <button id="lightboxClose" class="absolute top-4 right-4 z-20 bg-black/70 hover:bg-black text-white p-2.5 rounded-full border border-white/20 text-lg">✕</button>
+    <div class="w-full h-full flex items-center justify-center p-2">
+      <img id="lightboxImg" class="max-h-[92vh] max-w-[95vw] w-auto h-auto object-contain rounded-2xl shadow-2xl transition-transform" />
+    </div>
+    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/80 px-4 py-1.5 rounded-full text-xs text-white border border-white/20">
+      <span id="lightboxCaption">Full Size View</span>
+    </div>
+  </div>
+</div>
+
 <!-- Welcome & Sign-In Modal -->
 <div id="authModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
   <div class="bg-card2 border border-c rounded-3xl p-8 w-full max-w-md text-center fade-in shadow-2xl relative overflow-hidden">
     <div class="absolute -top-16 -right-16 w-36 h-36 bg-lime-500/10 rounded-full blur-2xl"></div>
     <div class="relative z-10 flex flex-col items-center">
       <img src="logo.jpg" alt="2BAC PC-11" class="w-20 h-20 rounded-2xl object-cover border-2 border-lime-500/50 shadow-[0_0_25px_var(--accent-glow)] mb-4" />
-      <h2 class="text-2xl font-extrabold tracking-tight text-white">2BAC-PC-11 RATING</h2>
-      <p class="text-sm text-lime-400 font-medium mt-1">Official Student Creativity & Rating Hub</p>
+      <h2 class="text-2xl font-black tracking-tight text-white">2BAC-PC-11 RATING</h2>
+      <p class="text-sm text-lime-400 font-bold mt-1">Baddie Rating · Looks & Vibes</p>
       <p class="text-xs text-muted2 mt-3 leading-relaxed" data-i18n="signin_prompt">
-        Sign in with Google to explore, rate creativity, share reactions, and join the conversation.
+        Sign in with Google to explore, rate looks & vibe, share reactions, and join the conversation.
       </p>
-      <button id="googleSignIn" class="mt-6 w-full flex items-center justify-center gap-3 rounded-full py-3 font-semibold btn-primary text-sm shadow-lg">
+      <button id="googleSignIn" class="mt-6 w-full flex items-center justify-center gap-3 rounded-full py-3 font-bold btn-primary text-sm shadow-lg">
         <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         <span data-i18n="signin_google">Continue with Google</span>
       </button>
@@ -275,30 +411,16 @@
   </div>
 </div>
 
-<!-- Mandatory Onboarding & Rules Acceptance Modal -->
+<!-- Onboarding Modal (After Google Sign-In) -->
 <div id="onboardModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-md p-4">
   <div class="bg-card2 border border-c rounded-3xl p-6 sm:p-8 w-full max-w-lg fade-in max-h-[92vh] overflow-y-auto scrollbar shadow-2xl relative">
     <div class="text-center mb-5">
       <img src="logo.jpg" alt="2BAC PC-11" class="w-16 h-16 rounded-2xl object-cover mx-auto border border-lime-500/40 shadow-[0_0_20px_var(--accent-glow)] mb-3" />
-      <h2 class="text-xl font-extrabold text-white" data-i18n="welcome_onboard">Welcome to 2BAC-PC-11 Rating</h2>
-      <p class="text-xs text-lime-400 mt-1">Please review the rules & choose your guest identity</p>
+      <h2 class="text-xl font-black text-white" data-i18n="welcome_onboard">Welcome to 2BAC-PC-11 Rating</h2>
+      <p class="text-xs text-lime-400 mt-1">Choose your guest identity</p>
     </div>
 
-    <!-- Mandatory Rules Callout -->
-    <div class="rounded-2xl p-4 border border-lime-500/30 bg-lime-500/10 text-lime-200 text-xs sm:text-sm space-y-2 leading-relaxed">
-      <div class="flex items-center gap-2 font-bold text-lime-400">
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        <span>Community Ethics & Core Rule:</span>
-      </div>
-      <p class="font-medium text-white/95" data-i18n="disclaimer_highlight">
-        "This site is only for fun. Rate the creativity, quality, editing and presentation of the images — never the physical appearance of people."
-      </p>
-      <p class="text-[11px] text-muted2" data-i18n="disclaimer_details">
-        Harassment, offensive commentary, and bullying are strictly forbidden. Moderation is active.
-      </p>
-    </div>
-
-    <div class="mt-5 space-y-4">
+    <div class="space-y-4">
       <div>
         <label class="text-xs font-semibold text-muted2 uppercase tracking-wider" data-i18n="nickname">Nickname (Mandatory)</label>
         <input id="nickInput" type="text" maxlength="24" placeholder="Enter your guest nickname…"
@@ -322,20 +444,13 @@
 
       <div>
         <label class="text-xs font-semibold text-muted2 uppercase tracking-wider">Short Bio (Optional)</label>
-        <input id="bioInput" type="text" maxlength="80" placeholder="A short bio or favorite quote…"
+        <input id="bioInput" type="text" maxlength="80" placeholder="A short bio or vibe quote…"
           class="mt-1.5 w-full rounded-xl px-4 py-2 text-sm ring-accent bg-bg border border-c text-white" />
       </div>
 
-      <label class="flex items-start gap-2.5 text-xs text-muted2 cursor-pointer pt-1">
-        <input id="acceptDisclaimer" type="checkbox" class="mt-0.5 rounded accent-lime-500 w-4 h-4 cursor-pointer" />
-        <span class="leading-snug" data-i18n="accept_terms">
-          I understand & accept the community rules, pledge to rate fairly based on image creativity, and respect all classmates.
-        </span>
-      </label>
-
       <p id="onboardErr" class="text-red-400 text-xs font-medium hidden bg-red-500/10 p-2.5 rounded-xl border border-red-500/30"></p>
       
-      <button id="onboardSubmit" class="w-full rounded-full py-3 font-semibold btn-primary text-sm shadow-[0_0_15px_var(--accent-glow)]" data-i18n="enter_site">
+      <button id="onboardSubmit" class="w-full rounded-full py-3 font-bold btn-primary text-sm shadow-[0_0_15px_var(--accent-glow)]" data-i18n="enter_site">
         Enter 2BAC-PC-11 Rating
       </button>
     </div>
@@ -369,37 +484,37 @@
 
     <!-- Core Purpose -->
     <div class="space-y-2 text-xs sm:text-sm text-white/90 leading-relaxed">
-      <h3 class="font-bold text-lime-400 uppercase tracking-wider text-xs">✨ Our Purpose & Spirit</h3>
+      <h3 class="font-bold text-lime-400 uppercase tracking-wider text-xs">✨ OUR CONCEPT & VIBE</h3>
       <p>
-        2BAC-PC-11 Rating is built as a shared memory album and entertainment space for the 2BAC PC-11 class. It celebrates student creativity, photography skills, fun editing, science lab memories, and artistic presentation.
+        2BAC-PC-11 Rating is a playful, casual rating space created for our 2BAC PC-11 class. We rate girls (and sometimes boys) on looks, visual style, outfit, and personality vibe.
       </p>
     </div>
 
     <!-- Ethics Rule Box -->
     <div class="p-4 rounded-2xl bg-lime-500/10 border border-lime-500/30 text-lime-200 text-xs sm:text-sm space-y-1.5">
-      <span class="font-bold text-lime-400 block text-xs uppercase tracking-wider">⚖️ The Golden Ethics Rule</span>
-      <p class="font-medium text-white">
-        "Rate the creativity, quality, editing, and presentation of the images — never the physical appearance of people."
+      <span class="font-bold text-lime-400 block text-xs uppercase tracking-wider">⚖️ THE GOLDEN RULE</span>
+      <p class="font-semibold text-white">
+        “This is only for fun and goofing around between us. It is not serious and the site will be deleted after a period of time. Be respectful. Do not take it too seriously.”
       </p>
       <p class="text-[11px] text-muted2">
-        Harassment, bullying, or rating personal looks is strictly prohibited and leads to immediate suspension.
+        Harassment or bullying is strictly prohibited. Keep it fun and friendly!
       </p>
     </div>
 
     <!-- FAQ Accordion -->
     <div class="space-y-3 text-xs sm:text-sm">
-      <h3 class="font-bold text-white uppercase tracking-wider text-xs">❓ Frequently Asked Questions</h3>
+      <h3 class="font-bold text-white uppercase tracking-wider text-xs">❓ FREQUENTLY ASKED QUESTIONS</h3>
       <div class="p-3 bg-bg border border-c rounded-xl space-y-1">
-        <p class="font-semibold text-white">How does the 0.1 – 10.0 rating work?</p>
-        <p class="text-muted2 text-xs">Each guest gets 1 active vote per photo. You can edit your vote anytime. The community average is recalculated atomically.</p>
+        <p class="font-semibold text-white">Can I change my rating on a photo?</p>
+        <p class="text-muted2 text-xs">Yes! Click on any score pill or type a new decimal score (0.1 - 10.0) in the photo popup and tap "Update Vote".</p>
       </div>
       <div class="p-3 bg-bg border border-c rounded-xl space-y-1">
-        <p class="font-semibold text-white">How does the Recommended feed rank photos?</p>
-        <p class="text-muted2 text-xs">It uses a virality score combining total votes, discussions/comments, reactions, average rating, and a 24-hour recency boost.</p>
+        <p class="font-semibold text-white">Can I change my nickname or profile picture?</p>
+        <p class="text-muted2 text-xs">Yes! Click on your profile in the top-right navbar or on your comments to edit your nickname, avatar URL, or bio anytime.</p>
       </div>
       <div class="p-3 bg-bg border border-c rounded-xl space-y-1">
-        <p class="font-semibold text-white">Where are the photos stored?</p>
-        <p class="text-muted2 text-xs">No files are uploaded to Firebase Storage. Only external image URLs (via postimages.org or imgto.link) are saved.</p>
+        <p class="font-semibold text-white">Are photos cropped?</p>
+        <p class="text-muted2 text-xs">No. In the photo popup, images appear in their real aspect ratio (9:16, portrait, or landscape). Click on the photo to open full-screen lightbox!</p>
       </div>
     </div>
   </div>
@@ -422,7 +537,7 @@
           <option value="feature">New Feature Idea</option>
           <option value="visual">Visual Design & Theme</option>
           <option value="game">Class Game / Challenge</option>
-          <option value="bug">Report a Bug / Issue</option>
+          <option value="bug">Report an Issue</option>
         </select>
       </div>
       <div>
@@ -430,7 +545,7 @@
         <textarea id="fbDetails" rows="4" maxlength="400" placeholder="What should we add or improve next for 2BAC PC-11?"
           class="mt-1 w-full rounded-xl px-3 py-2 text-sm ring-accent bg-bg border border-c text-white"></textarea>
       </div>
-      <button id="fbSubmit" class="w-full rounded-full py-2.5 font-semibold btn-primary text-sm">
+      <button id="fbSubmit" class="w-full rounded-full py-2.5 font-bold btn-primary text-sm">
         Send Idea to Owners
       </button>
       <p id="fbErr" class="text-red-400 text-xs hidden"></p>
@@ -448,56 +563,67 @@
     </div>
     <div class="space-y-3 text-xs sm:text-sm text-muted2">
       <div class="p-3 rounded-xl bg-bg border border-c space-y-1">
-        <span class="font-bold text-lime-400 text-xs">🚀 Official 2BAC-PC-11 Branding</span>
-        <p>New neon lime atom logo, dark carbon space theme, and prominent CEO & Co-Owner badges.</p>
+        <span class="font-bold text-lime-400 text-xs">🔥 Baddie Rating & Vibe Theme</span>
+        <p>Updated concept focusing on looks, style, and classmate personality.</p>
       </div>
       <div class="p-3 rounded-xl bg-bg border border-c space-y-1">
-        <span class="font-bold text-lime-400 text-xs">💬 Full Instagram Comments</span>
-        <p>Threaded replies, owner comment pinning, sorting (Top/Newest), and inline editing.</p>
+        <span class="font-bold text-lime-400 text-xs">🌌 Mouse-Reactive Galaxy Background</span>
+        <p>Interactive starfield with 3D parallax depth responsive to mouse movement.</p>
       </div>
       <div class="p-3 rounded-xl bg-bg border border-c space-y-1">
-        <span class="font-bold text-lime-400 text-xs">🔖 Bookmarks & Saved Photos</span>
-        <p>Save any photo to your private Bookmarks tab anytime.</p>
+        <span class="font-bold text-lime-400 text-xs">🖼️ Real Aspect Ratio & Lightbox</span>
+        <p>No clipping! Full 9:16 portrait view + full-screen viewer.</p>
       </div>
       <div class="p-3 rounded-xl bg-bg border border-c space-y-1">
-        <span class="font-bold text-lime-400 text-xs">🔊 Optional UI Sound Effects & Particles</span>
-        <p>Pure synthesizer audio feedback and celebratory bursts for votes & reactions.</p>
+        <span class="font-bold text-lime-400 text-xs">✏️ Anytime Profile Editing</span>
+        <p>Click your avatar or nickname anytime to change your nickname, avatar URL, or bio.</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Create / Publish Image Modal (OWNERS ONLY) -->
+<!-- Create / Publish Image Modal (OWNERS ONLY) with Framing / Crop Option -->
 <div id="createModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
   <div class="bg-card2 border border-c rounded-3xl p-6 sm:p-8 w-full max-w-lg fade-in max-h-[92vh] overflow-y-auto scrollbar shadow-2xl">
     <div class="flex items-center justify-between mb-4 pb-2 border-b border-c">
       <div class="flex items-center gap-2">
         <span class="badge-owner px-2 py-0.5 rounded-full text-[10px] font-bold">OWNER POSTING</span>
-        <h2 class="text-lg font-bold text-white" data-i18n="new_profile">Publish New Photo</h2>
+        <h2 class="text-lg font-bold text-white" data-i18n="new_profile">Post New Photo</h2>
       </div>
       <button data-close="createModal" class="text-muted2 hover:text-white text-lg p-1">✕</button>
     </div>
     
     <div class="space-y-4">
       <div>
-        <label class="text-xs font-semibold text-muted2 uppercase tracking-wider" data-i18n="name">Title / Subject Name</label>
-        <input id="pName" type="text" maxlength="50" placeholder="e.g. Science Lab Experiment / Epic Portrait"
+        <label class="text-xs font-semibold text-muted2 uppercase tracking-wider" data-i18n="name">Subject Name / Title</label>
+        <input id="pName" type="text" maxlength="50" placeholder="e.g. Sarah / Epic Style Check / Outfit Vibe"
           class="mt-1 w-full rounded-xl px-4 py-2.5 text-sm ring-accent bg-bg border border-c text-white font-medium" />
       </div>
 
       <div>
         <label class="text-xs font-semibold text-muted2 uppercase tracking-wider" data-i18n="grade">Category / Class</label>
-        <input id="pGrade" type="text" maxlength="24" value="2BAC PC-11" placeholder="e.g. 2BAC PC-11 · Physics Edits"
+        <input id="pGrade" type="text" maxlength="24" value="2BAC PC-11" placeholder="e.g. 2BAC PC-11"
           class="mt-1 w-full rounded-xl px-4 py-2.5 text-sm ring-accent bg-bg border border-c text-white" />
       </div>
 
+      <!-- Framing / Aspect Ratio Tool for Owners -->
       <div>
-        <label class="text-xs font-semibold text-muted2 uppercase tracking-wider" data-i18n="description">Description / Creative Context</label>
+        <label class="text-xs font-semibold text-muted2 uppercase tracking-wider">Display Framing / Aspect Ratio</label>
+        <select id="pFrameMode" class="mt-1 w-full rounded-xl px-3 py-2 text-sm ring-accent bg-bg border border-c text-white">
+          <option value="contain" selected>Original Aspect Ratio (Full Photo, No Crop)</option>
+          <option value="portrait">Portrait 9:16 / 3:4 Framing</option>
+          <option value="square">Square 1:1 Framing</option>
+          <option value="cover">Fill Cover (Modern Crop)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="text-xs font-semibold text-muted2 uppercase tracking-wider" data-i18n="description">Context / Outfit & Vibe Description</label>
         <textarea id="pDesc" maxlength="500" rows="3"
           class="mt-1 w-full rounded-xl px-4 py-2.5 text-sm ring-accent bg-bg border border-c text-white"
-          placeholder="Share details about the photo's creativity, editing, location, or funny background context (min 30 chars)…"></textarea>
+          placeholder="Share context, outfit vibe, or funny notes (min 15 chars)…"></textarea>
         <div class="flex justify-between text-xs mt-1 text-muted2">
-          <span id="descHint">Min 30 characters</span>
+          <span id="descHint">Min 15 characters</span>
           <span><span id="descCount">0</span>/500</span>
         </div>
       </div>
@@ -519,11 +645,11 @@
         
         <div id="imgPreview" class="mt-3 hidden">
           <p class="text-xs text-muted2 mb-1">Live URL preview:</p>
-          <img class="w-full h-44 object-cover rounded-xl border border-c bg-bg shadow-md" onerror="this.parentElement.classList.add('hidden')" />
+          <img class="max-h-56 max-w-full mx-auto object-contain rounded-xl border border-c bg-bg shadow-md" onerror="this.parentElement.classList.add('hidden')" />
         </div>
       </div>
 
-      <button id="submitProfile" class="w-full rounded-full py-3 font-semibold btn-primary text-sm shadow-[0_0_15px_var(--accent-glow)]" data-i18n="create">
+      <button id="submitProfile" class="w-full rounded-full py-3 font-bold btn-primary text-sm shadow-[0_0_15px_var(--accent-glow)]" data-i18n="create">
         Publish to Feed
       </button>
       <p id="createErr" class="text-red-400 text-xs font-medium hidden bg-red-500/10 p-2.5 rounded-xl border border-red-500/30"></p>
@@ -531,13 +657,13 @@
   </div>
 </div>
 
-<!-- Image Detail & Rating Modal -->
+<!-- Image Detail & Rating Modal (Full Aspect Ratio + Lightbox Trigger) -->
 <div id="detailModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-4">
   <div class="bg-card2 border border-c rounded-3xl w-full max-w-2xl max-h-[92vh] overflow-y-auto scrollbar fade-in shadow-2xl">
     <div class="sticky top-0 z-10 glass border-b border-c px-6 py-4 flex items-center justify-between">
       <div class="flex items-center gap-2 min-w-0">
         <h2 id="dName" class="text-lg font-bold truncate text-white"></h2>
-        <span id="dOwnerTag" class="hidden badge-owner px-2 py-0.5 rounded-full text-[10px] font-bold">👑 OFFICIAL</span>
+        <span id="dOwnerTag" class="hidden badge-owner px-2 py-0.5 rounded-full text-[10px] font-bold">👑 OFFICIAL OWNER POST</span>
       </div>
       <div class="flex items-center gap-2">
         <button id="dShareBtn" class="p-1.5 rounded-full hover:bg-bg border border-c text-muted2 hover:text-lime-400 transition-colors" title="Share Photo Link">
@@ -552,18 +678,19 @@
 
     <div class="p-6 space-y-6">
       <div class="flex flex-col sm:flex-row gap-6">
+        <!-- Image Container (Real Aspect Ratio, No Crop) -->
         <div class="sm:w-1/2 flex flex-col">
-          <div class="relative group rounded-2xl overflow-hidden border border-c bg-black">
-            <img id="dImg" class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105" 
+          <div class="relative group rounded-2xl overflow-hidden border border-c bg-black/70 flex items-center justify-center p-1.5">
+            <img id="dImg" class="max-h-[58vh] max-w-full w-auto h-auto object-contain rounded-xl cursor-zoom-in transition-transform duration-300 group-hover:scale-[1.02]" 
               onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><rect width=%22400%22 height=%22400%22 fill=%22%23111%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23666%22 font-size=%2216%22 text-anchor=%22middle%22 dy=%22.3em%22>Broken image</text></svg>'" />
-            <a id="dImgLink" href="#" target="_blank" rel="noopener" class="absolute bottom-2 right-2 bg-black/70 hover:bg-black text-[11px] text-white px-2 py-1 rounded-lg backdrop-blur flex items-center gap-1 border border-white/20">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 3h6v6m-11 5L21 3m-3 11v7H3V6h7"/></svg>
-              <span>Full Size</span>
-            </a>
+            <button id="dLightboxBtn" class="absolute bottom-3 right-3 bg-black/80 hover:bg-black text-[11px] text-white px-2.5 py-1.5 rounded-xl backdrop-blur flex items-center gap-1.5 border border-white/20 shadow-lg">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg>
+              <span>Full Screen</span>
+            </button>
           </div>
           <div class="flex items-center justify-between text-xs text-muted2 mt-2 px-1">
             <span id="dGrade" class="font-medium"></span>
-            <span id="dAuthor"></span>
+            <span id="dAuthor" class="text-lime-400 font-semibold"></span>
           </div>
         </div>
 
@@ -573,42 +700,44 @@
           <!-- Average Score Display -->
           <div class="p-4 rounded-2xl bg-bg border border-c flex items-baseline justify-between">
             <div>
-              <span class="text-xs text-muted2 uppercase tracking-wider block">Average Rating</span>
+              <span class="text-xs text-muted2 uppercase tracking-wider block">Average Community Score</span>
               <div class="flex items-baseline gap-1 mt-0.5">
-                <span id="dScore" class="text-3xl font-extrabold text-lime-400">—</span>
+                <span id="dScore" class="text-3xl font-black text-lime-400">—</span>
                 <span class="text-xs text-muted2">/10</span>
               </div>
             </div>
             <span id="dCount" class="text-xs text-muted2 self-end"></span>
           </div>
 
-          <!-- Rating Experience (0.1 - 10.0) -->
+          <!-- Rating Experience (0.1 - 10.0 with Editable Support) -->
           <div class="space-y-2 p-4 rounded-2xl bg-bg border border-c">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold uppercase tracking-wider text-muted2" data-i18n="your_rating">Your Rating</span>
-              <span id="ratingMsg" class="text-xs text-lime-400 font-medium"></span>
+              <span class="text-xs font-bold uppercase tracking-wider text-muted2" data-i18n="your_rating">Your Rating</span>
+              <span id="ratingMsg" class="text-xs text-lime-400 font-bold"></span>
             </div>
             
             <!-- Quick score shortcut buttons -->
             <div class="flex items-center gap-1.5 flex-wrap">
-              <button class="quick-rate px-2 py-1 rounded-lg text-xs font-semibold bg-card2 border border-c hover:border-lime-400" data-val="7.0">7.0</button>
-              <button class="quick-rate px-2 py-1 rounded-lg text-xs font-semibold bg-card2 border border-c hover:border-lime-400" data-val="8.0">8.0</button>
-              <button class="quick-rate px-2 py-1 rounded-lg text-xs font-semibold bg-card2 border border-c hover:border-lime-400" data-val="9.0">9.0</button>
-              <button class="quick-rate px-2 py-1 rounded-lg text-xs font-semibold bg-card2 border border-c hover:border-lime-400" data-val="9.5">9.5</button>
-              <button class="quick-rate px-2 py-1 rounded-lg text-xs font-semibold bg-card2 border border-c hover:border-lime-400" data-val="10.0">10.0</button>
+              <button class="quick-rate px-2 py-1 rounded-lg text-xs font-bold bg-card2 border border-c hover:border-lime-400" data-val="7.0">7.0</button>
+              <button class="quick-rate px-2 py-1 rounded-lg text-xs font-bold bg-card2 border border-c hover:border-lime-400" data-val="8.0">8.0</button>
+              <button class="quick-rate px-2 py-1 rounded-lg text-xs font-bold bg-card2 border border-c hover:border-lime-400" data-val="9.0">9.0</button>
+              <button class="quick-rate px-2 py-1 rounded-lg text-xs font-bold bg-card2 border border-c hover:border-lime-400" data-val="9.5">9.5</button>
+              <button class="quick-rate px-2 py-1 rounded-lg text-xs font-bold bg-card2 border border-c hover:border-lime-400" data-val="10.0">10.0</button>
             </div>
 
             <div class="flex gap-2 mt-1">
               <input id="ratingInput" type="number" step="0.1" min="0.1" max="10" placeholder="0.1 – 10.0"
-                class="w-28 rounded-xl px-3 py-2 text-sm ring-accent bg-card2 border border-c text-white font-bold text-center" />
-              <button id="ratingSubmit" class="flex-1 px-4 py-2 rounded-xl text-xs font-bold btn-primary" data-i18n="rate">Submit Vote</button>
+                class="w-28 rounded-xl px-3 py-2 text-sm ring-accent bg-card2 border border-c text-white font-black text-center" />
+              <button id="ratingSubmit" class="flex-1 px-4 py-2 rounded-xl text-xs font-bold btn-primary" data-i18n="rate">
+                <span id="ratingBtnText">Submit Vote</span>
+              </button>
             </div>
             <p id="ratingErr" class="text-xs text-red-400 hidden"></p>
           </div>
 
           <!-- Social Reactions -->
           <div class="space-y-2">
-            <span class="text-xs font-semibold uppercase tracking-wider text-muted2" data-i18n="reactions">Reactions</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-muted2" data-i18n="reactions">Reactions</span>
             <div id="reactionRow" class="flex flex-wrap gap-2"></div>
           </div>
 
@@ -650,7 +779,7 @@
 
         <!-- Add Comment Input Form -->
         <div id="commentForm" class="hidden mt-3 flex gap-2">
-          <input id="commentInput" type="text" maxlength="300" data-i18n-placeholder="add_comment" placeholder="Add a positive, creative comment…"
+          <input id="commentInput" type="text" maxlength="300" data-i18n-placeholder="add_comment" placeholder="Add a comment or hype up the look…"
             class="flex-1 rounded-full px-4 py-2.5 text-sm ring-accent bg-bg border border-c text-white" />
           <button id="commentSend" class="px-5 py-2.5 rounded-full text-xs font-bold btn-primary" data-i18n="send">Post</button>
         </div>
@@ -659,7 +788,7 @@
 
       <!-- Report Button for Guests -->
       <div class="pt-2 border-t border-c flex justify-between items-center text-xs text-muted2">
-        <span>Respect community guidelines.</span>
+        <span>Keep the site fun & respectful.</span>
         <button id="reportBtn" class="px-3 py-1 rounded-full border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors" data-i18n="report_image">
           Report Photo
         </button>
@@ -679,18 +808,18 @@
       <div>
         <label class="text-xs font-semibold text-muted2" data-i18n="report_reason">Reason</label>
         <select id="reportReason" class="mt-1 w-full rounded-xl px-3 py-2 text-sm ring-accent bg-bg border border-c text-white">
-          <option value="harassment" data-i18n="r_harassment">Bullying / Harassment / Appearance rating</option>
+          <option value="harassment" data-i18n="r_harassment">Extreme disrespect / Harassment</option>
           <option value="inappropriate" data-i18n="r_inappropriate">Inappropriate content</option>
-          <option value="spam" data-i18n="r_spam">Spam or unwanted promotion</option>
+          <option value="spam" data-i18n="r_spam">Spam or troll</option>
           <option value="other" data-i18n="r_other">Other rule violation</option>
         </select>
       </div>
       <div>
         <label class="text-xs font-semibold text-muted2" data-i18n="report_details">Details (optional)</label>
-        <textarea id="reportDetails" rows="3" maxlength="300" placeholder="Please clarify the problem…"
+        <textarea id="reportDetails" rows="3" maxlength="300" placeholder="Please explain the issue…"
           class="mt-1 w-full rounded-xl px-3 py-2 text-sm ring-accent bg-bg border border-c text-white"></textarea>
       </div>
-      <button id="reportSubmit" class="w-full rounded-full py-2.5 font-semibold btn-primary text-sm" data-i18n="submit_report">
+      <button id="reportSubmit" class="w-full rounded-full py-2.5 font-bold btn-primary text-sm" data-i18n="submit_report">
         Submit Report to Owners
       </button>
       <p id="reportErr" class="text-red-400 text-xs hidden"></p>
@@ -699,7 +828,7 @@
   </div>
 </div>
 
-<!-- Enhanced Moderation & Feedback Modal (OWNERS ONLY) -->
+<!-- Moderation & Feedback Queue (OWNERS ONLY) -->
 <div id="modModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-md p-4">
   <div class="bg-card2 border border-c rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto scrollbar fade-in p-6 shadow-2xl">
     <div class="flex items-center justify-between mb-4 pb-2 border-b border-c">
@@ -712,7 +841,7 @@
 
     <!-- Moderation Tabs (Reports vs Student Suggestions) -->
     <div class="flex items-center gap-2 mb-4 border-b border-c pb-2">
-      <button id="modTabReports" class="px-3 py-1 rounded-xl text-xs font-semibold btn-primary">Reports Queue</button>
+      <button id="modTabReports" class="px-3 py-1 rounded-xl text-xs font-bold btn-primary">Reports Queue</button>
       <button id="modTabIdeas" class="px-3 py-1 rounded-xl text-xs font-semibold border border-c text-muted2 hover:text-white">Student Suggestions</button>
     </div>
 
@@ -722,7 +851,7 @@
         class="flex-1 min-w-[200px] rounded-xl px-3 py-1.5 text-xs ring-accent bg-bg border border-c text-white" />
       <select id="modReasonFilter" class="rounded-xl px-3 py-1.5 text-xs bg-bg border border-c text-white">
         <option value="all">All Reasons</option>
-        <option value="harassment">Harassment / Appearance</option>
+        <option value="harassment">Harassment</option>
         <option value="inappropriate">Inappropriate</option>
         <option value="spam">Spam</option>
         <option value="comment">Comment Reports</option>
@@ -734,7 +863,7 @@
   </div>
 </div>
 
-<!-- Settings Modal with Sound and Motion controls -->
+<!-- Settings Modal -->
 <div id="settingsModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
   <div class="bg-card2 border border-c rounded-3xl p-6 w-full max-w-sm fade-in shadow-2xl space-y-4">
     <div class="flex items-center justify-between pb-2 border-b border-c">
@@ -745,8 +874,8 @@
     <div>
       <label class="text-xs font-semibold text-muted2" data-i18n="theme">Theme</label>
       <div class="mt-1 flex gap-2">
-        <button id="themeDark" class="flex-1 px-3 py-2 rounded-xl text-xs font-semibold border border-c bg-bg text-white" data-i18n="dark_mode">Dark (Default)</button>
-        <button id="themeLight" class="flex-1 px-3 py-2 rounded-xl text-xs font-semibold border border-c bg-bg text-white" data-i18n="light_mode">Light</button>
+        <button id="themeDark" class="flex-1 px-3 py-2 rounded-xl text-xs font-bold border border-c bg-bg text-white" data-i18n="dark_mode">Dark (Default)</button>
+        <button id="themeLight" class="flex-1 px-3 py-2 rounded-xl text-xs font-bold border border-c bg-bg text-white" data-i18n="light_mode">Light</button>
       </div>
     </div>
 
@@ -775,7 +904,7 @@
         <span class="text-[10px] text-muted2">Interface clicks & votes (Off by default)</span>
       </div>
       <div class="flex items-center gap-2">
-        <button id="testSoundBtn" class="px-2 py-1 rounded text-[10px] bg-bg border border-c text-muted2 hover:text-white" title="Test audio">Preview</button>
+        <button id="testSoundBtn" class="px-2 py-1 rounded text-[10px] bg-bg border border-c text-muted2 hover:text-white">Preview</button>
         <input id="soundToggle" type="checkbox" class="accent-lime-500 w-4 h-4 cursor-pointer" />
       </div>
     </div>
@@ -784,15 +913,21 @@
     <div class="pt-2 border-t border-c flex items-center justify-between">
       <div>
         <label class="text-xs font-semibold text-white block">Reduced Motion</label>
-        <span class="text-[10px] text-muted2">Disable particle bursts</span>
+        <span class="text-[10px] text-muted2">Disable particle bursts & galaxy motion</span>
       </div>
       <input id="motionToggle" type="checkbox" class="accent-lime-500 w-4 h-4 cursor-pointer" />
+    </div>
+
+    <div class="pt-2 border-t border-c">
+      <button id="settingsEditProfileBtn" class="w-full py-2 rounded-xl text-xs font-semibold border border-c hover:border-lime-400 text-white flex items-center justify-center gap-1.5">
+        <span>✏️ Edit Profile & Avatar</span>
+      </button>
     </div>
   </div>
 </div>
 
 <!-- Toast notification container -->
-<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold shadow-2xl fade-in border border-white/20" style="background:#111827;color:#f3f4f6"></div>
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-2xl fade-in border border-white/20" style="background:#111827;color:#f3f4f6"></div>
 
 <script type="module">
 // Firebase modular imports
@@ -810,7 +945,8 @@ const firebaseConfig = {
   measurementId: "G-X6JBCW26JC"
 };
 
-// HARD-CODED OWNERS (Only these two emails have admin, publishing, and moderation privileges)
+// HARD-CODED OWNERS (Only these two accounts have admin, publishing, and moderation privileges)
+// Note: Emails stay 100% PRIVATE and are never displayed publicly on the website!
 const OWNER_EMAILS = [
   "anaflousoussama555@gmail.com",
   "yagsahz@gmail.com"
@@ -830,11 +966,102 @@ const FB = {
 };
 window.FB = FB;
 
-// Synthesizer Web Audio API (Zero audio files needed, pure clean synthesizer)
-let audioCtx = null;
+// ==========================================
+// 🌌 PARALLAX GALAXY CANVAS BACKGROUND
+// ==========================================
+const galaxyCanvas = document.getElementById('galaxyCanvas');
+const gCtx = galaxyCanvas.getContext('2d');
+let stars = [];
+let targetMouseX = 0, targetMouseY = 0;
+let currentMouseX = 0, currentMouseY = 0;
 let soundEnabled = localStorage.getItem('sound_enabled') === 'true';
 let reducedMotion = localStorage.getItem('reduced_motion') === 'true';
 
+function initGalaxy() {
+  galaxyCanvas.width = window.innerWidth;
+  galaxyCanvas.height = window.innerHeight;
+  stars = [];
+  const starCount = Math.floor((window.innerWidth * window.innerHeight) / 8000);
+  for (let i = 0; i < starCount; i++) {
+    stars.push({
+      x: Math.random() * galaxyCanvas.width,
+      y: Math.random() * galaxyCanvas.height,
+      radius: Math.random() * 1.5 + 0.3,
+      alpha: Math.random() * 0.7 + 0.3,
+      baseAlpha: Math.random() * 0.7 + 0.3,
+      depth: Math.random() * 2 + 0.5,
+      speed: Math.random() * 0.02 + 0.005
+    });
+  }
+}
+window.addEventListener('resize', initGalaxy);
+initGalaxy();
+
+window.addEventListener('mousemove', (e) => {
+  if (reducedMotion) return;
+  targetMouseX = (e.clientX - window.innerWidth / 2) * 0.04;
+  targetMouseY = (e.clientY - window.innerHeight / 2) * 0.04;
+});
+
+function drawGalaxy() {
+  if (!reducedMotion) {
+    currentMouseX += (targetMouseX - currentMouseX) * 0.05;
+    currentMouseY += (targetMouseY - currentMouseY) * 0.05;
+  } else {
+    currentMouseX = 0;
+    currentMouseY = 0;
+  }
+
+  gCtx.clearRect(0, 0, galaxyCanvas.width, galaxyCanvas.height);
+
+  // Deep space subtle nebula gradients
+  const g1 = gCtx.createRadialGradient(
+    galaxyCanvas.width * 0.2 + currentMouseX * 2,
+    galaxyCanvas.height * 0.3 + currentMouseY * 2,
+    50,
+    galaxyCanvas.width * 0.2,
+    galaxyCanvas.height * 0.3,
+    galaxyCanvas.width * 0.4
+  );
+  g1.addColorStop(0, 'rgba(163, 230, 53, 0.06)');
+  g1.addColorStop(1, 'transparent');
+  gCtx.fillStyle = g1;
+  gCtx.fillRect(0, 0, galaxyCanvas.width, galaxyCanvas.height);
+
+  const g2 = gCtx.createRadialGradient(
+    galaxyCanvas.width * 0.8 - currentMouseX * 1.5,
+    galaxyCanvas.height * 0.7 - currentMouseY * 1.5,
+    50,
+    galaxyCanvas.width * 0.8,
+    galaxyCanvas.height * 0.7,
+    galaxyCanvas.width * 0.45
+  );
+  g2.addColorStop(0, 'rgba(59, 130, 246, 0.05)');
+  g2.addColorStop(1, 'transparent');
+  gCtx.fillStyle = g2;
+  gCtx.fillRect(0, 0, galaxyCanvas.width, galaxyCanvas.height);
+
+  // Stars rendering
+  for (let s of stars) {
+    const shiftX = s.x + currentMouseX * s.depth;
+    const shiftY = s.y + currentMouseY * s.depth;
+    
+    // Twinkle
+    s.alpha += s.speed;
+    if (s.alpha > 1 || s.alpha < 0.2) s.speed = -s.speed;
+
+    gCtx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.1, s.alpha)})`;
+    gCtx.beginPath();
+    gCtx.arc(shiftX, shiftY, s.radius, 0, Math.PI * 2);
+    gCtx.fill();
+  }
+
+  requestAnimationFrame(drawGalaxy);
+}
+requestAnimationFrame(drawGalaxy);
+
+// Synthesizer Web Audio API (Zero audio files needed, pure clean synthesizer)
+let audioCtx = null;
 function initAudio() {
   if (!audioCtx) {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -850,9 +1077,9 @@ function playPop() {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.08);
-    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+    osc.frequency.setValueAtTime(650, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(220, audioCtx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.14, audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
     osc.connect(gain);
     gain.connect(audioCtx.destination);
@@ -883,16 +1110,16 @@ function playSuccessChime() {
 }
 
 // Particle Canvas Burst
-const canvas = $('burstCanvas');
-const ctx = canvas.getContext('2d');
+const burstCanvas = document.getElementById('burstCanvas');
+const bCtx = burstCanvas.getContext('2d');
 let particles = [];
 
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+function resizeBurstCanvas() {
+  burstCanvas.width = window.innerWidth;
+  burstCanvas.height = window.innerHeight;
 }
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
+window.addEventListener('resize', resizeBurstCanvas);
+resizeBurstCanvas();
 
 function triggerBurst(x, y) {
   if (reducedMotion) return;
@@ -914,24 +1141,24 @@ function triggerBurst(x, y) {
 
 function updateParticles() {
   if (particles.length > 0) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    bCtx.clearRect(0, 0, burstCanvas.width, burstCanvas.height);
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
       p.x += p.vx;
       p.y += p.vy;
-      p.vy += 0.12; // gravity
+      p.vy += 0.12;
       p.alpha -= p.decay;
       if (p.alpha <= 0) {
         particles.splice(i, 1);
         continue;
       }
-      ctx.globalAlpha = p.alpha;
-      ctx.fillStyle = p.color;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fill();
+      bCtx.globalAlpha = p.alpha;
+      bCtx.fillStyle = p.color;
+      bCtx.beginPath();
+      bCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      bCtx.fill();
     }
-    ctx.globalAlpha = 1;
+    bCtx.globalAlpha = 1;
   }
   requestAnimationFrame(updateParticles);
 }
@@ -943,34 +1170,31 @@ const T = {
   en: {
     app_name: "2BAC-PC-11 Rating",
     search_placeholder: "Search by name, class, tag… (Ctrl+K)",
-    create_profile: "+ Add Image",
+    create_profile: "+ Post Photo",
     tab_recommended: "Recommended",
     tab_foryou: "For You",
     tab_saved: "Saved",
     tab_leaderboard: "Leaderboard",
     joined: "Joined:",
-    users: "students",
-    no_recs: "No photos published yet.",
-    recs_empty_sub: "Check back soon when owners post new photos for the class to rate!",
+    users: "classmates",
+    no_recs: "No photos posted yet.",
+    recs_empty_sub: "Check back soon when owners post photos for the class to rate!",
     no_fy: "Nothing personalized yet.",
-    fy_empty_sub: "Rate and react to some photos first to build your taste!",
-    lb_title: "Top Rated Showcase",
-    lb_subtitle: "Ranked by creativity, quality, and community ratings",
-    signin_prompt: "Sign in with Google to explore, rate creativity, share reactions, and join the conversation.",
+    fy_empty_sub: "Rate and react to some photos first to build your profile!",
+    lb_title: "Top Baddies & Icons Leaderboard",
+    lb_subtitle: "Ranked by community looks, outfit, and vibe score",
+    signin_prompt: "Sign in with Google to explore, rate looks & vibe, share reactions, and join the conversation.",
     signin_google: "Continue with Google",
     welcome_onboard: "Welcome to 2BAC-PC-11 Rating",
-    disclaimer_highlight: "\"This site is only for fun. Rate the creativity, quality, editing and presentation of the images — never the physical appearance of people.\"",
-    disclaimer_details: "Harassment, offensive commentary, and bullying are strictly forbidden. Moderation is active.",
     nickname: "Nickname (Mandatory)",
     avatar_choice: "Profile Picture",
     use_google_photo: "Use Google photo",
     use_url_photo: "Direct image URL",
-    accept_terms: "I understand & accept the community rules, pledge to rate fairly based on image creativity, and respect all classmates.",
     enter_site: "Enter 2BAC-PC-11 Rating",
-    new_profile: "Publish New Photo",
-    name: "Title / Subject Name",
+    new_profile: "Post New Photo",
+    name: "Subject Name / Title",
     grade: "Category / Class",
-    description: "Description / Creative Context",
+    description: "Context / Outfit & Vibe Description",
     image_url: "Direct Image URL",
     img_help_toggle: "⚡ How to get a direct image URL (Free conversion)",
     create: "Publish to Feed",
@@ -978,14 +1202,14 @@ const T = {
     rate: "Submit Vote",
     reactions: "Reactions",
     comments: "Comments & Discussion",
-    add_comment: "Add a positive, creative comment…",
+    add_comment: "Add a comment or hype up the look…",
     send: "Post",
     report_image: "Report Photo",
     report_title: "Report Content",
     report_reason: "Reason",
-    r_harassment: "Bullying / Harassment / Appearance rating",
+    r_harassment: "Extreme disrespect / Harassment",
     r_inappropriate: "Inappropriate content",
-    r_spam: "Spam or unwanted promotion",
+    r_spam: "Spam or troll",
     r_other: "Other rule violation",
     report_details: "Details (optional)",
     submit_report: "Submit Report to Owners",
@@ -1005,7 +1229,7 @@ const T = {
   fr: {
     app_name: "2BAC-PC-11 Rating",
     search_placeholder: "Rechercher par nom, classe, tag… (Ctrl+K)",
-    create_profile: "+ Ajouter image",
+    create_profile: "+ Publier photo",
     tab_recommended: "Recommandés",
     tab_foryou: "Pour vous",
     tab_saved: "Enregistrés",
@@ -1016,23 +1240,20 @@ const T = {
     recs_empty_sub: "Revenez bientôt lorsque les propriétaires publieront de nouvelles photos !",
     no_fy: "Rien de personnalisé pour l'instant.",
     fy_empty_sub: "Notez et réagissez à quelques photos pour créer votre profil !",
-    lb_title: "Top Créativité",
-    lb_subtitle: "Classé selon la créativité, la qualité et les votes",
-    signin_prompt: "Connectez-vous avec Google pour explorer, voter, réagir et commenter.",
+    lb_title: "Top Classement Baddies",
+    lb_subtitle: "Classé selon le style, le look et les votes",
+    signin_prompt: "Connectez-vous avec Google pour explorer, voter sur les looks et réagir.",
     signin_google: "Continuer avec Google",
     welcome_onboard: "Bienvenue sur 2BAC-PC-11 Rating",
-    disclaimer_highlight: "\"Ce site est fait uniquement pour s'amuser. Évaluez la créativité, la qualité, l'édition et la mise en valeur des photos — jamais l'apparence physique des personnes.\"",
-    disclaimer_details: "Le harcèlement et les moqueries sont strictement interdits.",
     nickname: "Pseudo (Obligatoire)",
     avatar_choice: "Photo de profil",
     use_google_photo: "Photo Google",
     use_url_photo: "URL d'image directe",
-    accept_terms: "Je comprends et j'accepte les règles, et je m'engage à respecter mes camarades.",
     enter_site: "Entrer sur 2BAC-PC-11",
     new_profile: "Publier une photo",
-    name: "Titre / Sujet",
+    name: "Titre / Nom",
     grade: "Classe / Catégorie",
-    description: "Description / Contexte créatif",
+    description: "Description / Style & Vibe",
     image_url: "URL directe de l'image",
     img_help_toggle: "⚡ Comment obtenir un lien direct d'image",
     create: "Publier",
@@ -1040,12 +1261,12 @@ const T = {
     rate: "Voter",
     reactions: "Réactions",
     comments: "Commentaires & Discussion",
-    add_comment: "Ajouter un commentaire positif…",
+    add_comment: "Ajouter un commentaire…",
     send: "Envoyer",
     report_image: "Signaler la photo",
     report_title: "Signaler le contenu",
     report_reason: "Raison",
-    r_harassment: "Harcèlement / Jugement sur le physique",
+    r_harassment: "Manque de respect / Harcèlement",
     r_inappropriate: "Contenu inapproprié",
     r_spam: "Spam",
     r_other: "Autre violation",
@@ -1066,7 +1287,7 @@ const T = {
   ar: {
     app_name: "2BAC-PC-11 Rating",
     search_placeholder: "ابحث بالاسم أو القسم… (Ctrl+K)",
-    create_profile: "+ إضافة صورة",
+    create_profile: "+ نشر صورة",
     tab_recommended: "موصى به",
     tab_foryou: "لك",
     tab_saved: "المحفوظات",
@@ -1078,22 +1299,19 @@ const T = {
     no_fy: "لا يوجد محتوى مخصص بعد.",
     fy_empty_sub: "قيّم وتفاعل مع بعض الصور أولاً!",
     lb_title: "قائمة الأفضل تقييماً",
-    lb_subtitle: "ترتيب حسب الإبداع والجودة وتصويت المجتمع",
+    lb_subtitle: "ترتيب حسب المظهر والستايل وتصويت الزملاء",
     signin_prompt: "سجل الدخول بGoogle للاستكشاف والتقييم والتفاعل.",
     signin_google: "المتابعة بحساب Google",
     welcome_onboard: "مرحباً بك في 2BAC-PC-11 Rating",
-    disclaimer_highlight: "\"هذا الموقع للمتعة فقط. قيّم الإبداع وجودة التعديل وطريقة تقديم الصورة — ولا تقيّم المظهر الخارجي أو شكل الأشخاص أبداً.\"",
-    disclaimer_details: "التنمر أو الإساءة ممنوعة تماماً. الإشراف مفعل دائماً.",
     nickname: "اللقب (إجباري)",
     avatar_choice: "صورة الملف الشخصي",
     use_google_photo: "صورة حساب Google",
     use_url_photo: "رابط صورة مباشر",
-    accept_terms: "أفهم وأقبل شروط الموقع وأتعهد باحترام زملائي والتقييم بنزاهة.",
     enter_site: "دخول 2BAC-PC-11",
     new_profile: "نشر صورة جديدة",
     name: "العنوان أو الاسم",
     grade: "القسم / الصنف",
-    description: "الوصف / السياق الإبداعي",
+    description: "الوصف / تفاصيل الستايل",
     image_url: "رابط الصورة المباشر",
     img_help_toggle: "⚡ كيفية تحويل الصورة إلى رابط مباشر",
     create: "نشر في الصفحة",
@@ -1101,14 +1319,14 @@ const T = {
     rate: "إرسال التقييم",
     reactions: "ردود الفعل",
     comments: "التعليقات والمناقشة",
-    add_comment: "أضف تعليقاً إيجابياً ومحترماً…",
+    add_comment: "أضف تعليقاً…",
     send: "إرسال",
     report_image: "الإبلاغ عن صورة",
     report_title: "الإبلاغ عن محتوى",
     report_reason: "السبب",
-    r_harassment: "تنمر / تعليق على الشكل الخارجي",
+    r_harassment: "إساءة شديدة / تنمر",
     r_inappropriate: "محتوى غير لائق",
-    r_spam: "سبام أو إعلانات",
+    r_spam: "سبام أو تكرار",
     r_other: "مخالفة أخرى",
     report_details: "تفاصيل (اختياري)",
     submit_report: "إرسال الإبلاغ للمشرفين",
@@ -1197,20 +1415,25 @@ function timeAgo(ts) {
 }
 
 function isOwner(user) {
-  if (!user || !user.email) return false;
-  const em = user.email.toLowerCase().trim();
-  return OWNER_EMAILS.includes(em);
+  if (!user) return false;
+  const em = (user.email || userProfile?.email || '').toLowerCase().trim();
+  if (OWNER_EMAILS.includes(em)) return true;
+  if (userProfile && userProfile.role === 'owner') return true;
+  return false;
 }
 function isAdmin() { return isOwner(currentUser); }
 
-function getOwnerBadge(email) {
-  if (!email) return '';
-  const em = email.toLowerCase().trim();
-  if (em === 'anaflousoussama555@gmail.com') {
-    return `<span class="badge-owner px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 shadow-sm">👑 Owner / CEO</span>`;
+// Generates the prominent green Owner Badge (EMAILS REMAIN 100% PRIVATE)
+function getOwnerBadge(user) {
+  const em = (user?.email || userProfile?.email || '').toLowerCase().trim();
+  if (em === 'anaflousoussama555@gmail.com' || (userProfile && userProfile.nickname && userProfile.nickname.toLowerCase().includes('oussama'))) {
+    return `<span class="badge-owner px-2 py-0.5 rounded-full text-[10px] font-black inline-flex items-center gap-1 shadow-sm flex-shrink-0">👑 Owner / CEO</span>`;
   }
-  if (em === 'yagsahz@gmail.com') {
-    return `<span class="badge-owner px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 shadow-sm">👑 Co-Owner / VP</span>`;
+  if (em === 'yagsahz@gmail.com' || (userProfile && userProfile.nickname && userProfile.nickname.toLowerCase().includes('yasser'))) {
+    return `<span class="badge-owner px-2 py-0.5 rounded-full text-[10px] font-black inline-flex items-center gap-1 shadow-sm flex-shrink-0">👑 Co-Owner / VP</span>`;
+  }
+  if (isOwner(user)) {
+    return `<span class="badge-owner px-2 py-0.5 rounded-full text-[10px] font-black inline-flex items-center gap-1 shadow-sm flex-shrink-0">👑 Owner</span>`;
   }
   return '';
 }
@@ -1221,6 +1444,41 @@ function nickname() {
 function avatarUrl() {
   return (userProfile && userProfile.avatarUrl) || (currentUser && currentUser.photoURL) || '';
 }
+
+// Check Cutscene Sequence on first visit
+function checkCutscene() {
+  const introSeen = localStorage.getItem('cutscene_seen_v2');
+  if (!introSeen) {
+    openModal('cutsceneModal');
+    $('cutsceneStep1').classList.remove('hidden');
+    $('cutsceneStep2').classList.add('hidden');
+  }
+}
+
+$('cutsceneNextBtn').addEventListener('click', () => {
+  playPop();
+  $('cutsceneStep1').classList.add('hidden');
+  $('cutsceneStep2').classList.remove('hidden');
+});
+
+$('cutsceneAcceptCheck').addEventListener('change', (e) => {
+  const btn = $('cutsceneEnterBtn');
+  if (e.target.checked) {
+    btn.disabled = false;
+    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+  } else {
+    btn.disabled = true;
+    btn.classList.add('opacity-50', 'cursor-not-allowed');
+  }
+});
+
+$('cutsceneEnterBtn').addEventListener('click', () => {
+  localStorage.setItem('cutscene_seen_v2', 'true');
+  playSuccessChime();
+  closeModal('cutsceneModal');
+  showToast('Welcome to 2BAC-PC-11 Rating! ✨');
+  if (!currentUser) openModal('authModal');
+});
 
 // Boot application
 async function boot() {
@@ -1250,7 +1508,7 @@ async function boot() {
       if (profilesUnsub) { profilesUnsub(); profilesUnsub = null; }
       profiles = [];
       renderRecommended(); renderForYou(); renderSaved(); renderLeaderboard();
-      openModal('authModal');
+      checkCutscene();
     }
   });
 
@@ -1272,6 +1530,7 @@ async function loadUserProfile(user) {
     } else {
       userProfile = null;
     }
+    renderAuth();
   } catch (e) {
     console.error('Error loading profile:', e);
   }
@@ -1311,17 +1570,11 @@ function setupOnboarding(user) {
   $('onboardSubmit').onclick = async () => {
     const nick = $('nickInput').value.trim();
     const bio = ($('bioInput').value || '').trim();
-    const accepted = $('acceptDisclaimer').checked;
     const err = $('onboardErr');
     err.classList.add('hidden');
 
     if (!nick || nick.length < 2) {
       err.textContent = 'Please choose a nickname (at least 2 characters).';
-      err.classList.remove('hidden');
-      return;
-    }
-    if (!accepted) {
-      err.textContent = 'You must accept the community rules to enter.';
       err.classList.remove('hidden');
       return;
     }
@@ -1351,14 +1604,14 @@ function setupOnboarding(user) {
         else t.set(cRef, { userCount: 1 });
       });
 
-      userProfile = { uid: user.uid, nickname: nick, avatarUrl: finalAvatar, bio, role, savedImages: [...savedIds], onboarded: true };
+      userProfile = { uid: user.uid, email: user.email, nickname: nick, avatarUrl: finalAvatar, bio, role, savedImages: [...savedIds], onboarded: true };
       closeModal('onboardModal');
       closeModal('authModal');
       if (!profilesUnsub) loadProfiles();
       loadJoinCount();
       renderAuth();
       playSuccessChime();
-      showToast('Welcome to 2BAC-PC-11, ' + nick + '!');
+      showToast('Welcome, ' + nick + '!');
     } catch (e) {
       err.textContent = e.message;
       err.classList.remove('hidden');
@@ -1373,6 +1626,71 @@ async function loadJoinCount() {
   });
 }
 
+// Full Profile Edit Functionality (Accessible Anytime)
+function openProfileEditModal() {
+  if (!currentUser) { openModal('authModal'); return; }
+  playPop();
+  $('editNickInput').value = nickname();
+  $('editNickLabel').textContent = nickname();
+  $('editBioInput').value = userProfile?.bio || '';
+  $('editAvatarUrlInput').value = userProfile?.avatarUrl || '';
+  $('editAvPreview').src = avatarUrl() || 'logo.jpg';
+  $('profileEditErr').classList.add('hidden');
+  openModal('profileEditModal');
+}
+
+$('editAvatarUrlInput').addEventListener('input', () => {
+  const url = $('editAvatarUrlInput').value.trim();
+  if (/^https?:\/\/.+/i.test(url)) {
+    $('editAvPreview').src = url;
+  }
+});
+
+$('useGoogleAvBtn').onclick = () => {
+  if (currentUser && currentUser.photoURL) {
+    $('editAvatarUrlInput').value = currentUser.photoURL;
+    $('editAvPreview').src = currentUser.photoURL;
+  }
+};
+
+$('saveProfileBtn').onclick = async () => {
+  const newNick = $('editNickInput').value.trim();
+  const newBio = $('editBioInput').value.trim();
+  const newAvatar = $('editAvatarUrlInput').value.trim() || avatarUrl();
+  const err = $('profileEditErr');
+  err.classList.add('hidden');
+
+  if (!newNick || newNick.length < 2) {
+    err.textContent = 'Nickname must be at least 2 characters.';
+    err.classList.remove('hidden');
+    return;
+  }
+
+  try {
+    await FB.updateDoc(FB.doc(FB.db, 'users', currentUser.uid), {
+      nickname: newNick,
+      bio: newBio,
+      avatarUrl: newAvatar,
+      updatedAt: FB.serverTimestamp()
+    });
+
+    if (userProfile) {
+      userProfile.nickname = newNick;
+      userProfile.bio = newBio;
+      userProfile.avatarUrl = newAvatar;
+    }
+
+    renderAuth();
+    closeModal('profileEditModal');
+    playSuccessChime();
+    showToast('Profile updated! ✨');
+  } catch (e) {
+    err.textContent = e.message;
+    err.classList.remove('hidden');
+  }
+};
+
+// Render Navbar Auth Area (Prominent Green Badge ALWAYS visible for Owners)
 function renderAuth() {
   const area = $('authArea');
   const createBtn = $('createBtn');
@@ -1385,31 +1703,28 @@ function renderAuth() {
     }
 
     const av = avatarUrl();
-    const ownerBadge = isOwner(currentUser) ? getOwnerBadge(currentUser.email) : '';
+    const ownerBadge = isOwner(currentUser) ? getOwnerBadge(currentUser) : '';
 
     area.innerHTML = `
       <div class="flex items-center gap-2">
-        <div class="relative cursor-pointer" id="userMenuBtn">
-          ${av ? `<img src="${escapeAttr(av)}" class="w-8 h-8 rounded-full border border-c object-cover" />` : `<div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs" style="background:var(--accent);color:#000">${escapeHtml(nickname().charAt(0).toUpperCase())}</div>`}
-        </div>
-        <div class="hidden sm:flex flex-col items-start leading-tight">
-          <div class="flex items-center gap-1.5">
-            <span class="text-xs font-bold text-white">${escapeHtml(nickname())}</span>
-            ${ownerBadge}
-          </div>
+        <div class="flex items-center gap-1.5 p-1 rounded-full hover:bg-card2 cursor-pointer transition-colors" id="headerProfileTrigger" title="Click to edit profile">
+          ${av ? `<img src="${escapeAttr(av)}" class="w-8 h-8 rounded-full border border-lime-400 object-cover flex-shrink-0" />` : `<div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs" style="background:var(--accent);color:#000">${escapeHtml(nickname().charAt(0).toUpperCase())}</div>`}
+          <span class="text-xs font-bold text-white max-w-[110px] truncate">${escapeHtml(nickname())}</span>
+          ${ownerBadge}
         </div>
         <button id="signOutBtn" title="Sign out" class="p-1.5 rounded-full hover:bg-card2 text-muted2 hover:text-white transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
         </button>
       </div>`;
 
+    $('headerProfileTrigger').addEventListener('click', openProfileEditModal);
     $('signOutBtn').addEventListener('click', async () => {
       await FB.signOut(FB.auth);
       showToast('Signed out.');
     });
   } else {
     createBtn.classList.add('hidden');
-    area.innerHTML = `<button id="signInBtn" class="px-4 py-2 rounded-full text-xs font-semibold btn-primary">${T[currentLang].signin_google}</button>`;
+    area.innerHTML = `<button id="signInBtn" class="px-4 py-2 rounded-full text-xs font-bold btn-primary">${T[currentLang].signin_google}</button>`;
     $('signInBtn').addEventListener('click', () => openModal('authModal'));
   }
 }
@@ -1434,7 +1749,7 @@ function loadProfiles() {
 }
 
 function cardSizeClass() {
-  return imgSize === 'small' ? 'h-36' : imgSize === 'large' ? 'h-72' : 'h-52';
+  return imgSize === 'small' ? 'h-40' : imgSize === 'large' ? 'h-80' : 'h-60';
 }
 
 function viralityScore(p) {
@@ -1458,8 +1773,8 @@ function viralityScore(p) {
 function cardHtml(p) {
   const avg = p.ratingCount ? (p.ratingSum / p.ratingCount).toFixed(1) : '—';
   const count = p.ratingCount || 0;
-  const warned = p.warned ? `<span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">⚠️ Warned</span>` : '';
-  const banned = p.banned ? `<span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40">Hidden</span>` : '';
+  const warned = p.warned ? `<span class="absolute top-2.5 left-2.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">⚠️ Warned</span>` : '';
+  const banned = p.banned ? `<span class="absolute top-2.5 left-2.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40">Hidden</span>` : '';
   const isSaved = savedIds.has(p.id);
   const bookmarkIcon = isSaved ? '★' : '☆';
   const bookmarkClass = isSaved ? 'text-lime-400 border-lime-400' : 'text-muted2 hover:text-white border-c';
@@ -1467,11 +1782,14 @@ function cardHtml(p) {
   const vScore = viralityScore(p);
   const hotBadge = vScore > 40 ? `<span class="badge-trending text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">🔥 Hot</span>` : '';
 
+  // Framing aspect fit
+  const imgFit = p.frameMode === 'contain' ? 'object-contain bg-black' : p.frameMode === 'square' ? 'aspect-square object-cover' : 'object-cover';
+
   return `
   <div class="bg-card2 border border-c rounded-2xl overflow-hidden card-click fade-in shadow-lg flex flex-col justify-between" data-open="${p.id}">
     <div>
-      <div class="relative overflow-hidden bg-black shimmer-box">
-        <img src="${escapeAttr(p.imageUrl)}" alt="${escapeAttr(p.name)}" class="w-full ${cardSizeClass()} object-cover opacity-90 transition-opacity duration-300" loading="lazy"
+      <div class="relative overflow-hidden bg-black/80 shimmer-box flex items-center justify-center">
+        <img src="${escapeAttr(p.imageUrl)}" alt="${escapeAttr(p.name)}" class="w-full ${cardSizeClass()} ${imgFit} opacity-90 transition-opacity duration-300" loading="lazy"
           onload="this.style.opacity=1"
           onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22><rect width=%22400%22 height=%22200%22 fill=%22%23111%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23555%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22>Broken link</text></svg>'" />
         ${warned}${banned}
@@ -1480,7 +1798,7 @@ function cardHtml(p) {
           <button data-quick-save="${p.id}" class="bg-black/75 backdrop-blur-md px-2 py-1 rounded-full text-xs font-bold border ${bookmarkClass} transition-colors" title="Bookmark">
             ${bookmarkIcon}
           </button>
-          <div class="bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-extrabold text-lime-400 border border-lime-500/30 flex items-center gap-1 shadow-md">
+          <div class="bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-black text-lime-400 border border-lime-500/30 flex items-center gap-1 shadow-md">
             <span>★</span> <span>${avg}</span><span class="text-[10px] text-muted2">/10</span>
           </div>
         </div>
@@ -1505,7 +1823,7 @@ function cardHtml(p) {
         <button data-quick-share="${escapeAttr(p.imageUrl)}" class="hover:text-white p-1" title="Share link">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8m-4-6-4-4-4 4m4-4v13"/></svg>
         </button>
-        <span class="text-lime-400 font-semibold group-hover:underline">Rate & Discuss →</span>
+        <span class="text-lime-400 font-bold group-hover:underline">Rate & Discuss →</span>
       </div>
     </div>
   </div>`;
@@ -1676,8 +1994,8 @@ function renderLeaderboard() {
         <div class="text-xs text-muted2 truncate">${escapeHtml(p.grade || '2BAC PC-11')} · ${p.ratingCount} vote${p.ratingCount === 1 ? '' : 's'}</div>
       </div>
       <div class="text-right flex-shrink-0">
-        <div class="text-2xl font-extrabold text-lime-400">${avg}</div>
-        <div class="text-[10px] text-muted2">Average score</div>
+        <div class="text-2xl font-black text-lime-400">${avg}</div>
+        <div class="text-[10px] text-muted2">Community Score</div>
       </div>
     </div>`;
   }).join('');
@@ -1700,7 +2018,7 @@ const descInput = $('pDesc');
 descInput.addEventListener('input', () => {
   $('descCount').textContent = descInput.value.length;
   const hint = $('descHint');
-  hint.style.color = descInput.value.length < 30 ? '#f87171' : 'var(--muted)';
+  hint.style.color = descInput.value.length < 15 ? '#f87171' : 'var(--muted)';
 });
 
 // Create Profile (OWNERS ONLY)
@@ -1718,9 +2036,10 @@ async function createProfile() {
   const grade = $('pGrade').value.trim() || '2BAC PC-11';
   const description = descInput.value.trim();
   const imageUrl = imgUrlInput.value.trim();
+  const frameMode = $('pFrameMode').value;
 
-  if (!name) { err.textContent = 'Please provide a title.'; err.classList.remove('hidden'); return; }
-  if (description.length < 30) { err.textContent = 'Description should be at least 30 characters.'; err.classList.remove('hidden'); return; }
+  if (!name) { err.textContent = 'Please provide a name/title.'; err.classList.remove('hidden'); return; }
+  if (description.length < 15) { err.textContent = 'Description should be at least 15 characters.'; err.classList.remove('hidden'); return; }
   if (!/^https?:\/\/.+/i.test(imageUrl)) { err.textContent = 'Valid HTTP or HTTPS image URL required.'; err.classList.remove('hidden'); return; }
 
   btn.disabled = true;
@@ -1732,6 +2051,7 @@ async function createProfile() {
       grade,
       description,
       imageUrl,
+      frameMode,
       createdBy: currentUser.uid,
       createdByName: nickname(),
       createdByEmail: currentUser.email,
@@ -1766,7 +2086,16 @@ function resetCreateForm() {
   $('imgPreview').classList.add('hidden');
 }
 
-// Open Detail Modal
+// Lightbox Open
+function openLightbox(url, title) {
+  playPop();
+  $('lightboxImg').src = url;
+  $('lightboxCaption').textContent = title || 'Full Size View';
+  openModal('lightboxModal');
+}
+$('lightboxClose').onclick = () => closeModal('lightboxModal');
+
+// Open Detail Modal (Full Aspect Ratio + Lightbox Trigger)
 async function openDetail(id) {
   currentProfileId = id;
   currentReplyTarget = null;
@@ -1780,12 +2109,17 @@ async function openDetail(id) {
 
   $('dName').textContent = p.name;
   $('dImg').src = p.imageUrl;
-  $('dImgLink').href = p.imageUrl;
+  $('dImg').onclick = () => openLightbox(p.imageUrl, p.name);
+  $('dLightboxBtn').onclick = () => openLightbox(p.imageUrl, p.name);
+
   $('dGrade').textContent = p.grade ? p.grade : '2BAC PC-11';
-  $('dAuthor').textContent = 'Published by ' + (p.createdByName || 'Owner');
+  $('dAuthor').textContent = 'By ' + (p.createdByName || 'Owner');
   $('dDesc').textContent = p.description || '';
 
-  const isOwnerPost = p.createdByEmail && OWNER_EMAILS.includes(p.createdByEmail.toLowerCase().trim());
+  // Show official owner tag if created by an owner UID or owner email
+  const isOwnerPost = (p.createdByEmail && OWNER_EMAILS.includes(p.createdByEmail.toLowerCase().trim())) ||
+                      (p.createdByName && (p.createdByName.toLowerCase().includes('oussama') || p.createdByName.toLowerCase().includes('yasser'))) ||
+                      (currentUser && isOwner(currentUser) && p.createdBy === currentUser.uid);
   $('dOwnerTag').classList.toggle('hidden', !isOwnerPost);
 
   const dBtn = $('dBookmarkBtn');
@@ -1796,9 +2130,16 @@ async function openDetail(id) {
 
   renderScore(p);
 
+  // Rating input state
   $('ratingInput').value = myRating !== null ? myRating : '';
   $('ratingErr').classList.add('hidden');
-  $('ratingMsg').textContent = myRating !== null ? `Your vote: ${myRating}/10` : '';
+  if (myRating !== null) {
+    $('ratingMsg').textContent = `Your vote: ${myRating}/10`;
+    $('ratingBtnText').textContent = 'Update Vote';
+  } else {
+    $('ratingMsg').textContent = '';
+    $('ratingBtnText').textContent = 'Submit Vote';
+  }
 
   $('adminBox').classList.toggle('hidden', !isAdmin());
 
@@ -1821,8 +2162,10 @@ async function openDetail(id) {
       if (myRating !== null) {
         $('ratingInput').value = myRating;
         $('ratingMsg').textContent = `Your vote: ${myRating}/10`;
+        $('ratingBtnText').textContent = 'Update Vote';
       } else {
         $('ratingMsg').textContent = '';
+        $('ratingBtnText').textContent = 'Submit Vote';
       }
     });
   }
@@ -1905,7 +2248,7 @@ async function reactEmoji(emoji, clientX, clientY) {
   }
 }
 
-// Rate Profile with Particle Burst
+// Rate Profile with Immediate Edit Support
 async function rateProfile(overrideVal, evt) {
   if (!currentUser) { openModal('authModal'); return; }
 
@@ -1955,11 +2298,13 @@ async function rateProfile(overrideVal, evt) {
     });
 
     $('ratingInput').value = v;
+    $('ratingBtnText').textContent = 'Update Vote';
+    $('ratingMsg').textContent = `Your vote: ${v}/10`;
     playSuccessChime();
     const x = evt ? evt.clientX : window.innerWidth / 2;
     const y = evt ? evt.clientY : window.innerHeight / 2;
     triggerBurst(x, y);
-    showToast('Vote registered: ' + v + '/10');
+    showToast('Vote saved: ' + v + '/10 ✨');
   } catch (e) {
     $('ratingErr').textContent = e.message;
     $('ratingErr').classList.remove('hidden');
@@ -1970,7 +2315,7 @@ async function rateProfile(overrideVal, evt) {
 function renderSortedComments() {
   const list = $('commentsList');
   if (!rawComments.length) {
-    list.innerHTML = `<p class="text-xs text-muted2 py-4 text-center">No comments yet. Start the conversation!</p>`;
+    list.innerHTML = `<p class="text-xs text-muted2 py-4 text-center">No comments yet. Be the first to drop a comment!</p>`;
     return;
   }
 
@@ -2013,6 +2358,9 @@ function renderSortedComments() {
   list.querySelectorAll('[data-delete-cid]').forEach(btn => {
     btn.addEventListener('click', () => deleteComment(btn.dataset.deleteCid));
   });
+  list.querySelectorAll('[data-open-author-edit]').forEach(btn => {
+    btn.addEventListener('click', openProfileEditModal);
+  });
 }
 
 function renderCommentsTree(comments) {
@@ -2032,8 +2380,9 @@ function renderCommentsTree(comments) {
 }
 
 function renderCommentCard(c, isReply) {
-  const isOwnerComment = c.email && OWNER_EMAILS.includes(c.email.toLowerCase().trim());
-  const ownerBadge = isOwnerComment ? getOwnerBadge(c.email) : '';
+  const isOwnerComment = (c.email && OWNER_EMAILS.includes(c.email.toLowerCase().trim())) ||
+                         (c.name && (c.name.toLowerCase().includes('oussama') || c.name.toLowerCase().includes('yasser')));
+  const ownerBadge = isOwnerComment ? getOwnerBadge({ email: c.email }) : '';
   const isMine = currentUser && currentUser.uid === c.uid;
   const canDelete = isAdmin() || isMine;
   const likes = c.likeCount || 0;
@@ -2044,7 +2393,7 @@ function renderCommentCard(c, isReply) {
   <div class="bg-bg border border-c ${c.pinned ? 'border-lime-500/50 bg-lime-500/5' : ''} rounded-2xl p-3 text-xs space-y-1.5 shadow-sm" id="comment-${c.id}">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2 flex-wrap">
-        <span class="font-bold text-white text-xs sm:text-sm">${escapeHtml(c.name || 'Student')}</span>
+        <span class="font-bold text-white text-xs sm:text-sm ${isMine ? 'cursor-pointer hover:underline text-lime-400' : ''}" ${isMine ? 'data-open-author-edit="true"' : ''}>${escapeHtml(c.name || 'Student')}</span>
         ${ownerBadge}
         ${pinnedTag}
         <span class="text-[10px] text-muted2">${timeAgo(c.createdAt)} ${editedTag}</span>
@@ -2229,14 +2578,14 @@ function checkNotifications() {
     {
       id: 'welcome_notice',
       title: '👑 Welcome to 2BAC-PC-11 Rating',
-      body: 'Explore photos published by your class owners, rate image creativity, and bookmark your favorites!',
+      body: 'Check out the class ratings, vote on looks & vibe, bookmark your favorites, and keep it fun!',
       time: 'Official',
       unread: !readNotifs.has('welcome_notice')
     },
     {
       id: 'golden_rule_notice',
       title: '⚖️ Community Rule Reminder',
-      body: 'Always vote on creativity, quality, and editing — never on looks or physical appearance.',
+      body: 'Site is temporary fun between classmates. Be respectful and enjoy the vibes!',
       time: 'Safety',
       unread: !readNotifs.has('golden_rule_notice')
     }
@@ -2256,7 +2605,7 @@ function checkNotifications() {
     </div>
   `).join('') + `
     <div class="pt-2 text-center">
-      <button id="markReadBtn" class="text-xs text-lime-400 hover:underline">Mark all as read</button>
+      <button id="markReadBtn" class="text-xs text-lime-400 hover:underline font-bold">Mark all as read</button>
     </div>`;
 
   $('markReadBtn').onclick = () => {
@@ -2543,6 +2892,11 @@ $('motionToggle').addEventListener('change', (e) => {
 $('testSoundBtn').onclick = () => {
   initAudio();
   playSuccessChime();
+};
+
+$('settingsEditProfileBtn').onclick = () => {
+  closeModal('settingsModal');
+  openProfileEditModal();
 };
 
 // About, FAQ & Changelog Triggers

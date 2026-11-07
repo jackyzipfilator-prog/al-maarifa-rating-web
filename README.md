@@ -1,6 +1,6 @@
 # 2BAC-PC-11 Rating
 
-The official social creativity showcase & rating web app for **2BAC PC-11** students and friends. Designed for celebrating creativity, photography skills, image editing, and shared memories.
+The official rating & social hub for **2BAC PC-11** students. Built for rating classmates on looks, visual style, outfits, and personality vibes in a fun, playful, temporary space.
 
 Powered by Firebase Auth (Google) + Cloud Firestore (Spark/Free plan). Hosted on Vercel / GitHub Pages.
 
@@ -8,63 +8,54 @@ Powered by Firebase Auth (Google) + Cloud Firestore (Spark/Free plan). Hosted on
 
 ## Owners & Administration
 Only these two authorized emails hold full administrative, publishing, and moderation privileges:
-- `anaflousoussama555@gmail.com` — **Main Owner / CEO** (Oussama)
-- `Yagsahz@gmail.com` / `yagsahz@gmail.com` — **Vice President / Co-Owner** (Yasser)
+- **Oussama** — Main Owner / CEO
+- **Yasser** — Vice President / Co-Owner
+
+*(Owner Gmail addresses remain 100% private and are never exposed publicly on the site).*
 
 All other visitors enter as **Guests** with mandatory nickname selection and community rules acceptance.
 
 ---
 
-## Implemented Features Across All Phases (Complete)
+## Core Features & Updates
 
-### Phase 1 — Foundation & Core Identity
-* **Official Branding**: Neon lime atom hexagon logo (`logo.jpg`), dark space theme, and prominent green CEO & Co-Owner badges.
-* **Dual-Owner Security**: Only the two owners can publish new photos, ban/warn, or delete.
-* **Guided Onboarding**: Mandatory ethics agreement (*"Rate creativity, editing, and presentation — never physical appearance"*) and mandatory nickname.
-* **Algorithmic Feed**: Chronological "Feed" removed; "Recommended" virality feed with recency boost promoted to default.
-* **0.1–10.0 Rating System**: Atomic 1-vote-per-guest protection with quick-rate shortcut buttons.
+### 1. New Concept & Vibe
+- **Main Theme**: Playful, casual baddie & vibe check between classmates.
+- **Rating Focus**: Looks / visual attractiveness, style & outfits, personality / vibe.
+- **Temporary Fun Disclaimer**: Explicitly framed as temporary fun between classmates that will be deleted after a period of time.
 
-### Phase 2 — Social Experience & Moderation
-* **Instagram-Style Comments**:
-  * Comment pinning by owners (pins to top with a 📌 badge).
-  * Live sorting by Top Liked, Newest, and Oldest.
-  * Inline comment editing with `(edited)` markers.
-  * Threaded replies with `@Nickname` targeting.
-  * Separate comment reporting and liking.
-* **Saved Bookmarks Collection**: Private bookmarking tab for students to save their favorite photos.
-* **In-App Notifications**: Header bell notification badge for official updates and announcements.
-* **Owner Moderation Queue**: Dedicated queue with search and reason filters.
+### 2. Cutscene-Style Intro
+- **Step 1**: Animated greeting with official neon lime atom logo (`logo.jpg`) + *“Hello! Come and rate with us! ✨”*.
+- **Step 2**: Rules & community agreement (*“This is a site where we rate girls (and sometimes boys) on looks or personality. It is only for fun and goofing around between us. Be respectful. Do not take it too seriously.”*).
 
-### Phase 3 — Visual Polish, Motion & Audio Synthesizer
-* **Web Audio API Synthesizer**: Pure in-browser sound effects for votes, reactions, and clicks (off by default, toggleable in Settings with a sound preview button).
-* **Confetti & Particle Bursts**: Neon particle burst animations on rating submission and celebrations.
-* **Shimmer Placeholders**: Restrained shimmer loading skeletons while external images load.
-* **Keyboard Shortcuts**: `Escape` closes any modal; `Ctrl+K` or `/` instantly focuses search.
-* **Accessibility**: Reduced-motion toggle in Settings.
+### 3. Anytime Profile Editing
+- Users (Owners & Guests) can click their avatar or nickname in the navbar, comments, or settings anytime to:
+  - Change their **Nickname**.
+  - Update their **Profile Picture** by pasting any direct image URL (with live preview).
+  - Update their **Short Bio**.
 
-### Phase 4 — Community Extras & Expansion
-* **About & Community Rules / FAQ Modal**: Dedicated guide explaining the rating philosophy, privacy, and team.
-* **Student Idea & Suggestion Box**: Students can submit feature requests or feedback directly to Oussama and Yasser.
-* **Owner Ideas Viewer**: Tab inside the Moderation Queue to review student suggestions.
-* **Photo Link Sharing**: One-click link copying to share direct photo links with classmates.
-* **What's New Changelog**: Version history viewer.
+### 4. Interactive Parallax Galaxy Background
+- 3D parallax starfield with glowing neon nebulas that gently responds to mouse movements.
+- Respects reduced-motion settings.
+
+### 5. Aspect Ratio & Fullscreen Lightbox (No Cropping)
+- Images in detail view display in their real natural aspect ratio (9:16 portrait, landscape, or square) without unwanted cropping.
+- Clicking any image opens a distraction-free **Fullscreen Lightbox Viewer**.
+- Owners have an aspect ratio framing tool when posting photos.
+
+### 6. Rating Editing
+- Guests can change their previous rating anytime by selecting a new score and clicking **Update Vote**.
 
 ---
 
 ## Deployment & Setup
 
-### 1. Firebase Rules (IMPORTANT)
+### Firebase Rules
 Copy and paste the contents of `firestore.rules` into your Firebase Console:
 1. Open [Firebase Console](https://console.firebase.google.com) → Select project `al-maarifa-3fc45`.
 2. **Firestore Database** → **Rules** tab → Paste `firestore.rules` → Click **Publish**.
 *(Note: Storage rules do not need modification because image files are never hosted on Firebase Storage).*
 
-### 2. Running Locally or Deploying
+### Running Locally or Deploying
 - Run with VS Code "Live Server" or any local static server (`npx serve .` or `python -m http.server 3000`).
 - Deploy by committing with GitHub Desktop and pushing to GitHub (connected to Vercel).
-
----
-
-## Core Guidelines
-- **URL-Based Images Only**: The platform stores direct image URLs (from `postimages.org` or `imgto.link`), never hosting image files on Firebase Storage.
-- **Ethics Rule**: Ratings are strictly focused on image creativity, editing, and presentation — never physical appearance.

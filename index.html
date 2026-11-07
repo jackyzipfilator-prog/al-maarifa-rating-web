@@ -348,17 +348,6 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const F = { collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, runTransaction, where, limit, increment, getDoc, setDoc };
 
-let currentUser = null;
-let userProfile = null;
-let profiles = [];
-let profilesUnsub = null;
-let commentsUnsub = null;
-let myRatingUnsub = null;
-let reactionsUnsub = null;
-let myRating = null;
-let currentProfileId = null;
-let viewedIds = new Set(JSON.parse(localStorage.getItem('viewed') || '[]'));
-let imgSize = localStorage.getItem('imgSize') || 'medium';
 const EMOJIS = ['❤️','🔥','😂','😮','👍','🎉'];
 
 const T = {

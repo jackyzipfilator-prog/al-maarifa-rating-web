@@ -244,9 +244,6 @@
           <span id="notifBadge" class="hidden absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-lime-400 ring-2 ring-card2"></span>
         </button>
 
-        <button id="aboutBtn" class="p-2 rounded-full hover:bg-card2 border border-transparent hover:border-c transition-colors text-muted2 hover:text-white" aria-label="About & Rules" title="About & Rules">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>
-        </button>
 
         <button id="settingsBtn" class="p-2 rounded-full hover:bg-card2 border border-transparent hover:border-c transition-colors text-muted2 hover:text-white" aria-label="Settings" title="Settings">
           <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -523,6 +520,9 @@
       <button data-close="notifModal" class="text-muted2 hover:text-white">✕</button>
     </div>
     <div id="notifList" class="space-y-2.5"></div>
+    <div class="pt-3 mt-3 border-t border-c">
+      <button data-open-about="true" class="w-full py-2 rounded-xl text-xs font-semibold border border-c text-muted2 hover:text-white hover:border-lime-400 transition-colors">About & Rules / Concept</button>
+    </div>
   </div>
 </div>
 
@@ -958,14 +958,7 @@
       <button data-close="settingsModal" class="text-muted2 hover:text-white">✕</button>
     </div>
 
-    <div>
-      <label class="text-xs font-semibold text-muted2" data-i18n="theme">Theme</label>
-      <div class="mt-1 flex gap-2">
-        <button id="themeDark" class="flex-1 px-3 py-2 rounded-xl text-xs font-bold border border-c bg-bg text-white" data-i18n="dark_mode">Dark (Default)</button>
-        <button id="themeLight" class="flex-1 px-3 py-2 rounded-xl text-xs font-bold border border-c bg-bg text-white" data-i18n="light_mode">Light</button>
-      </div>
-    </div>
-
+    <!-- Theme locked to Dark Mode (no toggle) -->
     <div>
       <label class="text-xs font-semibold text-muted2" data-i18n="language">Language</label>
       <select id="langSelect" class="mt-1 w-full rounded-xl px-3 py-2 text-sm ring-accent bg-bg border border-c text-white">
@@ -1475,7 +1468,7 @@ function applyTheme(t) {
   document.documentElement.classList.toggle('light', t === 'light');
   document.documentElement.classList.toggle('dark', t !== 'light');
 }
-applyTheme(localStorage.getItem('theme') || 'dark');
+applyTheme('dark'); // locked to Dark Mode
 
 let currentUser = null, userProfile = null, profiles = [];
 let profilesUnsub = null, commentsUnsub = null, myRatingUnsub = null, reactionsUnsub = null;
@@ -1489,7 +1482,7 @@ let viewedIds = new Set(JSON.parse(localStorage.getItem('viewed') || '[]'));
 let readNotifs = new Set(JSON.parse(localStorage.getItem('read_notifs') || '[]'));
 let imgSize = localStorage.getItem('imgSize') || 'medium';
 
-function $(id) { return document.getElementById(id); }
+function $(id) { const el = document.getElementById(id); if (!el) { console.warn('Missing element:', id); return { addEventListener(){}, onclick:null, onchange:null, classList:{add(){},remove(){},toggle(){},contains(){return false;}}, style:{}, innerHTML:'', textContent:'', value:'', checked:false }; } return el; }
 function openModal(id) { const m = $(id); m.classList.remove('hidden'); m.classList.add('flex'); }
 function closeModal(id) { const m = $(id); m.classList.add('hidden'); m.classList.remove('flex'); }
 function showToast(msg) {
@@ -2821,14 +2814,15 @@ $('fbSubmit').onclick = async () => {
 };
 
 // Settings Handlers
+document.querySelectorAll('[data-open-about]').forEach(b => b.addEventListener('click', () => { closeModal('notifModal'); playPop(); openModal('aboutModal'); }));
 $('settingsBtn').addEventListener('click', () => {
   playPop();
   $('soundToggle').checked = soundEnabled;
   $('motionToggle').checked = reducedMotion;
   openModal('settingsModal');
 });
-$('themeLight').addEventListener('click', () => applyTheme('light'));
-$('themeDark').addEventListener('click', () => applyTheme('dark'));
+const themeLightEl = $('themeLight'); if (themeLightEl) themeLightEl.addEventListener('click', () => applyTheme('light'));
+const themeDarkEl = $('themeDark'); if (themeDarkEl) themeDarkEl.addEventListener('click', () => applyTheme('dark'));
 $('langSelect').addEventListener('change', (e) => applyLang(e.target.value));
 const imgSizeSelectEl = $('imgSizeSelect');
 if (imgSizeSelectEl) {
@@ -2862,8 +2856,12 @@ $('settingsEditProfileBtn').onclick = () => {
   openProfileEditModal();
 };
 
+const resetCounterBtnEl = $('resetCounterBtn');
+if (resetCounterBtnEl) resetCounterBtnEl.addEventListener('click', resetJoinedCounter);
+
 // About, FAQ & Changelog Triggers
-$('aboutBtn').onclick = () => { playPop(); openModal('aboutModal'); };
+// aboutBtn removed; About & Rules reachable via footer buttons
+$('notifBtn').onclick = () => { playPop(); openModal('notifModal'); };
 $('footerAboutBtn').onclick = () => { playPop(); openModal('aboutModal'); };
 $('footerFaqBtn').onclick = () => { playPop(); openModal('aboutModal'); };
 $('changelogBtn').onclick = () => { playPop(); openModal('changelogModal'); };
@@ -2994,6 +2992,19 @@ function wireUI() {
   });
 
   document.querySelectorAll('.tabBtn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+  document.querySelectorAll('[data-lang-btn]').forEach(b => b.addEventListener('click', () => applyLang(b.dataset.langBtn)));
+  document.querySelectorAll('[data-size-choice]').forEach(b => b.addEventListener('click', () => {
+    imgSize = b.dataset.sizeChoice;
+    localStorage.setItem('imgSize', imgSize);
+    document.querySelectorAll('[data-size-choice]').forEach(x => {
+      x.classList.toggle('border-lime-400', x === b);
+      x.classList.toggle('bg-lime-500/20', x === b);
+      x.classList.toggle('text-lime-300', x === b);
+    });
+    renderRecommended();
+    renderForYou();
+    renderSaved();
+  }));
   $('createBtn').addEventListener('click', () => openModal('createModal'));
   $('submitProfile').addEventListener('click', createProfile);
   $('commentSend').addEventListener('click', addComment);

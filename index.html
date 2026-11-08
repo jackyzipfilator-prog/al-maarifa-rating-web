@@ -2861,6 +2861,123 @@ $('footerAboutBtn').onclick = () => { playPop(); openModal('aboutModal'); };
 $('footerFaqBtn').onclick = () => { playPop(); openModal('aboutModal'); };
 $('changelogBtn').onclick = () => { playPop(); openModal('changelogModal'); };
 
+
+// ==========================================
+// USER & IMAGE MODERATION TOOLS (OWNERS ONLY)
+// ==========================================
+async function adminAction(action) {
+  if (!isAdmin() || !currentProfileId) return;
+  const ref = FB.doc(FB.db, 'profiles', currentProfileId);
+
+  try {
+    if (action === 'ban') {
+      const p = profiles.find(x => x.id === currentProfileId);
+      await FB.updateDoc(ref, { banned: !p.banned });
+      showToast(p.banned ? 'Photo unhidden' : 'Photo hidden from public');
+    } else if (action === 'delete') {
+      if (!confirm('Permanently delete this photo from the site?')) return;
+      await FB.deleteDoc(ref);
+      closeModal('detailModal');
+      showToast('Photo permanently deleted.');
+    } else if (action === 'report_review') {
+      openModal('modModal');
+      loadReports();
+      loadIdeas();
+      loadRestrictedUsers();
+    }
+  } catch (e) {
+    showToast(e.message);
+  }
+}
+
+async function warnUser(uid, name) {
+  if (!isAdmin()) return;
+  const reason = prompt('Enter warning reason for ' + (name || 'user') + ':', 'Please follow community rules.');
+  if (reason === null) return;
+  try {
+    await FB.updateDoc(FB.doc(FB.db, 'users', uid), {
+      warned: true, warnReason: reason, warnedAt: FB.serverTimestamp(), warnedBy: (currentUser && currentUser.email) || ''
+    });
+    showToast('⚠️ Warning issued to ' + (name || 'user'));
+    loadRestrictedUsers();
+  } catch (e) { showToast('Failed: ' + e.message); }
+}
+
+async function timeoutUser(uid, name, hours) {
+  if (!isAdmin()) return;
+  const h = parseFloat(prompt('Timeout duration in hours for ' + (name || 'user') + ':', String(hours || 24))) || 24;
+  if (!h) return;
+  const timeoutUntil = Date.now() + (h * 3600 * 1000);
+  try {
+    await FB.updateDoc(FB.doc(FB.db, 'users', uid), {
+      timeoutUntil: timeoutUntil, timedOutAt: FB.serverTimestamp(), timedOutBy: (currentUser && currentUser.email) || ''
+    });
+    showToast('⏳ ' + (name || 'user') + ' timed out for ' + h + 'h');
+    loadRestrictedUsers();
+  } catch (e) { showToast('Failed: ' + e.message); }
+}
+
+async function banUser(uid, name) {
+  if (!isAdmin()) return;
+  if (!confirm('Permanently BAN ' + (name || 'user') + '? They cannot vote or comment.')) return;
+  try {
+    await FB.updateDoc(FB.doc(FB.db, 'users', uid), {
+      banned: true, suspended: true, bannedAt: FB.serverTimestamp(), bannedBy: (currentUser && currentUser.email) || ''
+    });
+    showToast('🚫 ' + (name || 'user') + ' has been banned.');
+    loadRestrictedUsers();
+  } catch (e) { showToast('Failed: ' + e.message); }
+}
+
+async function unrestrictUser(uid, name) {
+  if (!isAdmin()) return;
+  try {
+    await FB.updateDoc(FB.doc(FB.db, 'users', uid), {
+      warned: false, warnReason: '', timeoutUntil: null, banned: false, suspended: false
+    });
+    showToast('✅ Restrictions lifted for ' + (name || 'user'));
+    loadRestrictedUsers();
+  } catch (e) { showToast('Failed: ' + e.message); }
+}
+
+async function resetJoinedCounter() {
+  if (!isAdmin()) return;
+  if (!confirm('Reset the Joined Classmates counter to 0?')) return;
+  try {
+    await FB.setDoc(FB.doc(FB.db, 'stats', 'counters'), { userCount: 0 });
+    const jc = $('joinCount');
+    if (jc) jc.textContent = '0';
+    showToast('Counter reset to 0! 🔄');
+  } catch (e) { showToast('Error: ' + e.message); }
+}
+
+async function loadRestrictedUsers() {
+  const el = $('restrictedUsersList');
+  if (!el || !isAdmin()) return;
+  try {
+    const snap = await FB.getDocs(FB.collection(FB.db, 'users'));
+    const list = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .filter(u => u.banned || u.suspended || u.warned || (u.timeoutUntil && Date.now() < u.timeoutUntil));
+    if (!list.length) {
+      el.innerHTML = '<p class="text-xs text-muted2 text-center py-4">No active restrictions.</p>';
+      return;
+    }
+    el.innerHTML = list.map(u => {
+      const isBanned = u.banned || u.suspended;
+      const isTimedOut = u.timeoutUntil && Date.now() < u.timeoutUntil;
+      const statusBadge = isBanned ? '<span class="text-[10px] font-bold text-red-400 bg-red-500/10 border border-red-500/30 px-2 py-0.5 rounded">Banned</span>' :
+        isTimedOut ? '<span class="text-[10px] font-bold text-orange-400 bg-orange-500/10 border border-orange-500/30 px-2 py-0.5 rounded">Timeout</span>' :
+        '<span class="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded">Warned</span>';
+      const displayName = escapeHtml(u.nickname || u.email || 'User');
+      const uid = u.id;
+      const nickAttr = (u.nickname || 'User').replace(/'/g, "\\'");
+      return '<div class="p-3 bg-bg border border-c rounded-xl flex items-center justify-between text-xs"><div><div class="flex items-center gap-2"><span class="font-bold text-white">' + displayName + '</span>' + statusBadge + '</div><p class="text-[10px] text-muted2 mt-0.5">' + (u.warnReason ? escapeHtml(u.warnReason) : 'UID: ' + uid) + '</p></div><button onclick="unrestrictUser(' + "'" + uid + "', '" + nickAttr + "'" + ')" class="px-2.5 py-1 rounded-lg border border-lime-500/40 text-lime-400 hover:bg-lime-500/10 text-xs font-semibold">Lift</button></div>';
+    }).join('');
+  } catch (e) {
+    el.innerHTML = '<p class="text-xs text-red-400 py-2">Error: ' + e.message + '</p>';
+  }
+}
+
 // Wire Up Global UI Listeners
 function wireUI() {
   $('search').addEventListener('input', renderRecommended);

@@ -308,6 +308,7 @@
         <span data-i18n="joined">Joined:</span>
         <span id="joinCount" class="font-bold text-white">0</span>
         <span data-i18n="users">classmates</span>
+        <button id="resetJoinCountBtn" class="hidden ml-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30" title="Reset counter (Owner only)">↺ Reset</button>
       </span>
     </div>
   </div>
@@ -1584,6 +1585,9 @@ async function boot() {
     currentUser = user;
     renderAuth();
 
+    const rcb = $('resetJoinCountBtn');
+    if (rcb) rcb.classList.toggle('hidden', !(user && (user.email === 'anaflousoussama555@gmail.com' || user.email === 'Yagsahz@gmail.com')));
+
     if (user) {
       await loadUserProfile(user);
       if (userProfile && (userProfile.suspended || userProfile.banned)) {
@@ -2815,6 +2819,7 @@ $('fbSubmit').onclick = async () => {
 
 // Settings Handlers
 document.querySelectorAll('[data-open-about]').forEach(b => b.addEventListener('click', () => { closeModal('notifModal'); playPop(); openModal('aboutModal'); }));
+const rcbEl = $('resetJoinCountBtn'); if (rcbEl) rcbEl.addEventListener('click', resetJoinedCounter);
 $('settingsBtn').addEventListener('click', () => {
   playPop();
   $('soundToggle').checked = soundEnabled;

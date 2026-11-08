@@ -23,15 +23,15 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // Stats counter for registered users
+    // Stats counter for registered users (publicly readable so guests can see count)
     match /stats/{docId} {
-      allow read: if isSignedIn();
+      allow read: if true;
       allow write: if isSignedIn();
     }
 
-    // Images / Profiles: ONLY the two owners can create or delete
+    // Images / Profiles: ONLY the two owners can create or delete. Publicly readable.
     match /profiles/{pid} {
-      allow read: if isSignedIn();
+      allow read: if true;
       allow create: if isAdmin()
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.ratingSum == 0
@@ -46,7 +46,7 @@ service cloud.firestore {
 
       // Subcollection: Ratings (1 rating per user per image, 0.1 to 10.0)
       match /ratings/{uid} {
-        allow read: if isSignedIn();
+        allow read: if true;
         allow write: if isSignedIn() && uid == request.auth.uid
           && request.resource.data.value is number
           && request.resource.data.value >= 0.1
@@ -56,14 +56,14 @@ service cloud.firestore {
 
       // Subcollection: Reactions
       match /reactions/{uid} {
-        allow read: if isSignedIn();
+        allow read: if true;
         allow write: if isSignedIn() && uid == request.auth.uid;
         allow delete: if isSignedIn() && uid == request.auth.uid;
       }
 
       // Subcollection: Comments (includes likes and replies support)
       match /comments/{cid} {
-        allow read: if isSignedIn();
+        allow read: if true;
         allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
         allow update: if isSignedIn() && (
           isAdmin() ||
@@ -74,7 +74,7 @@ service cloud.firestore {
 
         // Subcollection: Comment likes
         match /likes/{luid} {
-          allow read: if isSignedIn();
+          allow read: if true;
           allow write: if isSignedIn() && luid == request.auth.uid;
           allow delete: if isSignedIn() && luid == request.auth.uid;
         }

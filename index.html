@@ -2830,13 +2830,16 @@ $('settingsBtn').addEventListener('click', () => {
 $('themeLight').addEventListener('click', () => applyTheme('light'));
 $('themeDark').addEventListener('click', () => applyTheme('dark'));
 $('langSelect').addEventListener('change', (e) => applyLang(e.target.value));
-$('imgSizeSelect').addEventListener('change', (e) => {
-  imgSize = e.target.value;
-  localStorage.setItem('imgSize', imgSize);
-  renderRecommended();
-  renderForYou();
-  renderSaved();
-});
+const imgSizeSelectEl = $('imgSizeSelect');
+if (imgSizeSelectEl) {
+  imgSizeSelectEl.addEventListener('change', (e) => {
+    imgSize = e.target.value;
+    localStorage.setItem('imgSize', imgSize);
+    renderRecommended();
+    renderForYou();
+    renderSaved();
+  });
+}
 
 $('soundToggle').addEventListener('change', (e) => {
   soundEnabled = e.target.checked;

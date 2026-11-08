@@ -916,6 +916,37 @@
 
     <div id="reportsList" class="space-y-3"></div>
     <div id="ideasModList" class="space-y-3 hidden"></div>
+
+    <!-- User Moderation & Counter Tab View (Owners Only) -->
+    <div id="modUsersView" class="hidden space-y-4">
+      <!-- Counter Reset -->
+      <div class="p-4 rounded-2xl bg-[#0b1120] border border-[#27354f] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div>
+          <h4 class="text-sm font-bold text-white">📊 Joined Classmates Counter</h4>
+          <p class="text-xs text-muted2 mt-0.5">Reset the displayed student / visitor counter to 0.</p>
+        </div>
+        <button id="resetCounterBtn" class="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30">
+          🔄 Reset Counter to 0
+        </button>
+      </div>
+      <!-- Manual User Action -->
+      <div class="p-4 rounded-2xl bg-[#0b1120] border border-[#27354f] space-y-3">
+        <h4 class="text-sm font-bold text-white">🛡️ Moderate User (Warn / Timeout / Ban)</h4>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input id="userModTargetUid" type="text" placeholder="Enter User UID or Nickname…" class="flex-1 rounded-xl px-3 py-2 text-xs font-bold bg-[#070a12] border border-[#334155] text-white" />
+          <button id="btnModWarnManual" class="px-3 py-2 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30">⚠️ Warn</button>
+          <button id="btnModTimeoutManual" class="px-3 py-2 rounded-xl text-xs font-bold bg-orange-500/20 text-orange-300 border border-orange-500/40 hover:bg-orange-500/30">⏳ Timeout (24h)</button>
+          <button id="btnModBanManual" class="px-3 py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/40 hover:bg-red-500/30">🚫 Ban User</button>
+        </div>
+      </div>
+      <!-- Active Restrictions List -->
+      <div class="space-y-2">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-muted2">Active Restrictions & Warnings</h4>
+        <div id="restrictedUsersList" class="space-y-2 max-h-60 overflow-y-auto scrollbar">
+          <p class="text-xs text-muted2 text-center py-4">Loading…</p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2662,10 +2693,35 @@ async function addComment() {
     showToast(`You are in timeout for ${mins} more minutes.`);
     return;
   }
-  currentReportContext = { type: 'image', id: currentProfileId };
-  $('reportDetails').value = '';
-  openModal('reportModal');
-});
+  const text = $('commentInput').value.trim();
+  if (!text) return;
+  try {
+    const payload = {
+      uid: currentUser.uid,
+      name: nickname(),
+      email: currentUser.email || '',
+      text,
+      createdAt: FB.serverTimestamp(),
+      likeCount: 0,
+      pinned: false
+    };
+    if (currentReplyTarget) {
+      payload.replyToId = currentReplyTarget.cid;
+      payload.replyToNick = currentReplyTarget.nick;
+    }
+    await FB.addDoc(FB.collection(FB.db, 'profiles', currentProfileId, 'comments'), payload);
+    const pRef = FB.doc(FB.db, 'profiles', currentProfileId);
+    await FB.updateDoc(pRef, { commentCount: FB.increment(1) });
+    $('commentInput').value = '';
+    currentReplyTarget = null;
+    $('replyTargetBanner').classList.add('hidden');
+    playSuccessChime();
+  } catch (e) {
+    showToast('Comment error: ' + e.message);
+  }
+}
+
+$('reportBtn').addEventListener('click', () => {
 
 $('reportSubmit').addEventListener('click', async () => {
   const err = $('reportErr');

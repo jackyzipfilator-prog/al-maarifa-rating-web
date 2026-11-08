@@ -33,6 +33,42 @@
     --owner: #059669;
     --owner-glow: rgba(5, 150, 105, 0.3);
   }
+  
+  /* High contrast inputs & pure white typed text */
+  input, textarea, select {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #a3e635 !important;
+    background-color: #0b1120 !important;
+    opacity: 1 !important;
+  }
+  input::placeholder, textarea::placeholder {
+    color: #94a3b8 !important;
+    -webkit-text-fill-color: #94a3b8 !important;
+    opacity: 1 !important;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: #a3e635 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(163, 230, 53, 0.35) !important;
+  }
+  select option {
+    background-color: #0b1120 !important;
+    color: #ffffff !important;
+  }
+  .lang-choice-active {
+    background: rgba(163, 230, 53, 0.2) !important;
+    color: #bef264 !important;
+    border-color: #a3e635 !important;
+    box-shadow: 0 0 10px rgba(163, 230, 53, 0.25) !important;
+  }
+  .size-choice-active {
+    background: rgba(163, 230, 53, 0.2) !important;
+    color: #bef264 !important;
+    border-color: #a3e635 !important;
+    box-shadow: 0 0 10px rgba(163, 230, 53, 0.25) !important;
+  }
+
   body {
     background: var(--bg);
     color: var(--text);
@@ -222,12 +258,33 @@
           <span>Post Photo</span>
         </button>
 
+        <!-- Always Visible Language Selector (Desktop) -->
+        <div class="hidden sm:flex items-center gap-1 bg-[#0b1120] border-2 border-[#1e293b] rounded-full p-1 shadow-inner">
+          <button type="button" data-lang-btn="en" class="lang-btn px-2.5 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 text-white hover:text-lime-400">
+            <span>🇺🇸</span> <span>English</span>
+          </button>
+          <button type="button" data-lang-btn="fr" class="lang-btn px-2.5 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 text-white hover:text-lime-400">
+            <span>🇫🇷</span> <span>Français</span>
+          </button>
+          <button type="button" data-lang-btn="ar" class="lang-btn px-2.5 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 text-white hover:text-lime-400">
+            <span>🇲🇦</span> <span>الدارجة</span>
+          </button>
+        </div>
         <div id="authArea" class="flex items-center"></div>
       </div>
     </div>
 
     <!-- Mobile Search Field -->
-    <div class="md:hidden px-4 pb-3">
+    <div class="md:hidden px-4 pb-2 space-y-2">
+      <!-- Mobile Quick Language Bar -->
+      <div class="flex items-center justify-between bg-[#0b1120] border-2 border-[#1e293b] rounded-2xl p-1.5 px-3">
+        <span class="text-xs font-bold text-lime-400 flex items-center gap-1">🌐 <span>Language:</span></span>
+        <div class="flex items-center gap-1">
+          <button type="button" data-lang-btn="en" class="lang-btn px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-[#0f172a] border border-[#334155] hover:border-lime-400">🇺🇸 EN</button>
+          <button type="button" data-lang-btn="fr" class="lang-btn px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-[#0f172a] border border-[#334155] hover:border-lime-400">🇫🇷 FR</button>
+          <button type="button" data-lang-btn="ar" class="lang-btn px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-[#0f172a] border border-[#334155] hover:border-lime-400">🇲🇦 دارجة</button>
+        </div>
+      </div>
       <div class="relative">
         <input id="searchMobile" type="text" data-i18n-placeholder="search_placeholder" placeholder="Search by name, class, tag…"
           class="w-full rounded-full pl-9 pr-4 py-2 text-sm ring-accent bg-card2 border border-c text-white" />
@@ -352,8 +409,7 @@
 
     <div>
       <label class="text-xs font-semibold text-muted2 uppercase tracking-wider">Change Nickname</label>
-      <input id="editNickInput" type="text" maxlength="24" placeholder="Enter your nickname…"
-        class="mt-1 w-full rounded-xl px-4 py-2.5 text-sm ring-accent bg-bg border border-c text-white font-medium" />
+      <input id="editNickInput" type="text" maxlength="24" placeholder="Enter your nickname…" class="mt-1.5 w-full rounded-xl px-4 py-3 text-base font-bold text-white bg-[#0b1120] border-2 border-[#334155] focus:border-lime-400 focus:ring-2 focus:ring-lime-400/40 placeholder-slate-400 outline-none shadow-inner" />
     </div>
 
     <div>
@@ -423,8 +479,7 @@
     <div class="space-y-4">
       <div>
         <label class="text-xs font-semibold text-muted2 uppercase tracking-wider" data-i18n="nickname">Nickname (Mandatory)</label>
-        <input id="nickInput" type="text" maxlength="24" placeholder="Enter your guest nickname…"
-          class="mt-1.5 w-full rounded-xl px-4 py-2.5 text-sm ring-accent bg-bg border border-c text-white font-medium" />
+        <input id="nickInput" type="text" maxlength="24" placeholder="Enter your guest nickname…" class="mt-1.5 w-full rounded-xl px-4 py-3 text-base font-bold text-white bg-[#0b1120] border-2 border-[#334155] focus:border-lime-400 focus:ring-2 focus:ring-lime-400/40 placeholder-slate-400 outline-none shadow-inner" />
         <span class="text-[11px] text-muted2">Required for posting comments and voting.</span>
       </div>
 
@@ -680,17 +735,17 @@
       <div class="flex flex-col sm:flex-row gap-6">
         <!-- Image Container (Real Aspect Ratio, No Crop) -->
         <div class="sm:w-1/2 flex flex-col">
-          <div class="relative group rounded-2xl overflow-hidden border border-c bg-black/70 flex items-center justify-center p-1.5">
-            <img id="dImg" class="max-h-[58vh] max-w-full w-auto h-auto object-contain rounded-xl cursor-zoom-in transition-transform duration-300 group-hover:scale-[1.02]" 
+          <div class="relative group rounded-2xl overflow-hidden border border-[#27354f] bg-black/85 flex items-center justify-center p-2 min-h-[220px] max-h-[52vh]">
+            <img id="dImg" class="max-h-[50vh] max-w-full w-auto h-auto object-contain rounded-xl cursor-zoom-in transition-transform duration-300 group-hover:scale-[1.01]" 
               onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><rect width=%22400%22 height=%22400%22 fill=%22%23111%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23666%22 font-size=%2216%22 text-anchor=%22middle%22 dy=%22.3em%22>Broken image</text></svg>'" />
-            <button id="dLightboxBtn" class="absolute bottom-3 right-3 bg-black/80 hover:bg-black text-[11px] text-white px-2.5 py-1.5 rounded-xl backdrop-blur flex items-center gap-1.5 border border-white/20 shadow-lg">
+            <button id="dLightboxBtn" class="absolute bottom-3 right-3 bg-black/80 hover:bg-black text-[11px] text-white font-bold px-3 py-1.5 rounded-xl backdrop-blur flex items-center gap-1.5 border border-white/20 shadow-lg">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg>
               <span>Full Screen</span>
             </button>
           </div>
           <div class="flex items-center justify-between text-xs text-muted2 mt-2 px-1">
             <span id="dGrade" class="font-medium"></span>
-            <span id="dAuthor" class="text-lime-400 font-semibold"></span>
+            
           </div>
         </div>
 
@@ -744,7 +799,7 @@
           <!-- Admin Bar (ONLY VISIBLE TO THE TWO OWNERS) -->
           <div id="adminBox" class="hidden flex flex-wrap gap-2 pt-3 border-t border-c">
             <span class="w-full text-[10px] uppercase tracking-wider font-bold text-emerald-400">👑 Owner Moderation:</span>
-            <button data-admin="warn" class="px-3 py-1.5 rounded-xl text-xs border border-yellow-500/40 text-yellow-300 hover:bg-yellow-500/10">Warn Flag</button>
+            
             <button data-admin="ban" class="px-3 py-1.5 rounded-xl text-xs border border-red-500/40 text-red-300 hover:bg-red-500/10">Hide Photo</button>
             <button data-admin="delete" class="px-3 py-1.5 rounded-xl text-xs border border-red-500/40 text-red-300 hover:bg-red-500/10">Delete Photo</button>
             <button data-admin="report_review" class="px-3 py-1.5 rounded-xl text-xs border border-blue-500/40 text-blue-300 hover:bg-blue-500/10">Reports Queue</button>
@@ -843,6 +898,7 @@
     <div class="flex items-center gap-2 mb-4 border-b border-c pb-2">
       <button id="modTabReports" class="px-3 py-1 rounded-xl text-xs font-bold btn-primary">Reports Queue</button>
       <button id="modTabIdeas" class="px-3 py-1 rounded-xl text-xs font-semibold border border-c text-muted2 hover:text-white">Student Suggestions</button>
+      <button id="modTabUsers" class="px-3 py-1 rounded-xl text-xs font-semibold border border-c text-muted2 hover:text-white">👥 User Moderation & Counter</button>
     </div>
 
     <!-- Moderation Filters -->
@@ -889,12 +945,18 @@
     </div>
 
     <div>
-      <label class="text-xs font-semibold text-muted2" data-i18n="image_size">Card Image Size</label>
-      <select id="imgSizeSelect" class="mt-1 w-full rounded-xl px-3 py-2 text-sm ring-accent bg-bg border border-c text-white">
-        <option value="small" data-i18n="size_small">Compact</option>
-        <option value="medium" data-i18n="size_medium" selected>Standard</option>
-        <option value="large" data-i18n="size_large">Large Preview</option>
-      </select>
+      <label class="text-xs font-bold text-white uppercase tracking-wider block mb-2" data-i18n="image_size">Card Image Size</label>
+      <div class="grid grid-cols-3 gap-2">
+        <button type="button" data-size-choice="small" class="size-btn py-2 px-1 rounded-xl text-xs font-bold border-2 border-[#27354f] bg-[#0b1120] text-white hover:border-lime-400 transition-colors text-center shadow-sm">
+          📱 Compact
+        </button>
+        <button type="button" data-size-choice="medium" class="size-btn py-2 px-1 rounded-xl text-xs font-bold border-2 border-lime-400 bg-lime-500/20 text-lime-300 hover:border-lime-400 transition-colors text-center shadow-sm size-choice-active">
+          🖼️ Standard
+        </button>
+        <button type="button" data-size-choice="large" class="size-btn py-2 px-1 rounded-xl text-xs font-bold border-2 border-[#27354f] bg-[#0b1120] text-white hover:border-lime-400 transition-colors text-center shadow-sm">
+          🔍 Large
+        </button>
+      </div>
     </div>
 
     <!-- UI Sounds Toggle -->
@@ -1367,6 +1429,13 @@ function applyLang(lang) {
   }
   const sel = $('langSelect');
   if (sel) sel.value = lang;
+
+  // Highlight all matching language buttons on desktop and mobile
+  document.querySelectorAll('[data-lang-btn]').forEach(b => {
+    const active = b.dataset.langBtn === lang;
+    b.classList.toggle('lang-choice-active', active);
+    b.classList.toggle('border-lime-400', active);
+  });
 }
 
 // Dark theme is default
@@ -1447,7 +1516,7 @@ function avatarUrl() {
 
 // Check Cutscene Sequence on first visit
 function checkCutscene() {
-  const introSeen = localStorage.getItem('cutscene_seen_v2');
+  const introSeen = localStorage.getItem('cutscene_seen_v3');
   if (!introSeen) {
     openModal('cutsceneModal');
     $('cutsceneStep1').classList.remove('hidden');
@@ -1473,7 +1542,7 @@ $('cutsceneAcceptCheck').addEventListener('change', (e) => {
 });
 
 $('cutsceneEnterBtn').addEventListener('click', () => {
-  localStorage.setItem('cutscene_seen_v2', 'true');
+  localStorage.setItem('cutscene_seen_v3', 'true');
   playSuccessChime();
   closeModal('cutsceneModal');
   showToast('Welcome to 2BAC-PC-11 Rating! ✨');
@@ -1482,15 +1551,20 @@ $('cutsceneEnterBtn').addEventListener('click', () => {
 
 // Boot application
 async function boot() {
+  // Always load profiles, join counter and verify cutscene on startup (public feed)
+  if (!profilesUnsub) loadProfiles();
+  loadJoinCount();
+  checkCutscene();
+
   FB.onAuthStateChanged(FB.auth, async (user) => {
     currentUser = user;
     renderAuth();
 
     if (user) {
       await loadUserProfile(user);
-      if (userProfile && userProfile.suspended) {
+      if (userProfile && (userProfile.suspended || userProfile.banned)) {
         await FB.signOut(FB.auth);
-        showToast('Your guest account has been suspended by owners.');
+        showToast('Your guest account has been banned by owners.');
         return;
       }
       if (!userProfile || !userProfile.onboarded) {
@@ -1499,16 +1573,11 @@ async function boot() {
       } else {
         closeModal('onboardModal');
         closeModal('authModal');
-        if (!profilesUnsub) loadProfiles();
-        loadJoinCount();
         checkNotifications();
       }
     } else {
       userProfile = null;
-      if (profilesUnsub) { profilesUnsub(); profilesUnsub = null; }
-      profiles = [];
-      renderRecommended(); renderForYou(); renderSaved(); renderLeaderboard();
-      checkCutscene();
+      renderAuth();
     }
   });
 
@@ -1792,7 +1861,7 @@ function cardHtml(p) {
         <img src="${escapeAttr(p.imageUrl)}" alt="${escapeAttr(p.name)}" class="w-full ${cardSizeClass()} ${imgFit} opacity-90 transition-opacity duration-300" loading="lazy"
           onload="this.style.opacity=1"
           onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22><rect width=%22400%22 height=%22200%22 fill=%22%23111%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23555%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22>Broken link</text></svg>'" />
-        ${warned}${banned}
+        ${banned}
         
         <div class="absolute top-2.5 right-2.5 flex items-center gap-1.5">
           <button data-quick-save="${p.id}" class="bg-black/75 backdrop-blur-md px-2 py-1 rounded-full text-xs font-bold border ${bookmarkClass} transition-colors" title="Bookmark">
@@ -1818,7 +1887,7 @@ function cardHtml(p) {
       </div>
     </div>
     <div class="px-4 pb-3 pt-1 flex items-center justify-between text-[11px] text-muted2 border-t border-c/50">
-      <span>By ${escapeHtml(p.createdByName || 'Owner')}</span>
+      <span></span>
       <div class="flex items-center gap-2">
         <button data-quick-share="${escapeAttr(p.imageUrl)}" class="hover:text-white p-1" title="Share link">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8m-4-6-4-4-4 4m4-4v13"/></svg>
@@ -2099,21 +2168,33 @@ $('lightboxClose').onclick = () => closeModal('lightboxModal');
 async function openDetail(id) {
   currentProfileId = id;
   currentReplyTarget = null;
-  $('replyTargetBanner').classList.add('hidden');
+  const replyBanner = $('replyTargetBanner');
+  if (replyBanner) replyBanner.classList.add('hidden');
 
   viewedIds.add(id);
   localStorage.setItem('viewed', JSON.stringify([...viewedIds]));
 
-  const p = profiles.find(x => x.id === id);
-  if (!p) return;
+  let p = profiles.find(x => x.id === id);
+  if (!p) {
+    try {
+      const snap = await FB.getDoc(FB.doc(FB.db, 'profiles', id));
+      if (snap.exists()) p = { id: snap.id, ...snap.data() };
+    } catch (_) {}
+  }
+  if (!p) {
+    showToast('Photo not found');
+    return;
+  }
 
+  // 1. Immediately open modal so user sees feedback right away!
+  openModal('detailModal');
+
+  // 2. Populate Header & Image (Original aspect ratio preserved, no crop)
   $('dName').textContent = p.name;
   $('dImg').src = p.imageUrl;
   $('dImg').onclick = () => openLightbox(p.imageUrl, p.name);
   $('dLightboxBtn').onclick = () => openLightbox(p.imageUrl, p.name);
-
-  $('dGrade').textContent = p.grade ? p.grade : '2BAC PC-11';
-  $('dAuthor').textContent = 'By ' + (p.createdByName || 'Owner');
+  $('dGrade').textContent = p.grade || '2BAC PC-11';
   $('dDesc').textContent = p.description || '';
 
   // Show official owner tag if created by an owner UID or owner email
@@ -2122,15 +2203,19 @@ async function openDetail(id) {
                       (currentUser && isOwner(currentUser) && p.createdBy === currentUser.uid);
   $('dOwnerTag').classList.toggle('hidden', !isOwnerPost);
 
+  // Bookmark & Share buttons
   const dBtn = $('dBookmarkBtn');
-  dBtn.classList.toggle('text-lime-400', savedIds.has(id));
-  dBtn.onclick = () => toggleSavePhoto(id);
+  if (dBtn) {
+    dBtn.classList.toggle('text-lime-400', savedIds.has(id));
+    dBtn.onclick = () => toggleSavePhoto(id);
+  }
+  const dShare = $('dShareBtn');
+  if (dShare) dShare.onclick = () => copyPhotoLink(p.imageUrl);
 
-  $('dShareBtn').onclick = () => copyPhotoLink(p.imageUrl);
-
+  // 3. Render Current Average Score & Count
   renderScore(p);
 
-  // Rating input state
+  // 4. Rating Input & State
   $('ratingInput').value = myRating !== null ? myRating : '';
   $('ratingErr').classList.add('hidden');
   if (myRating !== null) {
@@ -2141,20 +2226,37 @@ async function openDetail(id) {
     $('ratingBtnText').textContent = 'Submit Vote';
   }
 
+  // 5. Admin Controls for Owners
   $('adminBox').classList.toggle('hidden', !isAdmin());
 
-  // Listen to Comments & Threaded replies
-  if (commentsUnsub) commentsUnsub();
-  commentsUnsub = FB.onSnapshot(
-    FB.query(FB.collection(FB.db, 'profiles', id, 'comments'), FB.orderBy('createdAt', 'asc')),
-    (snap) => {
-      rawComments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      $('commentBadgeCount').textContent = rawComments.length;
-      renderSortedComments();
-    }
-  );
+  // 6. Comments Form vs Sign-in Hint
+  const form = $('commentForm');
+  const hint = $('commentHint');
+  if (currentUser) {
+    form.classList.remove('hidden');
+    hint.innerHTML = '';
+  } else {
+    form.classList.add('hidden');
+    hint.innerHTML = `<div class="p-3 bg-[#0d1527] border border-[#27354f] rounded-xl flex items-center justify-between text-xs mt-2">
+      <span class="text-slate-300 font-medium">Sign in to vote, rate looks & join comments!</span>
+      <button onclick="openModal('authModal')" class="px-3.5 py-1.5 rounded-full btn-primary font-bold text-xs shadow-md">Sign In</button>
+    </div>`;
+  }
 
-  // Listen to user's personal rating
+  // 7. Social Reactions (Resilient listener with error callback)
+  if (reactionsUnsub) reactionsUnsub();
+  reactionsUnsub = FB.onSnapshot(FB.collection(FB.db, 'profiles', id, 'reactions'), (snap) => {
+    const counts = {};
+    let myEmoji = null;
+    snap.forEach(d => {
+      const r = d.data();
+      counts[r.emoji] = (counts[r.emoji] || 0) + 1;
+      if (currentUser && r.uid === currentUser.uid) myEmoji = r.emoji;
+    });
+    renderReactions(counts, myEmoji);
+  }, (err) => console.warn('Reactions error:', err));
+
+  // 8. User's personal rating (Resilient listener with error callback)
   if (myRatingUnsub) myRatingUnsub();
   if (currentUser) {
     myRatingUnsub = FB.onSnapshot(FB.doc(FB.db, 'profiles', id, 'ratings', currentUser.uid), (d) => {
@@ -2167,33 +2269,28 @@ async function openDetail(id) {
         $('ratingMsg').textContent = '';
         $('ratingBtnText').textContent = 'Submit Vote';
       }
-    });
+    }, (err) => console.warn('Rating error:', err));
   }
 
-  // Listen to Reactions
-  if (reactionsUnsub) reactionsUnsub();
-  reactionsUnsub = FB.onSnapshot(FB.collection(FB.db, 'profiles', id, 'reactions'), (snap) => {
-    const counts = {};
-    let myEmoji = null;
-    snap.forEach(d => {
-      const r = d.data();
-      counts[r.emoji] = (counts[r.emoji] || 0) + 1;
-      if (currentUser && r.uid === currentUser.uid) myEmoji = r.emoji;
-    });
-    renderReactions(counts, myEmoji);
-  });
-
-  const form = $('commentForm');
-  const hint = $('commentHint');
-  if (currentUser) {
-    form.classList.remove('hidden');
-    hint.textContent = '';
-  } else {
-    form.classList.add('hidden');
-    hint.textContent = 'Please sign in to vote and comment.';
-  }
-
-  openModal('detailModal');
+  // 9. Comments & Threaded replies (Resilient query with error callback & fallback)
+  if (commentsUnsub) commentsUnsub();
+  commentsUnsub = FB.onSnapshot(
+    FB.query(FB.collection(FB.db, 'profiles', id, 'comments'), FB.orderBy('createdAt', 'asc')),
+    (snap) => {
+      rawComments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      $('commentBadgeCount').textContent = rawComments.length;
+      renderSortedComments();
+    },
+    (err) => {
+      console.warn('Comments query error:', err);
+      // Fallback in case orderBy requires index
+      FB.onSnapshot(FB.collection(FB.db, 'profiles', id, 'comments'), (snap) => {
+        rawComments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        $('commentBadgeCount').textContent = rawComments.length;
+        renderSortedComments();
+      }, (e2) => console.warn('Fallback comments error:', e2));
+    }
+  );
 }
 
 function renderScore(p) {
@@ -2250,7 +2347,16 @@ async function reactEmoji(emoji, clientX, clientY) {
 
 // Rate Profile with Immediate Edit Support
 async function rateProfile(overrideVal, evt) {
-  if (!currentUser) { openModal('authModal'); return; }
+  if (!currentUser) { openModal('authModal'); showToast('Please sign in to rate!'); return; }
+  if (userProfile && (userProfile.banned || userProfile.suspended)) {
+    showToast('Your account is banned from voting.');
+    return;
+  }
+  if (userProfile && userProfile.timeoutUntil && Date.now() < userProfile.timeoutUntil) {
+    const mins = Math.ceil((userProfile.timeoutUntil - Date.now()) / 60000);
+    showToast(`You are in timeout for ${mins} more minutes.`);
+    return;
+  }
 
   const p = profiles.find(x => x.id === currentProfileId);
   if (p && p.createdBy === currentUser.uid) {
@@ -2361,6 +2467,16 @@ function renderSortedComments() {
   list.querySelectorAll('[data-open-author-edit]').forEach(btn => {
     btn.addEventListener('click', openProfileEditModal);
   });
+  list.querySelectorAll('[data-mod-user]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const act = btn.dataset.modUser;
+      const uid = btn.dataset.uid;
+      const uname = btn.dataset.uname;
+      if (act === 'warn') warnUser(uid, uname);
+      else if (act === 'timeout') timeoutUser(uid, uname, 24);
+      else if (act === 'ban') banUser(uid, uname);
+    });
+  });
 }
 
 function renderCommentsTree(comments) {
@@ -2413,7 +2529,14 @@ function renderCommentCard(c, isReply) {
       <button data-reply-cid="${c.id}" data-reply-nick="${escapeAttr(c.name || 'Student')}" class="hover:text-lime-400 font-semibold transition-colors">
         Reply
       </button>
-    </div>
+    
+    ${isAdmin() && c.uid !== (currentUser && currentUser.uid) ? `
+    <div class="flex items-center gap-1.5 border-t border-[#1e293b]/70 pt-1.5 mt-1 text-[10px]">
+      <span class="text-lime-400 font-bold">👑 Mod User:</span>
+      <button data-mod-user="warn" data-uid="${c.uid}" data-uname="${escapeAttr(c.name || 'User')}" class="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 font-bold">⚠️ Warn</button>
+      <button data-mod-user="timeout" data-uid="${c.uid}" data-uname="${escapeAttr(c.name || 'User')}" class="px-2 py-0.5 rounded bg-orange-500/15 border border-orange-500/40 text-orange-300 hover:bg-orange-500/30 font-bold">⏳ Timeout (24h)</button>
+      <button data-mod-user="ban" data-uid="${c.uid}" data-uname="${escapeAttr(c.name || 'User')}" class="px-2 py-0.5 rounded bg-red-500/15 border border-red-500/40 text-red-300 hover:bg-red-500/30 font-bold">🚫 Ban</button>
+    </div>` : ''}
   </div>`;
 }
 
@@ -2529,239 +2652,16 @@ async function toggleCommentLike(cid) {
 }
 
 async function addComment() {
-  if (!currentUser) return;
-  const input = $('commentInput');
-  const text = input.value.trim();
-  if (!text) return;
-
-  const replyToId = currentReplyTarget ? currentReplyTarget.cid : null;
-  const replyToNick = currentReplyTarget ? currentReplyTarget.nick : null;
-
-  try {
-    await FB.addDoc(FB.collection(FB.db, 'profiles', currentProfileId, 'comments'), {
-      text,
-      uid: currentUser.uid,
-      name: nickname(),
-      email: currentUser.email,
-      replyToId: replyToId,
-      replyToNick: replyToNick,
-      likeCount: 0,
-      createdAt: FB.serverTimestamp()
-    });
-
-    const pRef = FB.doc(FB.db, 'profiles', currentProfileId);
-    await FB.updateDoc(pRef, { commentCount: FB.increment(1) });
-
-    playPop();
-    input.value = '';
-    currentReplyTarget = null;
-    $('replyTargetBanner').classList.add('hidden');
-  } catch (e) {
-    showToast(e.message);
-  }
-}
-
-async function deleteComment(cid) {
-  if (!confirm('Delete this comment?')) return;
-  try {
-    await FB.deleteDoc(FB.doc(FB.db, 'profiles', currentProfileId, 'comments', cid));
-    const pRef = FB.doc(FB.db, 'profiles', currentProfileId);
-    await FB.updateDoc(pRef, { commentCount: FB.increment(-1) });
-    showToast('Comment removed.');
-  } catch (e) {
-    showToast(e.message);
-  }
-}
-
-function checkNotifications() {
-  const notifs = [
-    {
-      id: 'welcome_notice',
-      title: '👑 Welcome to 2BAC-PC-11 Rating',
-      body: 'Check out the class ratings, vote on looks & vibe, bookmark your favorites, and keep it fun!',
-      time: 'Official',
-      unread: !readNotifs.has('welcome_notice')
-    },
-    {
-      id: 'golden_rule_notice',
-      title: '⚖️ Community Rule Reminder',
-      body: 'Site is temporary fun between classmates. Be respectful and enjoy the vibes!',
-      time: 'Safety',
-      unread: !readNotifs.has('golden_rule_notice')
-    }
-  ];
-
-  const hasUnread = notifs.some(n => n.unread);
-  $('notifBadge').classList.toggle('hidden', !hasUnread);
-
-  const el = $('notifList');
-  el.innerHTML = notifs.map(n => `
-    <div class="bg-bg border border-c rounded-2xl p-3.5 space-y-1 shadow-sm">
-      <div class="flex items-center justify-between">
-        <span class="font-bold text-white text-xs">${escapeHtml(n.title)}</span>
-        <span class="text-[10px] text-muted2">${n.time}</span>
-      </div>
-      <p class="text-xs text-muted2 leading-relaxed">${escapeHtml(n.body)}</p>
-    </div>
-  `).join('') + `
-    <div class="pt-2 text-center">
-      <button id="markReadBtn" class="text-xs text-lime-400 hover:underline font-bold">Mark all as read</button>
-    </div>`;
-
-  $('markReadBtn').onclick = () => {
-    notifs.forEach(n => readNotifs.add(n.id));
-    localStorage.setItem('read_notifs', JSON.stringify([...readNotifs]));
-    $('notifBadge').classList.add('hidden');
-    showToast('All notifications read.');
-  };
-}
-
-$('notifBtn').addEventListener('click', () => {
-  playPop();
-  openModal('notifModal');
-});
-
-// Admin Moderation Actions
-async function adminAction(action) {
-  if (!isAdmin() || !currentProfileId) return;
-  const ref = FB.doc(FB.db, 'profiles', currentProfileId);
-
-  try {
-    if (action === 'warn') {
-      const p = profiles.find(x => x.id === currentProfileId);
-      await FB.updateDoc(ref, { warned: !p.warned });
-      showToast(p.warned ? 'Warning cleared' : 'Warning issued');
-    } else if (action === 'ban') {
-      const p = profiles.find(x => x.id === currentProfileId);
-      await FB.updateDoc(ref, { banned: !p.banned });
-      showToast(p.banned ? 'Photo unhidden' : 'Photo hidden from public');
-    } else if (action === 'delete') {
-      if (!confirm('Permanently delete this photo from the site?')) return;
-      await FB.deleteDoc(ref);
-      closeModal('detailModal');
-      showToast('Photo permanently deleted.');
-    } else if (action === 'report_review') {
-      openModal('modModal');
-      loadReports();
-      loadIdeas();
-    }
-  } catch (e) {
-    showToast(e.message);
-  }
-}
-
-// Load Reports Queue
-let cachedReports = [];
-async function loadReports() {
-  FB.onSnapshot(FB.query(FB.collection(FB.db, 'reports'), FB.orderBy('createdAt', 'desc')), (snap) => {
-    cachedReports = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderFilteredReports();
-  });
-}
-
-function renderFilteredReports() {
-  const el = $('reportsList');
-  const q = ($('modSearch').value || '').trim().toLowerCase();
-  const reasonFilter = $('modReasonFilter').value;
-
-  let list = cachedReports.filter(r => r.status !== 'dismissed');
-  if (reasonFilter !== 'all') {
-    list = list.filter(r => (r.reason || '').toLowerCase().includes(reasonFilter) || (r.type || '').includes(reasonFilter));
-  }
-  if (q) {
-    list = list.filter(r => (r.reason || '').toLowerCase().includes(q) || (r.details || '').toLowerCase().includes(q) || (r.reporterNickname || '').toLowerCase().includes(q));
-  }
-
-  if (!list.length) {
-    el.innerHTML = `<p class="text-xs text-muted2 py-8 text-center">No reports match your filters. Moderation queue is clean!</p>`;
+  if (!currentUser) { openModal('authModal'); showToast('Please sign in to comment!'); return; }
+  if (userProfile && (userProfile.banned || userProfile.suspended)) {
+    showToast('Your account is banned from commenting.');
     return;
   }
-
-  el.innerHTML = list.map(r => `
-    <div class="bg-bg border border-c rounded-2xl p-4 space-y-2 text-xs shadow-sm">
-      <div class="flex items-center justify-between">
-        <span class="font-bold text-red-400 uppercase tracking-wider text-[11px]">${escapeHtml(r.reason || 'Report')}</span>
-        <span class="text-muted2 text-[10px]">${timeAgo(r.createdAt)}</span>
-      </div>
-      <p class="text-white text-xs">${r.details ? escapeHtml(r.details) : 'No details provided.'}</p>
-      <div class="text-[11px] text-muted2 flex items-center justify-between">
-        <span>Reporter: ${escapeHtml(r.reporterNickname || 'Anon')}</span>
-        ${r.imageUrl ? `<a href="${escapeAttr(r.imageUrl)}" target="_blank" class="text-lime-400 hover:underline">View image link</a>` : ''}
-      </div>
-      <div class="flex gap-2 pt-2 border-t border-c">
-        <button class="px-3 py-1 rounded-lg border border-c text-muted2 hover:text-white" onclick="dismissReport('${r.id}')">Dismiss</button>
-        ${r.profileId ? `<button class="px-3 py-1 rounded-lg border border-red-500/40 text-red-300 hover:bg-red-500/10" onclick="removeReported('${r.id}', '${r.profileId}')">Remove Post</button>` : ''}
-        ${r.createdBy ? `<button class="px-3 py-1 rounded-lg border border-red-500/40 text-red-300 hover:bg-red-500/10" onclick="banReported('${r.createdBy}')">Suspend User</button>` : ''}
-      </div>
-    </div>`).join('');
-}
-
-// Student Suggestions Viewer for Owners
-async function loadIdeas() {
-  FB.onSnapshot(FB.query(FB.collection(FB.db, 'feedback'), FB.orderBy('createdAt', 'desc')), (snap) => {
-    const el = $('ideasModList');
-    if (snap.empty) {
-      el.innerHTML = `<p class="text-xs text-muted2 py-8 text-center">No student suggestions submitted yet.</p>`;
-      return;
-    }
-    el.innerHTML = snap.docs.map(d => {
-      const f = d.data();
-      return `
-      <div class="bg-bg border border-c rounded-2xl p-4 space-y-1.5 text-xs shadow-sm">
-        <div class="flex items-center justify-between">
-          <span class="font-bold text-lime-400 uppercase tracking-wider text-[11px]">${escapeHtml(f.category || 'Idea')}</span>
-          <span class="text-muted2 text-[10px]">${timeAgo(f.createdAt)}</span>
-        </div>
-        <p class="text-white leading-relaxed">${escapeHtml(f.details)}</p>
-        <span class="text-[10px] text-muted2">Submitted by: ${escapeHtml(f.nickname || 'Student')}</span>
-      </div>`;
-    }).join('');
-  });
-}
-
-$('modTabReports').onclick = () => {
-  $('modTabReports').classList.add('btn-primary');
-  $('modTabReports').classList.remove('border', 'border-c', 'text-muted2');
-  $('modTabIdeas').classList.remove('btn-primary');
-  $('modTabIdeas').classList.add('border', 'border-c', 'text-muted2');
-  $('reportsList').classList.remove('hidden');
-  $('reportsFilterRow').classList.remove('hidden');
-  $('ideasModList').classList.add('hidden');
-};
-
-$('modTabIdeas').onclick = () => {
-  $('modTabIdeas').classList.add('btn-primary');
-  $('modTabIdeas').classList.remove('border', 'border-c', 'text-muted2');
-  $('modTabReports').classList.remove('btn-primary');
-  $('modTabReports').classList.add('border', 'border-c', 'text-muted2');
-  $('ideasModList').classList.remove('hidden');
-  $('reportsList').classList.add('hidden');
-  $('reportsFilterRow').classList.add('hidden');
-};
-
-$('modSearch').addEventListener('input', renderFilteredReports);
-$('modReasonFilter').addEventListener('change', renderFilteredReports);
-
-window.dismissReport = async (rid) => {
-  await FB.updateDoc(FB.doc(FB.db, 'reports', rid), { status: 'dismissed' });
-  showToast('Report dismissed.');
-};
-window.removeReported = async (rid, pid) => {
-  if (!confirm('Delete this reported photo?')) return;
-  await FB.deleteDoc(FB.doc(FB.db, 'profiles', pid));
-  await FB.updateDoc(FB.doc(FB.db, 'reports', rid), { status: 'removed' });
-  closeModal('modModal');
-  showToast('Photo removed.');
-};
-window.banReported = async (uid) => {
-  if (!uid || !confirm('Suspend this user account?')) return;
-  await FB.updateDoc(FB.doc(FB.db, 'users', uid), { suspended: true });
-  showToast('User suspended.');
-};
-
-// Report Submission
-$('reportBtn').addEventListener('click', () => {
-  if (!currentUser) { openModal('authModal'); return; }
+  if (userProfile && userProfile.timeoutUntil && Date.now() < userProfile.timeoutUntil) {
+    const mins = Math.ceil((userProfile.timeoutUntil - Date.now()) / 60000);
+    showToast(`You are in timeout for ${mins} more minutes.`);
+    return;
+  }
   currentReportContext = { type: 'image', id: currentProfileId };
   $('reportDetails').value = '';
   openModal('reportModal');

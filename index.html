@@ -107,6 +107,9 @@
   .fade-in { animation: fadeIn .24s cubic-bezier(0.16, 1, 0.3, 1); }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
   .scrollbar-hide::-webkit-scrollbar { display:none; } .scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
+  /* Device mode: mobile preview constrains app to a centered phone frame */
+  html.device-mobile #app { max-width: 420px; margin-left: auto; margin-right: auto; border-left: 1px solid var(--border); border-right: 1px solid var(--border); min-height: 100vh; }
+  @media (max-width: 640px) { html.device-mobile #app { max-width: 100%; border-left: none; border-right: none; } }
   
   .card-click { cursor: pointer; transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1), border-color .2s, box-shadow .2s; }
   .card-click:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 16px 32px -6px rgba(0,0,0,0.6), 0 0 20px var(--accent-glow); }
@@ -238,7 +241,7 @@
       </div>
 
       <!-- Action items -->
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
         <!-- Notification Bell -->
         <button id="notifBtn" class="relative p-1.5 sm:p-2 rounded-full hover:bg-card2 border border-transparent hover:border-c transition-colors text-muted2 hover:text-white" aria-label="Notifications" title="Notifications">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -293,7 +296,7 @@
 
   <!-- Sub-header & Navigation Tabs -->
   <div class="max-w-6xl mx-auto px-4 mt-5 flex flex-wrap items-center justify-between gap-3">
-    <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
+    <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-1">
       <div class="inline-flex bg-card2 border border-c rounded-full p-1 shadow-sm snap-start">
         <button data-tab="recommended" class="tabBtn px-4 py-1.5 rounded-full text-sm font-bold btn-primary whitespace-nowrap" data-i18n="tab_recommended">Recommended</button>
         <button data-tab="foryou" class="tabBtn px-4 py-1.5 rounded-full text-sm font-medium text-muted2 whitespace-nowrap" data-i18n="tab_foryou">For You</button>
@@ -1019,6 +1022,12 @@
 <!-- Toast notification container -->
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-2xl fade-in border border-white/20" style="background:#111827;color:#f3f4f6"></div>
 
+<!-- Device Mode Toggle (PC / Mobile preview) -->
+<div id="deviceToggle" class="fixed bottom-4 right-4 z-[60] flex items-center gap-1 p-1 rounded-full border border-c shadow-xl" style="background:var(--card)">
+  <button id="devicePcBtn" type="button" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors" aria-label="PC view">🖥️ PC</button>
+  <button id="deviceMobileBtn" type="button" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors" aria-label="Mobile view">📱 Mobile</button>
+</div>
+
 <script type="module">
 // Firebase modular imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
@@ -1473,6 +1482,18 @@ function applyTheme(t) {
   document.documentElement.classList.toggle('dark', t !== 'light');
 }
 applyTheme('dark'); // locked to Dark Mode
+
+// Device mode (PC / Mobile preview)
+function applyDeviceMode(mode) {
+  const m = (mode === 'mobile') ? 'mobile' : 'pc';
+  localStorage.setItem('deviceMode', m);
+  document.documentElement.classList.toggle('device-mobile', m === 'mobile');
+  const pcBtn = $('devicePcBtn'); const mbBtn = $('deviceMobileBtn');
+  if (pcBtn) { pcBtn.style.background = m === 'pc' ? 'var(--accent)' : 'transparent'; pcBtn.style.color = m === 'pc' ? '#fff' : 'var(--muted)'; }
+  if (mbBtn) { mbBtn.style.background = m === 'mobile' ? 'var(--accent)' : 'transparent'; mbBtn.style.color = m === 'mobile' ? '#fff' : 'var(--muted)'; }
+}
+const _uaMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+applyDeviceMode(localStorage.getItem('deviceMode') || (_uaMobile ? 'mobile' : 'pc'));
 
 let currentUser = null, userProfile = null, profiles = [];
 let profilesUnsub = null, commentsUnsub = null, myRatingUnsub = null, reactionsUnsub = null;
@@ -2823,6 +2844,8 @@ $('fbSubmit').onclick = async () => {
 // Settings Handlers
 document.querySelectorAll('[data-open-about]').forEach(b => b.addEventListener('click', () => { closeModal('notifModal'); playPop(); openModal('aboutModal'); }));
 const rcbEl = $('resetJoinCountBtn'); if (rcbEl) rcbEl.addEventListener('click', resetJoinedCounter);
+const devicePcBtnEl = $('devicePcBtn'); if (devicePcBtnEl) devicePcBtnEl.addEventListener('click', () => applyDeviceMode('pc'));
+const deviceMobileBtnEl = $('deviceMobileBtn'); if (deviceMobileBtnEl) deviceMobileBtnEl.addEventListener('click', () => applyDeviceMode('mobile'));
 $('settingsBtn').addEventListener('click', () => {
   playPop();
   $('soundToggle').checked = soundEnabled;

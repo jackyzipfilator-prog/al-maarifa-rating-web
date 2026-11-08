@@ -2722,6 +2722,10 @@ async function addComment() {
 }
 
 $('reportBtn').addEventListener('click', () => {
+  currentReportContext = { type: 'image', id: currentProfileId };
+  $('reportDetails').value = '';
+  openModal('reportModal');
+});
 
 $('reportSubmit').addEventListener('click', async () => {
   const err = $('reportErr');
